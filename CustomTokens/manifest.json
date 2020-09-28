@@ -1,0 +1,9 @@
+{
+	"Name":"CustomTokens",
+	"Author":"TheMightyAmondee",
+	"Version":"1.0.0",
+	"Description":"Provides some custom tokens needed for my mods",
+	"UniqueID": "TheMightyAmondee.CustomTokens",
+	"EntryDll":"CustomTokens.dll",
+	"UpdateKeys":[]
+}
