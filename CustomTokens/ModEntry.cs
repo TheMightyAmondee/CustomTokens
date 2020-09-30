@@ -17,6 +17,9 @@ namespace CustomTokens
         void RegisterToken(IManifest mod, string name, Func<IEnumerable<string>> getValue);
     }
 
+    /// <summary>
+    /// Special class to track mine level
+    /// </summary>
     public class MineLevelTracking
     {
         public int CurrentMineLevel { get; set; }
@@ -25,6 +28,7 @@ namespace CustomTokens
     public class ModEntry 
         : Mod
     {
+        // mine level tracking
         private MineLevelTracking _mineLevelTracking;
 
         public override void Entry(IModHelper helper)
@@ -38,42 +42,17 @@ namespace CustomTokens
             this.Monitor.Log($"Game Launched", LogLevel.Debug);
             var api = this.Helper.ModRegistry.GetApi<IContentPatcherAPI>("Pathoschild.ContentPatcher");
 
+            // register "PlayerName" token
             api.RegisterToken(
                 this.ModManifest, 
                 "PlayerName", 
                 () =>
                 {
                     if (Context.IsWorldReady)
-                        return new[] { Game1.player.Name };
-
-                    if (SaveGame.loaded?.player != null)
-                        return new[] { SaveGame.loaded.player.Name }; // lets token be used before save is fully loaded
-
-                    return null;
-                });
-
-            api.RegisterToken(
-                this.ModManifest, 
-                "MineLevel", 
-                () =>
-                {
-                    if (Context.IsPlayerFree)
                     {
-                        // return new[] { Game1.CurrentMineLevel.ToString() };
-                        var currentMineLevel = -1;
-
-                        if(_mineLevelTracking is null)
-                        {
-                            currentMineLevel = 0;
-                        }
-                        else
-                        {
-                            currentMineLevel = _mineLevelTracking.CurrentMineLevel;
-                        }
-
                         return new[] 
                         { 
-                            currentMineLevel.ToString() 
+                            Game1.player.Name 
                         };
                     }
 
@@ -83,9 +62,30 @@ namespace CustomTokens
                         return new[] 
                         { 
                             SaveGame.loaded.player.Name 
-                        }; 
+                        };
                     }
 
+                    return null;
+                });
+
+            // register "MineLevel" token
+            api.RegisterToken(
+                this.ModManifest, 
+                "MineLevel", 
+                () =>
+                {
+                    if (Context.IsWorldReady)
+                    {
+                        var currentMineLevel = _mineLevelTracking is null
+                                                    ? 0
+                                                    : _mineLevelTracking.CurrentMineLevel;
+
+                        return new[] 
+                        { 
+                            currentMineLevel.ToString() 
+                        };
+                    }
+                    
                     return null;
                 });
         }
@@ -94,12 +94,18 @@ namespace CustomTokens
         {
             this.Monitor.Log($"{Game1.player.Name} warped from {e.OldLocation} to {e.NewLocation}", LogLevel.Debug);
 
+            // get current location as a MineShaft
             var mineShaft = Game1.currentLocation as MineShaft;
            
+            // test to see if current location is a MineShaft
             if (!(mineShaft is null))
             {
+                this.Monitor.Log($"{Game1.player.Name} is on level {mineShaft.mineLevel}.", LogLevel.Debug);
+
+                // test for mine level tracking
                 if (_mineLevelTracking is null)
                 {
+                    // create mine level tracking object with current mine level
                     _mineLevelTracking =
                         new MineLevelTracking()
                         {
@@ -108,10 +114,9 @@ namespace CustomTokens
                 }
                 else
                 {
+                    // mine level tracking object exists!  Just update the current mine level
                     _mineLevelTracking.CurrentMineLevel = mineShaft.mineLevel;
                 }
-
-                this.Monitor.Log($"{Game1.player.Name} is on level {mineShaft.mineLevel}.", LogLevel.Debug);
             }            
         }
     }
