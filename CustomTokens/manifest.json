@@ -5,5 +5,11 @@
 	"Description":"Provides some custom tokens needed for my mods",
 	"UniqueID": "TheMightyAmondee.CustomTokens",
 	"EntryDll":"CustomTokens.dll",
-	"UpdateKeys":[]
+	"UpdateKeys":[],
+	"Dependencies":[
+		{
+			"UniqueID":"PathosChild.ContentPatcher",
+			"IsRequired":false
+		}
+	]
 }
