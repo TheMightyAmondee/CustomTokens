@@ -35,10 +35,11 @@ namespace CustomTokens
         {
             helper.Events.Player.Warped += this.LocationChange;
             helper.Events.GameLoop.GameLaunched += this.GameLaunched;
+            helper.Events.GameLoop.DayStarted += this.DayStarted;
         }
 
         private void GameLaunched(object sender, GameLaunchedEventArgs e)
-        {
+        {            
             this.Monitor.Log($"Game Launched", LogLevel.Debug);
             var api = this.Helper.ModRegistry.GetApi<IContentPatcherAPI>("Pathoschild.ContentPatcher");
 
@@ -92,8 +93,12 @@ namespace CustomTokens
         
         private void LocationChange(object sender, WarpedEventArgs e)
         {
-            this.Monitor.Log($"{Game1.player.Name} warped from {e.OldLocation} to {e.NewLocation}", LogLevel.Debug);
-
+#if DEBUG
+            if(!System.Diagnostics.Debugger.IsAttached)
+            {
+               // System.Diagnostics.Debugger.Launch();
+            }
+#endif
             // get current location as a MineShaft
             var mineShaft = Game1.currentLocation as MineShaft;
            
@@ -117,7 +122,25 @@ namespace CustomTokens
                     // mine level tracking object exists!  Just update the current mine level
                     _mineLevelTracking.CurrentMineLevel = mineShaft.mineLevel;
                 }
-            }            
+                this.Monitor.Log($"Mine Level updated to {mineShaft.mineLevel}", LogLevel.Debug);
+            }
+
+            else
+            {
+                this.Monitor.Log($"{Game1.player.Name} is not in the mine.", LogLevel.Debug);
+                // does the mine tracker exist?
+                if (!(_mineLevelTracking is null))
+                {
+                    // reset mine level tracker
+                    _mineLevelTracking = null;
+                    this.Monitor.Log($"Mine tracker reset",LogLevel.Debug);
+                }
+            }
+        }
+
+        private void DayStarted(object sender, DayStartedEventArgs e)
+        {
+
         }
     }
 }
