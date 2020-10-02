@@ -18,18 +18,21 @@ namespace CustomTokens
     }
 
     /// <summary>
-    /// Special class to track mine level
+    /// Special class to track required playerdata
     /// </summary>
-    public class MineLevelTracking
+    public class PlayerDataTracking
     {
         public int CurrentMineLevel { get; set; }
+        public double CurrentYearsMarried { get; set; }
     }
 
     public class ModEntry 
         : Mod
     {
         // mine level tracking
-        private MineLevelTracking _mineLevelTracking;
+        private PlayerDataTracking _mineLevelTracking;
+
+        private PlayerDataTracking _yearsMarried;
 
         public override void Entry(IModHelper helper)
         {
@@ -40,34 +43,7 @@ namespace CustomTokens
 
         private void GameLaunched(object sender, GameLaunchedEventArgs e)
         {            
-            this.Monitor.Log($"Game Launched", LogLevel.Debug);
             var api = this.Helper.ModRegistry.GetApi<IContentPatcherAPI>("Pathoschild.ContentPatcher");
-
-            // register "PlayerName" token
-            api.RegisterToken(
-                this.ModManifest, 
-                "PlayerName", 
-                () =>
-                {
-                    if (Context.IsWorldReady)
-                    {
-                        return new[] 
-                        { 
-                            Game1.player.Name 
-                        };
-                    }
-
-                    if (SaveGame.loaded?.player != null)
-                    {
-                        // lets token be used before save is fully loaded
-                        return new[] 
-                        { 
-                            SaveGame.loaded.player.Name 
-                        };
-                    }
-
-                    return null;
-                });
 
             // register "MineLevel" token
             api.RegisterToken(
@@ -89,8 +65,62 @@ namespace CustomTokens
                     
                     return null;
                 });
+
+            //Register "YearsMarried" token
+            api.RegisterToken(
+                this.ModManifest,
+                "YearsMarried",
+                () =>
+                {
+                    if (Context.IsWorldReady)
+                    {
+                        var currentYearsMarried = _yearsMarried is null
+                                                    ? 0
+                                                    : _yearsMarried.CurrentYearsMarried;
+
+                        return new[]
+                        {
+                            currentYearsMarried.ToString()
+                        };
+                    }
+
+                    return null;
+                });
         }
-        
+
+        private void DayStarted(object sender, DayStartedEventArgs e)
+        {
+            //Get days married
+            int DaysMarried = Game1.player.GetDaysMarried();
+            float Years = DaysMarried / 112;
+            //Years married
+            double YearsMarried = Math.Floor(Years);
+
+            //Test if player is married
+            if(Game1.player.isMarried() is false)
+            {
+                this.Monitor.Log($"{Game1.player.Name} is not married");
+            }
+            else
+            {
+                // does the tracker for years married exist?
+                //No, create tracker object
+                if (_yearsMarried is null)
+                {
+                    _yearsMarried =
+                        new PlayerDataTracking()
+                        {
+                            CurrentYearsMarried = YearsMarried
+                        };
+
+                }
+                //Yes, update tracker
+                else
+                {
+                    _yearsMarried.CurrentYearsMarried = YearsMarried;
+                }
+            }
+        }
         private void LocationChange(object sender, WarpedEventArgs e)
         {
 #if DEBUG
@@ -112,7 +142,7 @@ namespace CustomTokens
                 {
                     // create mine level tracking object with current mine level
                     _mineLevelTracking =
-                        new MineLevelTracking()
+                        new PlayerDataTracking()
                         {
                             CurrentMineLevel = mineShaft.mineLevel
                         };
@@ -122,25 +152,19 @@ namespace CustomTokens
                     // mine level tracking object exists!  Just update the current mine level
                     _mineLevelTracking.CurrentMineLevel = mineShaft.mineLevel;
                 }
-                this.Monitor.Log($"Mine Level updated to {mineShaft.mineLevel}", LogLevel.Debug);
+                this.Monitor.Log($"Mine Level updated to {mineShaft.mineLevel}", LogLevel.Trace);
             }
 
             else
             {
-                this.Monitor.Log($"{Game1.player.Name} is not in the mine.", LogLevel.Debug);
                 // does the mine tracker exist?
                 if (!(_mineLevelTracking is null))
                 {
                     // reset mine level tracker
                     _mineLevelTracking = null;
-                    this.Monitor.Log($"Mine tracker reset",LogLevel.Debug);
+                    this.Monitor.Log($"Mine tracker reset",LogLevel.Trace);
                 }
             }
-        }
-
-        private void DayStarted(object sender, DayStartedEventArgs e)
-        {
-
         }
     }
 }
