@@ -24,8 +24,8 @@ namespace CustomTokens
     {
         public int CurrentMineLevel { get; set; }
         public double CurrentYearsMarried { get; set; }
-        public string AnniversaryDate { get; set; }
-
+        public int AnniversaryDay { get; set; }
+        public string AnniversarySeason { get; set; }
     }
 
     public class ModEntry 
@@ -36,7 +36,8 @@ namespace CustomTokens
         // years married tracking
         private PlayerDataTracking _yearsMarried;
         // anniversary tracker
-        private PlayerDataTracking _Anniversarydate;
+        private PlayerDataTracking _Anniversaryday;
+        private PlayerDataTracking _Anniversaryseason;
 
         public override void Entry(IModHelper helper)
         {
@@ -71,27 +72,47 @@ namespace CustomTokens
                     return null;
                 });
 
-            //Register "YearsMarried" token
+            //Register "AnniversaryDay" token
             api.RegisterToken(
                 this.ModManifest,
-                "Anniversary",
+                "AnniversaryDay",
                 () =>
                 {
                     if (Context.IsWorldReady)
                     {
-                        var Anniversary = _Anniversarydate is null
-                                                    ? "No anniversary"
-                                                    : _Anniversarydate.AnniversaryDate;
+                        var AnniversaryDay = _Anniversaryday is null
+                                                    ? 0
+                                                    : _Anniversaryday.AnniversaryDay;
 
                         return new[]
                         {
-                            Anniversary
+                            AnniversaryDay.ToString()
                         };
                     }
 
                     return null;
                 });
-            //Register "Anniversary" token
+            //Register "AnniversarySeason" token
+            api.RegisterToken(
+                this.ModManifest,
+                "AnniversarySeason",
+                () =>
+                {
+                    if (Context.IsWorldReady)
+                    {
+                        var AnniversarySeason = _Anniversaryseason is null
+                                                    ? "No season"
+                                                    : _Anniversaryseason.AnniversarySeason;
+
+                        return new[]
+                        {
+                            AnniversarySeason
+                        };
+                    }
+
+                    return null;
+                });
+            //Register "YearsMarried" token
             api.RegisterToken(
                this.ModManifest,
                "YearsMarried",
@@ -122,8 +143,6 @@ namespace CustomTokens
             double YearsMarried = Math.Floor(Years);
             //Anniversary
             var anniversary = SDate.Now().AddDays(-(DaysMarried - 1));
-            string anniversarydate = $"{anniversary.Season}_{anniversary.Day}";
-
             //Test if player is married
             if (Game1.player.isMarried() is false)
             {
@@ -150,25 +169,40 @@ namespace CustomTokens
                     _yearsMarried.CurrentYearsMarried = YearsMarried;
                 }
 
-                //Does the anniversary tracker exist?
+                //Does the anniversary day tracker exist?
                 //No, create tracker
-                if( _Anniversarydate is null)
+                if(_Anniversaryday is null)
                 {
-                    _Anniversarydate =
+                    _Anniversaryday =
                         new PlayerDataTracking()
                         {
-                            AnniversaryDate = anniversarydate
+                            AnniversaryDay = anniversary.Day
                         };
                 }
-                //Yes, update tracker
+                // Update tracker
                 else
                 {
-                    _Anniversarydate.AnniversaryDate = anniversarydate;
+                    _Anniversaryday.AnniversaryDay = anniversary.Day;
+                }
+                //Create anniversary season tracker
+                if (_Anniversaryseason is null)
+                {
+                    _Anniversaryseason =
+                        new PlayerDataTracking()
+                        {
+                            AnniversarySeason = anniversary.Season
+                        };
+                }
+                //Update tracker
+                else
+                {
+                    _Anniversaryseason.AnniversarySeason = anniversary.Season;
                 }
 
-                this.Monitor.Log($"{Game1.player.Name} has been married for {YearsMarried} year(s)", LogLevel.Debug);
+                this.Monitor.Log($"{Game1.player.Name} has been married for {YearsMarried} year(s)");
 
-                this.Monitor.Log($"For use in tokens, anniversary is {anniversarydate}", LogLevel.Debug);
+                this.Monitor.Log($"Anniversary is the {anniversary.Day} of {anniversary.Season}");
+
             }
         }
         private void LocationChange(object sender, WarpedEventArgs e)
@@ -210,9 +244,9 @@ namespace CustomTokens
                 // does the mine tracker exist?
                 if (!(_mineLevelTracking is null))
                 {
-                    // reset mine level tracker
+                    // reset mine level tracker when player leaves mine
                     _mineLevelTracking = null;
-                    this.Monitor.Log($"Mine tracker reset to null");
+                    this.Monitor.Log($"Mine tracker reset");
                 }
             }
         }
@@ -220,13 +254,19 @@ namespace CustomTokens
         //Discard tokens when save is exited
         private void ExitSave(object sender, ReturnedToTitleEventArgs e)
         {
-            if(!(_Anniversarydate is null))
+            if(!(_Anniversaryday is null))
             {
-                _Anniversarydate = null;
-                this.Monitor.Log($"Anniversary reset");
+                _Anniversaryday = null;
+                this.Monitor.Log($"Anniversaryday reset");
             }
 
-            if(!(_yearsMarried is null))
+            if (!(_Anniversaryseason is null))
+            {
+                _Anniversaryseason = null;
+                this.Monitor.Log($"Anniversaryseason reset");
+            }
+
+            if (!(_yearsMarried is null))
             {
                 _yearsMarried = null;
                 this.Monitor.Log($"YearsMarried reset");
