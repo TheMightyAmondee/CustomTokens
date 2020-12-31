@@ -28,6 +28,7 @@ namespace CustomTokens
             helper.Events.Player.Warped += this.LocationChange;
             helper.Events.GameLoop.GameLaunched += this.GameLaunched;
             helper.Events.GameLoop.UpdateTicked += this.UpdateTicked;
+            helper.Events.GameLoop.Saved += this.Saved;
             helper.Events.GameLoop.DayStarted += this.DayStarted;
             helper.ConsoleCommands.Add("tracker", "Displays the current tracked values", this.TellMe);
         }
@@ -167,6 +168,8 @@ namespace CustomTokens
             double YearsMarried = Math.Floor(Years);
             // Get Anniversary date
             var anniversary = SDate.Now().AddDays(-(DaysMarried - 1));
+
+           
             // Test if player is married
             if (Game1.player.isMarried() is false)
             {
@@ -191,8 +194,12 @@ namespace CustomTokens
 
             }
 
-            // Save any data to JSON recorded the previous day, ensures data is discard if day was not saved
-            this.Helper.Data.WriteJsonFile<PlayerData>($"data\\{Constants.SaveFolderName}.json", ModEntry.PlayerData);
+            // Fix death tracker
+            if (PlayerData.DeathCountAfterMarriageOld < PlayerData.DeathCountAfterMarriage)
+            {
+                this.Monitor.Log("Fixing tracker to discard unsaved data");
+                PlayerData.DeathCountAfterMarriage = PlayerData.DeathCountAfterMarriageOld;
+            }
         }
         private void LocationChange(object sender, WarpedEventArgs e)
         {
@@ -246,7 +253,9 @@ namespace CustomTokens
             // Update tracker if player died, is married and tracker should update
             if(Game1.killScreen == true && Game1.player.isMarried() == true && update == true)
             {
- 
+
+                PlayerData = Helper.Data.ReadJsonFile<PlayerData>($"data\\{Constants.SaveFolderName}.json") ?? new PlayerData();
+
                 // Increment tracker
                 PlayerData.DeathCountAfterMarriage++;
 
@@ -261,6 +270,18 @@ namespace CustomTokens
                 // Tracker should be updated next death
                 update = true;
             }
+
+            // Save any data to JSON recorded that day, ensures data is discard if day was not saved
+            this.Helper.Data.WriteJsonFile<PlayerData>($"data\\{Constants.SaveFolderName}.json", ModEntry.PlayerData);
+        }
+
+        private void Saved(object sender, SavedEventArgs e)
+        {
+            // Update old tracker
+            PlayerData.DeathCountAfterMarriageOld = PlayerData.DeathCountAfterMarriage;
+            this.Monitor.Log("Old death tracker updated for new day");
+            // Save any data to JSON recorded that day, ensures data is discard if day was not saved
+            this.Helper.Data.WriteJsonFile<PlayerData>($"data\\{Constants.SaveFolderName}.json", ModEntry.PlayerData);
         }
     }
 }

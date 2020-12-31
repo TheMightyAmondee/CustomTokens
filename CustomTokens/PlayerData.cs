@@ -8,5 +8,6 @@ namespace CustomTokens
         public int AnniversaryDay { get; set; }
         public string AnniversarySeason { get; set; } = "No season";
         public int DeathCountAfterMarriage { get; set; }
+        public int DeathCountAfterMarriageOld { get; set; }
     }
 }
