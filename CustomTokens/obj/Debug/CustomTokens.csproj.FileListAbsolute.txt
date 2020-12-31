@@ -3,4 +3,3 @@ C:\Users\ameli\source\repos\CustomTokens\CustomTokens\bin\Debug\CustomTokens.dll
 C:\Users\ameli\source\repos\CustomTokens\CustomTokens\bin\Debug\CustomTokens.pdb
 C:\Users\ameli\source\repos\CustomTokens\CustomTokens\obj\Debug\CustomTokens.dll
 C:\Users\ameli\source\repos\CustomTokens\CustomTokens\obj\Debug\CustomTokens.pdb
-C:\Users\ameli\source\repos\CustomTokens\CustomTokens\obj\Debug\CustomTokens.csprojAssemblyReference.cache

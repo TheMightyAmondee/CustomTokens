@@ -141,6 +141,8 @@ namespace CustomTokens
                        /* 
                        CP won't load content after token is updated, 
                        Adding 1 to the value if married ensures token value is correct when content is loaded
+                       To ensure CP will update the token, ensure an Update field of OnLocationChange or OnTimeChange or both
+                       is included with the patch using the token
                        */
                        var currentdeathcountmarried = Game1.player.isMarried() is true 
                        ? PlayerData.DeathCountAfterMarriage + 1 
@@ -244,9 +246,7 @@ namespace CustomTokens
             // Update tracker if player died, is married and tracker should update
             if(Game1.killScreen == true && Game1.player.isMarried() == true && update == true)
             {
-                // Read JSON file and create one if necessary
-                ModEntry.PlayerData = this.Helper.Data.ReadJsonFile<PlayerData>($"data\\{Constants.SaveFolderName}.json") ?? new PlayerData();
-                
+ 
                 // Increment tracker
                 PlayerData.DeathCountAfterMarriage++;
 
