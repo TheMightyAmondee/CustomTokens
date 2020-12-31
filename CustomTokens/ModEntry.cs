@@ -161,7 +161,7 @@ namespace CustomTokens
             // Get days married
             int DaysMarried = Game1.player.GetDaysMarried();
             float Years = DaysMarried / 112;
-            // Years married
+            // Get years married
             double YearsMarried = Math.Floor(Years);
             // Get Anniversary date
             var anniversary = SDate.Now().AddDays(-(DaysMarried - 1));
@@ -189,7 +189,7 @@ namespace CustomTokens
 
             }
 
-            // Save any data to JSON recorded the previous day
+            // Save any data to JSON recorded the previous day, ensures data is discard if day was not saved
             this.Helper.Data.WriteJsonFile<PlayerData>($"data\\{Constants.SaveFolderName}.json", ModEntry.PlayerData);
         }
         private void LocationChange(object sender, WarpedEventArgs e)
@@ -228,6 +228,7 @@ namespace CustomTokens
                     $"\nCurrentYearsMarried: {PlayerData.CurrentYearsMarried}" +
                     $"\nAnniversaryDay: {PlayerData.AnniversaryDay}" +
                     $"\nAnniversarySeason: {PlayerData.AnniversarySeason}" +
+                    $"\nDeathCount:{Game1.stats.timesUnconscious}" +
                     $"\nDeathCountAfterMarriage: {PlayerData.DeathCountAfterMarriage}", LogLevel.Debug);
             }
             catch
