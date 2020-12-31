@@ -17,41 +17,27 @@ namespace CustomTokens
         void RegisterToken(IManifest mod, string name, Func<IEnumerable<string>> getValue);
     }
 
-    /// <summary>
-    /// Special class to track required playerdata
-    /// </summary>
-    public class PlayerDataTracking
-    {
-        public int CurrentMineLevel { get; set; }
-        public double CurrentYearsMarried { get; set; }
-        public int AnniversaryDay { get; set; }
-        public string AnniversarySeason { get; set; }
-    }
-
     public class ModEntry 
         : Mod
     {
-        // mine level tracking
-        private PlayerDataTracking _mineLevelTracking;
-        // years married tracking
-        private PlayerDataTracking _yearsMarried;
-        // anniversary tracker
-        private PlayerDataTracking _Anniversaryday;
-        private PlayerDataTracking _Anniversaryseason;
+        public bool update = false;
+        public static PlayerData PlayerData { get; private set; } = new PlayerData();
 
         public override void Entry(IModHelper helper)
         {
             helper.Events.Player.Warped += this.LocationChange;
             helper.Events.GameLoop.GameLaunched += this.GameLaunched;
+            helper.Events.GameLoop.UpdateTicked += this.UpdateTicked;
             helper.Events.GameLoop.DayStarted += this.DayStarted;
-            helper.Events.GameLoop.ReturnedToTitle += this.ExitSave;
+            helper.ConsoleCommands.Add("tracker", "Displays the current tracked values", this.TellMe);
         }
 
         private void GameLaunched(object sender, GameLaunchedEventArgs e)
-        {            
+        {
+            // Access Content Patcher API
             var api = this.Helper.ModRegistry.GetApi<IContentPatcherAPI>("Pathoschild.ContentPatcher");
 
-            // register "MineLevel" token
+            // Register "MineLevel" token
             api.RegisterToken(
                 this.ModManifest, 
                 "MineLevel", 
@@ -59,9 +45,7 @@ namespace CustomTokens
                 {
                     if (Context.IsWorldReady)
                     {
-                        var currentMineLevel = _mineLevelTracking is null
-                                                    ? 0
-                                                    : _mineLevelTracking.CurrentMineLevel;
+                        var currentMineLevel = PlayerData.CurrentMineLevel;
 
                         return new[] 
                         { 
@@ -72,7 +56,7 @@ namespace CustomTokens
                     return null;
                 });
 
-            //Register "AnniversaryDay" token
+            // Register "AnniversaryDay" token
             api.RegisterToken(
                 this.ModManifest,
                 "AnniversaryDay",
@@ -80,9 +64,7 @@ namespace CustomTokens
                 {
                     if (Context.IsWorldReady)
                     {
-                        var AnniversaryDay = _Anniversaryday is null
-                                                    ? 0
-                                                    : _Anniversaryday.AnniversaryDay;
+                        var AnniversaryDay = PlayerData.AnniversaryDay;
 
                         return new[]
                         {
@@ -92,7 +74,7 @@ namespace CustomTokens
 
                     return null;
                 });
-            //Register "AnniversarySeason" token
+            // Register "AnniversarySeason" token
             api.RegisterToken(
                 this.ModManifest,
                 "AnniversarySeason",
@@ -100,9 +82,7 @@ namespace CustomTokens
                 {
                     if (Context.IsWorldReady)
                     {
-                        var AnniversarySeason = _Anniversaryseason is null
-                                                    ? "No season"
-                                                    : _Anniversaryseason.AnniversarySeason;
+                        var AnniversarySeason = PlayerData.AnniversarySeason;
 
                         return new[]
                         {
@@ -112,7 +92,7 @@ namespace CustomTokens
 
                     return null;
                 });
-            //Register "YearsMarried" token
+            // Register "YearsMarried" token
             api.RegisterToken(
                this.ModManifest,
                "YearsMarried",
@@ -120,9 +100,7 @@ namespace CustomTokens
                {
                    if (Context.IsWorldReady)
                    {
-                       var currentYearsMarried = _yearsMarried is null
-                                                   ? 0
-                                                   : _yearsMarried.CurrentYearsMarried;
+                       var currentYearsMarried = PlayerData.CurrentYearsMarried;
 
                        return new[]
                        {
@@ -132,144 +110,155 @@ namespace CustomTokens
 
                    return null;
                });
+
+            // Register "DeathCount" token
+            api.RegisterToken(
+               this.ModManifest,
+               "DeathCount",
+               () =>
+               {
+                   if (Context.IsWorldReady)
+                   {
+                       var currentdeathcount = (int)Game1.stats.timesUnconscious;
+
+                       return new[]
+                       {
+                            currentdeathcount.ToString()
+                       };
+                   }
+
+                   return null;
+               });
+
+            // Register "DeathCountMarried" token
+            api.RegisterToken(
+               this.ModManifest,
+               "DeathCountMarried",
+               () =>
+               {
+                   if (Context.IsWorldReady)
+                   {
+                       /* 
+                       CP won't load content after token is updated, 
+                       Adding 1 to the value if married ensures token value is correct when content is loaded
+                       */
+                       var currentdeathcountmarried = Game1.player.isMarried() is true 
+                       ? PlayerData.DeathCountAfterMarriage + 1 
+                       : 0;
+
+                       return new[]
+                       {
+                            currentdeathcountmarried.ToString()
+                       };
+                   }
+
+                   return null;
+               });
         }
 
         private void DayStarted(object sender, DayStartedEventArgs e)
         {
-            //Get days married
+            // Get days married
             int DaysMarried = Game1.player.GetDaysMarried();
             float Years = DaysMarried / 112;
-            //Years married
+            // Years married
             double YearsMarried = Math.Floor(Years);
-            //Anniversary
+            // Get Anniversary date
             var anniversary = SDate.Now().AddDays(-(DaysMarried - 1));
-            //Test if player is married
+            // Test if player is married
             if (Game1.player.isMarried() is false)
             {
                 this.Monitor.Log($"{Game1.player.Name} is not married");
+
+                // Reset tracker if player is no longer married
+                PlayerData.DeathCountAfterMarriage = 0;
             }
 
-            //Player is married, tokens can exist
+            // Player is married, tokens can exist
             else
             {
-                // does the tracker for years married exist?
-                //No, create tracker object
-                if (_yearsMarried is null)
-                {
-                    _yearsMarried =
-                        new PlayerDataTracking()
-                        {
-                            CurrentYearsMarried = YearsMarried
-                        };
+                PlayerData.CurrentYearsMarried = YearsMarried;
 
-                }
-                //Yes, update tracker
-                else
-                {
-                    _yearsMarried.CurrentYearsMarried = YearsMarried;
-                }
+                PlayerData.AnniversarySeason = anniversary.Season;
 
-                //Does the anniversary day tracker exist?
-                //No, create tracker
-                if(_Anniversaryday is null)
-                {
-                    _Anniversaryday =
-                        new PlayerDataTracking()
-                        {
-                            AnniversaryDay = anniversary.Day
-                        };
-                }
-                // Update tracker
-                else
-                {
-                    _Anniversaryday.AnniversaryDay = anniversary.Day;
-                }
-                //Create anniversary season tracker
-                if (_Anniversaryseason is null)
-                {
-                    _Anniversaryseason =
-                        new PlayerDataTracking()
-                        {
-                            AnniversarySeason = anniversary.Season
-                        };
-                }
-                //Update tracker
-                else
-                {
-                    _Anniversaryseason.AnniversarySeason = anniversary.Season;
-                }
+                PlayerData.AnniversaryDay = anniversary.Day;
 
                 this.Monitor.Log($"{Game1.player.Name} has been married for {YearsMarried} year(s)");
 
                 this.Monitor.Log($"Anniversary is the {anniversary.Day} of {anniversary.Season}");
 
             }
+
+            // Save any data to JSON recorded the previous day
+            this.Helper.Data.WriteJsonFile<PlayerData>($"data\\{Constants.SaveFolderName}.json", ModEntry.PlayerData);
         }
         private void LocationChange(object sender, WarpedEventArgs e)
         {
-#if DEBUG
-            if(!System.Diagnostics.Debugger.IsAttached)
-            {
-               // System.Diagnostics.Debugger.Launch();
-            }
-#endif
-            // get current location as a MineShaft
+            // Get current location as a MineShaft
             var mineShaft = Game1.currentLocation as MineShaft;
            
-            // test to see if current location is a MineShaft
+            // Test to see if current location is a MineShaft
             if (!(mineShaft is null))
             {
+                // Yes, update tracker
+
                 this.Monitor.Log($"{Game1.player.Name} is on level {mineShaft.mineLevel}.");
 
-                // test for mine level tracking
-                if (_mineLevelTracking is null)
-                {
-                    // create mine level tracking object with current mine level
-                    _mineLevelTracking =
-                        new PlayerDataTracking()
-                        {
-                            CurrentMineLevel = mineShaft.mineLevel
-                        };
-                }
-                else
-                {
-                    // mine level tracking object exists!  Just update the current mine level
-                    _mineLevelTracking.CurrentMineLevel = mineShaft.mineLevel;
-                }
-                this.Monitor.Log($"Mine Level updated to {mineShaft.mineLevel}");
+                PlayerData.CurrentMineLevel = mineShaft.mineLevel;
             }
 
             else
             {
-                // does the mine tracker exist?
-                if (!(_mineLevelTracking is null))
+                // No, does the tracker reflect this?
+                if(PlayerData.CurrentMineLevel > 0)
                 {
-                    // reset mine level tracker when player leaves mine
-                    _mineLevelTracking = null;
-                    this.Monitor.Log($"Mine tracker reset");
+                    // No, reset mine level tracker
+                    PlayerData.CurrentMineLevel = 0;
+                    this.Monitor.Log($"Minelevel tracker reset");
                 }
             }
         }
 
-        //Discard tokens when save is exited
-        private void ExitSave(object sender, ReturnedToTitleEventArgs e)
+        private void TellMe(string command, string[] args)
         {
-            if(!(_Anniversaryday is null))
+            try 
             {
-                _Anniversaryday = null;
-                this.Monitor.Log($"Anniversaryday reset");
+                // Display information in SMAPI console
+                this.Monitor.Log($"\n\nCurrentMineLevel: {PlayerData.CurrentMineLevel}" +
+                    $"\nCurrentYearsMarried: {PlayerData.CurrentYearsMarried}" +
+                    $"\nAnniversaryDay: {PlayerData.AnniversaryDay}" +
+                    $"\nAnniversarySeason: {PlayerData.AnniversarySeason}" +
+                    $"\nDeathCountAfterMarriage: {PlayerData.DeathCountAfterMarriage}", LogLevel.Debug);
+            }
+            catch
+            {
+                // Display an error if command has failed to execute
+                this.Monitor.Log("Command failed", LogLevel.Error);
+            }
+            
+        }
+
+        private void UpdateTicked(object sender, UpdateTickedEventArgs e)
+        {
+            // Update tracker if player died, is married and tracker should update
+            if(Game1.killScreen == true && Game1.player.isMarried() == true && update == true)
+            {
+                // Read JSON file and create one if necessary
+                ModEntry.PlayerData = this.Helper.Data.ReadJsonFile<PlayerData>($"data\\{Constants.SaveFolderName}.json") ?? new PlayerData();
+                
+                // Increment tracker
+                PlayerData.DeathCountAfterMarriage++;
+
+                // Already updated, ensures tracker won't repeatedly increment
+                update = false;
+
+                this.Monitor.Log($"{Game1.player.Name} has died {PlayerData.DeathCountAfterMarriage} time(s) since last marriage.");
             }
 
-            if (!(_Anniversaryseason is null))
+            else if(Game1.killScreen == false && update == false)
             {
-                _Anniversaryseason = null;
-                this.Monitor.Log($"Anniversaryseason reset");
-            }
-
-            if (!(_yearsMarried is null))
-            {
-                _yearsMarried = null;
-                this.Monitor.Log($"YearsMarried reset");
+                // Tracker should be updated next death
+                update = true;
             }
         }
     }
