@@ -16,4 +16,4 @@ Custom Tokens is a mod that provides some basic additional tokens for Content Pa
 
 ### Config:
 - AllowDebugging adds a single debug command so the values of the tokens can be viewed in the SMAPI console. When enabled typing "tracker" in the console will display a list of token values
-- ResetDeathCountAfterMarriageWhenDivorced will cause the DeathCountAfterMarriage token to reset to 0 when divorced, default is true
+- ResetDeathCountMarriedWhenDivorced will cause the DeathCountMarried token to reset to 0 when divorced, default is true
