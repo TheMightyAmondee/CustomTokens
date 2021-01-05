@@ -20,17 +20,28 @@ namespace CustomTokens
     public class ModEntry 
         : Mod
     {
+        private ModConfig config;
+
         public bool update = false;
         public static PlayerData PlayerData { get; private set; } = new PlayerData();
+
+        public static PlayerDataToWrite PlayerDataToWrite { get; private set; } = new PlayerDataToWrite();
 
         public override void Entry(IModHelper helper)
         {
             helper.Events.Player.Warped += this.LocationChange;
             helper.Events.GameLoop.GameLaunched += this.GameLaunched;
             helper.Events.GameLoop.UpdateTicked += this.UpdateTicked;
-            helper.Events.GameLoop.DayEnding += this.DayEnding;
+            helper.Events.GameLoop.Saved += this.Saved;
             helper.Events.GameLoop.DayStarted += this.DayStarted;
-            helper.ConsoleCommands.Add("tracker", "Displays the current tracked values", this.TellMe);
+
+            // Read the mod config for values and create one if one does not currently exist
+            this.config = this.Helper.ReadConfig<ModConfig>();
+
+            if (this.config.AllowDebugging == true)
+            {
+                helper.ConsoleCommands.Add("tracker", "Displays the current tracked values", this.TellMe);
+            }
         }
 
         private void GameLaunched(object sender, GameLaunchedEventArgs e)
@@ -40,20 +51,20 @@ namespace CustomTokens
 
             // Register "MineLevel" token
             api.RegisterToken(
-                this.ModManifest, 
-                "MineLevel", 
+                this.ModManifest,
+                "MineLevel",
                 () =>
                 {
                     if (Context.IsWorldReady)
                     {
                         var currentMineLevel = PlayerData.CurrentMineLevel;
 
-                        return new[] 
-                        { 
-                            currentMineLevel.ToString() 
+                        return new[]
+                        {
+                            currentMineLevel.ToString()
                         };
                     }
-                    
+
                     return null;
                 });
 
@@ -75,6 +86,7 @@ namespace CustomTokens
 
                     return null;
                 });
+
             // Register "AnniversarySeason" token
             api.RegisterToken(
                 this.ModManifest,
@@ -93,6 +105,7 @@ namespace CustomTokens
 
                     return null;
                 });
+
             // Register "YearsMarried" token
             api.RegisterToken(
                this.ModManifest,
@@ -139,14 +152,14 @@ namespace CustomTokens
                {
                    if (Context.IsWorldReady)
                    {
-                       /* 
-                       CP won't load content after token is updated, 
-                       Adding 1 to the value if married ensures token value is correct when content is loaded
-                       To ensure CP will update the token, ensure an Update field of OnLocationChange or OnTimeChange or both
-                       is included with the patch using the token
-                       */
-                       var currentdeathcountmarried = Game1.player.isMarried() is true 
-                       ? PlayerData.DeathCountAfterMarriage + 1 
+                           /* 
+                           CP won't load content after token is updated, 
+                           Adding 1 to the value if married ensures token value is correct when content is loaded
+                           To ensure CP will update the token, ensure an Update field of OnLocationChange or OnTimeChange or both
+                           is included with the patch using the token
+                           */
+                       var currentdeathcountmarried = Game1.player.isMarried() is true
+                       ? PlayerDataToWrite.DeathCountAfterMarriage + 1
                        : 0;
 
                        return new[]
@@ -157,6 +170,7 @@ namespace CustomTokens
 
                    return null;
                });
+
         }
 
         private void DayStarted(object sender, DayStartedEventArgs e)
@@ -175,8 +189,11 @@ namespace CustomTokens
             {
                 this.Monitor.Log($"{Game1.player.Name} is not married");
 
-                // Reset tracker if player is no longer married
-                PlayerData.DeathCountAfterMarriage = 0;
+                if(this.config.ResetDeathCountAfterMarriageWhenDivorced == true && PlayerDataToWrite.DeathCountAfterMarriage != 0)
+                {
+                    // Reset tracker if player is no longer married
+                    PlayerDataToWrite.DeathCountAfterMarriage = 0;
+                }
             }
 
             // Player is married, tokens can exist
@@ -196,14 +213,14 @@ namespace CustomTokens
             }
 
             // Fix death tracker
-            if (PlayerData.DeathCountAfterMarriageOld < PlayerData.DeathCountAfterMarriage)
+            if (PlayerDataToWrite.DeathCountAfterMarriageOld < PlayerDataToWrite.DeathCountAfterMarriage)
             {
                 this.Monitor.Log("Fixing tracker to discard unsaved data");
-                PlayerData.DeathCountAfterMarriage = PlayerData.DeathCountAfterMarriageOld;
+                PlayerDataToWrite.DeathCountAfterMarriage = PlayerDataToWrite.DeathCountAfterMarriageOld;
             }
 
             // Save any data to JSON file
-            this.Helper.Data.WriteJsonFile<PlayerData>($"data\\{Constants.SaveFolderName}.json", ModEntry.PlayerData);
+            this.Helper.Data.WriteJsonFile<PlayerDataToWrite>($"data\\{Constants.SaveFolderName}.json", ModEntry.PlayerDataToWrite);
         }
         private void LocationChange(object sender, WarpedEventArgs e)
         {
@@ -241,8 +258,8 @@ namespace CustomTokens
                     $"\nCurrentYearsMarried: {PlayerData.CurrentYearsMarried}" +
                     $"\nAnniversaryDay: {PlayerData.AnniversaryDay}" +
                     $"\nAnniversarySeason: {PlayerData.AnniversarySeason}" +
-                    $"\nDeathCount:{Game1.stats.timesUnconscious}" +
-                    $"\nDeathCountAfterMarriage: {PlayerData.DeathCountAfterMarriage}", LogLevel.Debug);
+                    $"\nDeathCount: {Game1.stats.timesUnconscious}" +
+                    $"\nDeathCountAfterMarriage: {PlayerDataToWrite.DeathCountAfterMarriage}", LogLevel.Debug);
             }
             catch
             {
@@ -258,18 +275,25 @@ namespace CustomTokens
             if(Game1.killScreen == true && Game1.player.isMarried() == true && update == true)
             {
                 // Read JSON file and create if needed
-                PlayerData = Helper.Data.ReadJsonFile<PlayerData>($"data\\{Constants.SaveFolderName}.json") ?? new PlayerData();
+                PlayerDataToWrite = Helper.Data.ReadJsonFile<PlayerDataToWrite>($"data\\{Constants.SaveFolderName}.json") ?? new PlayerDataToWrite();
 
                 // Increment tracker
-                PlayerData.DeathCountAfterMarriage++;
+                PlayerDataToWrite.DeathCountAfterMarriage++;
 
                 // Already updated, ensures tracker won't repeatedly increment
                 update = false;
 
-                this.Monitor.Log($"{Game1.player.Name} has died {PlayerData.DeathCountAfterMarriage} time(s) since last marriage.");
+                if(this.config.ResetDeathCountAfterMarriageWhenDivorced == true)
+                {
+                    this.Monitor.Log($"{Game1.player.Name} has died {PlayerDataToWrite.DeathCountAfterMarriage} time(s) since last marriage.");
+                }
+                else
+                {
+                    this.Monitor.Log($"{Game1.player.Name} has died {PlayerDataToWrite.DeathCountAfterMarriage} time(s) since marriage.");
+                }               
 
                 // Save any data to JSON file
-                this.Helper.Data.WriteJsonFile<PlayerData>($"data\\{Constants.SaveFolderName}.json", ModEntry.PlayerData);
+                this.Helper.Data.WriteJsonFile<PlayerDataToWrite>($"data\\{Constants.SaveFolderName}.json", ModEntry.PlayerDataToWrite);
             }
 
             else if(Game1.killScreen == false && update == false)
@@ -279,13 +303,13 @@ namespace CustomTokens
             }
         }
 
-        private void DayEnding(object sender, DayEndingEventArgs e)
+        private void Saved(object sender, SavedEventArgs e)
         {
             // Update old tracker
-            PlayerData.DeathCountAfterMarriageOld = PlayerData.DeathCountAfterMarriage;
+            PlayerDataToWrite.DeathCountAfterMarriageOld = PlayerDataToWrite.DeathCountAfterMarriage;
             this.Monitor.Log("Old death tracker updated for new day");
             // Save any data to JSON file
-            this.Helper.Data.WriteJsonFile<PlayerData>($"data\\{Constants.SaveFolderName}.json", ModEntry.PlayerData);
+            this.Helper.Data.WriteJsonFile<PlayerDataToWrite>($"data\\{Constants.SaveFolderName}.json", ModEntry.PlayerDataToWrite);
         }
     }
 }

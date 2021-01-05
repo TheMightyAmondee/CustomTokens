@@ -5,7 +5,7 @@
 	"Description":"Provides some custom tokens for use with Content Patcher",
 	"UniqueID": "TheMightyAmondee.CustomTokens",
 	"EntryDll":"CustomTokens.dll",
-	"UpdateKeys":[],
+	"UpdateKeys":["Nexus:7517"],
 	"Dependencies":[
 		{
 			"UniqueID":"PathosChild.ContentPatcher",
