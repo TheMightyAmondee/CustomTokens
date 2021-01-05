@@ -8,7 +8,7 @@ namespace CustomTokens
 {
     public class PlayerDataToWrite
     {
-        public int DeathCountAfterMarriage { get; set; }
-        public int DeathCountAfterMarriageOld { get; set; }
+        public int DeathCountMarried { get; set; }
+        public int DeathCountMarriedOld { get; set; }
     }
 }

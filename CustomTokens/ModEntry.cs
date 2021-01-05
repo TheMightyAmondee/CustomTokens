@@ -159,7 +159,7 @@ namespace CustomTokens
                            is included with the patch using the token
                            */
                        var currentdeathcountmarried = Game1.player.isMarried() is true
-                       ? PlayerDataToWrite.DeathCountAfterMarriage + 1
+                       ? PlayerDataToWrite.DeathCountMarried + 1
                        : 0;
 
                        return new[]
@@ -200,10 +200,10 @@ namespace CustomTokens
             {
                 this.Monitor.Log($"{Game1.player.Name} is not married");
 
-                if (this.config.ResetDeathCountAfterMarriageWhenDivorced == true && PlayerDataToWrite.DeathCountAfterMarriage != 0)
+                if (this.config.ResetDeathCountMarriedWhenDivorced == true && PlayerDataToWrite.DeathCountMarried != 0)
                 {
                     // Reset tracker if player is no longer married
-                    PlayerDataToWrite.DeathCountAfterMarriage = 0;
+                    PlayerDataToWrite.DeathCountMarried = 0;
                 }
             }
 
@@ -216,10 +216,10 @@ namespace CustomTokens
             }
 
             // Fix death tracker
-            if (PlayerDataToWrite.DeathCountAfterMarriageOld < PlayerDataToWrite.DeathCountAfterMarriage)
+            if (PlayerDataToWrite.DeathCountMarriedOld < PlayerDataToWrite.DeathCountMarried)
             {
                 this.Monitor.Log("Fixing tracker to discard unsaved data");
-                PlayerDataToWrite.DeathCountAfterMarriage = PlayerDataToWrite.DeathCountAfterMarriageOld;
+                PlayerDataToWrite.DeathCountMarried = PlayerDataToWrite.DeathCountMarriedOld;
             }
 
             // Save any data to JSON file
@@ -262,7 +262,7 @@ namespace CustomTokens
                     $"\nAnniversaryDay: {PlayerData.AnniversaryDay}" +
                     $"\nAnniversarySeason: {PlayerData.AnniversarySeason}" +
                     $"\nDeathCount: {Game1.stats.timesUnconscious}" +
-                    $"\nDeathCountAfterMarriage: {PlayerDataToWrite.DeathCountAfterMarriage}", LogLevel.Debug);
+                    $"\nDeathCountMarriaged: {PlayerDataToWrite.DeathCountMarried}", LogLevel.Debug);
             }
             catch
             {
@@ -279,18 +279,18 @@ namespace CustomTokens
             {
                 
                 // Increment tracker
-                PlayerDataToWrite.DeathCountAfterMarriage++;
+                PlayerDataToWrite.DeathCountMarried++;
 
                 // Already updated, ensures tracker won't repeatedly increment
                 update = false;
 
-                if(this.config.ResetDeathCountAfterMarriageWhenDivorced == true)
+                if(this.config.ResetDeathCountMarriedWhenDivorced == true)
                 {
-                    this.Monitor.Log($"{Game1.player.Name} has died {PlayerDataToWrite.DeathCountAfterMarriage} time(s) since last marriage.");
+                    this.Monitor.Log($"{Game1.player.Name} has died {PlayerDataToWrite.DeathCountMarried} time(s) since last marriage.");
                 }
                 else
                 {
-                    this.Monitor.Log($"{Game1.player.Name} has died {PlayerDataToWrite.DeathCountAfterMarriage} time(s) since marriage.");
+                    this.Monitor.Log($"{Game1.player.Name} has died {PlayerDataToWrite.DeathCountMarried} time(s) since marriage.");
                 }               
 
                 // Save any data to JSON file
@@ -307,7 +307,7 @@ namespace CustomTokens
         private void Saved(object sender, SavedEventArgs e)
         {
             // Update old tracker
-            PlayerDataToWrite.DeathCountAfterMarriageOld = PlayerDataToWrite.DeathCountAfterMarriage;
+            PlayerDataToWrite.DeathCountMarriedOld = PlayerDataToWrite.DeathCountMarried;
             this.Monitor.Log("Old death tracker updated for new day");
             // Save any data to JSON file
             this.Helper.Data.WriteJsonFile<PlayerDataToWrite>($"data\\{Constants.SaveFolderName}.json", ModEntry.PlayerDataToWrite);

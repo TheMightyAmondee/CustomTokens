@@ -8,7 +8,7 @@ namespace CustomTokens
 {
     internal class ModConfig
     {
-        public bool ResetDeathCountAfterMarriageWhenDivorced { get; set; } = true;
+        public bool ResetDeathCountMarriedWhenDivorced { get; set; } = true;
         public bool AllowDebugging { get; set; } = false;
     }
 }
