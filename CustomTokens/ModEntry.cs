@@ -262,7 +262,7 @@ namespace CustomTokens
                     $"\nAnniversaryDay: {PlayerData.AnniversaryDay}" +
                     $"\nAnniversarySeason: {PlayerData.AnniversarySeason}" +
                     $"\nDeathCount: {Game1.stats.timesUnconscious}" +
-                    $"\nDeathCountMarriaged: {PlayerDataToWrite.DeathCountMarried}", LogLevel.Debug);
+                    $"\nDeathCountMarried: {PlayerDataToWrite.DeathCountMarried}", LogLevel.Debug);
             }
             catch
             {
