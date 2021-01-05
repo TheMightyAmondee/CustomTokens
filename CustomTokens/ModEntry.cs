@@ -183,33 +183,36 @@ namespace CustomTokens
             // Get Anniversary date
             var anniversary = SDate.Now().AddDays(-(DaysMarried - 1));
 
-           
+            
+            // Read JSON file and create if needed
+            PlayerDataToWrite = Helper.Data.ReadJsonFile<PlayerDataToWrite>($"data\\{Constants.SaveFolderName}.json") ?? new PlayerDataToWrite();
+
+            // Set tokens
+            PlayerData.CurrentYearsMarried = Game1.player.isMarried() == true ? YearsMarried : 0;
+
+            PlayerData.AnniversarySeason = Game1.player.isMarried() == true ? anniversary.Season : "No season";
+
+            PlayerData.AnniversaryDay = Game1.player.isMarried() == true ? anniversary.Day : 0;
+
+
             // Test if player is married
             if (Game1.player.isMarried() is false)
             {
                 this.Monitor.Log($"{Game1.player.Name} is not married");
 
-                if(this.config.ResetDeathCountAfterMarriageWhenDivorced == true && PlayerDataToWrite.DeathCountAfterMarriage != 0)
+                if (this.config.ResetDeathCountAfterMarriageWhenDivorced == true && PlayerDataToWrite.DeathCountAfterMarriage != 0)
                 {
                     // Reset tracker if player is no longer married
                     PlayerDataToWrite.DeathCountAfterMarriage = 0;
                 }
             }
 
-            // Player is married, tokens can exist
+            // Player is married, tokens exist
             else
             {
-                PlayerData.CurrentYearsMarried = YearsMarried;
-
-                PlayerData.AnniversarySeason = anniversary.Season;
-
-                PlayerData.AnniversaryDay = anniversary.Day;
-
                 this.Monitor.Log($"{Game1.player.Name} has been married for {YearsMarried} year(s)");
 
                 this.Monitor.Log($"Anniversary is the {anniversary.Day} of {anniversary.Season}");
-
-
             }
 
             // Fix death tracker
@@ -274,9 +277,7 @@ namespace CustomTokens
             // Update tracker if player died, is married and tracker should update
             if(Game1.killScreen == true && Game1.player.isMarried() == true && update == true)
             {
-                // Read JSON file and create if needed
-                PlayerDataToWrite = Helper.Data.ReadJsonFile<PlayerDataToWrite>($"data\\{Constants.SaveFolderName}.json") ?? new PlayerDataToWrite();
-
+                
                 // Increment tracker
                 PlayerDataToWrite.DeathCountAfterMarriage++;
 
