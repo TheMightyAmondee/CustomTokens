@@ -152,20 +152,36 @@ namespace CustomTokens
                {
                    if (Context.IsWorldReady)
                    {
+                       var currentdeathcountmarried = Game1.player.isMarried()
+                           ? PlayerDataToWrite.DeathCountMarried
+                           : 0;
+
+                       if (Game1.killScreen == true)
+                       {
                            /* 
-                           CP won't load content after token is updated, 
-                           Adding 1 to the value if married ensures token value is correct when content is loaded
+                           CP won't load content after token is updated during the PlayerKilled event, 
+                           Adding 1 to the value if married ensures token value is correct when content is loaded for event
                            To ensure CP will update the token, ensure an Update field of OnLocationChange or OnTimeChange or both
                            is included with the patch using the token
                            */
-                       var currentdeathcountmarried = Game1.player.isMarried() is true
-                       ? PlayerDataToWrite.DeathCountMarried + 1
-                       : 0;
 
-                       return new[]
+                           currentdeathcountmarried = Game1.player.isMarried() 
+                           ? PlayerDataToWrite.DeathCountMarried + 1
+                           : 0;
+
+                           return new[]
+                           {
+                               currentdeathcountmarried.ToString()
+                           };
+                       }
+                       else
                        {
-                            currentdeathcountmarried.ToString()
-                       };
+                           return new[]
+                           {
+                               currentdeathcountmarried.ToString()
+                           };
+                       }
+       
                    }
 
                    return null;
