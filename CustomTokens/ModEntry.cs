@@ -257,8 +257,8 @@ namespace CustomTokens
             try 
             {
                 // Display information in SMAPI console
-                this.Monitor.Log($"\n\nCurrentMineLevel: {PlayerData.CurrentMineLevel}" +
-                    $"\nCurrentYearsMarried: {PlayerData.CurrentYearsMarried}" +
+                this.Monitor.Log($"\n\nMineLevel: {PlayerData.CurrentMineLevel}" +
+                    $"\nYearsMarried: {PlayerData.CurrentYearsMarried}" +
                     $"\nAnniversaryDay: {PlayerData.AnniversaryDay}" +
                     $"\nAnniversarySeason: {PlayerData.AnniversarySeason}" +
                     $"\nDeathCount: {Game1.stats.timesUnconscious}" +
@@ -290,7 +290,7 @@ namespace CustomTokens
                 }
                 else
                 {
-                    this.Monitor.Log($"{Game1.player.Name} has died {PlayerDataToWrite.DeathCountMarried} time(s) since marriage.");
+                    this.Monitor.Log($"{Game1.player.Name} has died {PlayerDataToWrite.DeathCountMarried} time(s) during marriage.");
                 }               
 
                 // Save any data to JSON file
