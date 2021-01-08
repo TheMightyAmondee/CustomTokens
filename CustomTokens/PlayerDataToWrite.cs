@@ -10,5 +10,6 @@ namespace CustomTokens
     {
         public int DeathCountMarried { get; set; }
         public int DeathCountMarriedOld { get; set; }
+        public int PassOutCount { get; set; }
     }
 }
