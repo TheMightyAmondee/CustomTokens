@@ -31,3 +31,4 @@ DeathCountPK | 0 | Value is DeathCount + 1 |Because there are limits on the upda
 DeathCountMarried | 0 | The number of deaths that occur when the player is married
 DeathCountMarriedPK | 0 | Value is DeathCountMarried + 1 |Because there are limits on the update rate of tokens in CP, this token can be used as a more accurate snapshot of DeathCountMarried in some cases, mainly the PlayerKilled event
 PassOutCount | 0 | The number of times the player has passed out, either from exhaustion or it reaching 2AM
+
