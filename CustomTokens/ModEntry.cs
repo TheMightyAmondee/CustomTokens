@@ -23,6 +23,7 @@ namespace CustomTokens
         private ModConfig config;
 
         public bool update = false;
+
         public static PlayerData PlayerData { get; private set; } = new PlayerData();
 
         public static PlayerDataToWrite PlayerDataToWrite { get; private set; } = new PlayerDataToWrite();
@@ -152,36 +153,75 @@ namespace CustomTokens
                {
                    if (Context.IsWorldReady)
                    {
+                       /* 
+                       CP won't load content after token is updated during the PlayerKilled event, 
+                       Adding 1 to the value if married ensures token value is correct when content is loaded for event
+                       To ensure CP will update the token, ensure an Update field of OnLocationChange or OnTimeChange or both
+                       is included with the patch using the token
+                       */
+                       var currentdeathcountmarried = Game1.player.isMarried() 
+                       ? PlayerDataToWrite.DeathCountMarried
+                       : 0;
+
+                       return new[]
+                       {
+                            currentdeathcountmarried.ToString()
+                       };
+
+                   }
+
+                   return null;
+               });
+
+            // Register "DeathCountPK" token
+            api.RegisterToken(
+               this.ModManifest,
+               "DeathCountPK",
+               () =>
+               {
+                   /* 
+                   CP won't load content after token is updated during the PlayerKilled event, 
+                   Adding 1 to the value if married ensures token value is correct when content is loaded for event
+                   To ensure CP will update the token, ensure an Update field of OnLocationChange or OnTimeChange or both
+                   is included with the patch using the token
+                   */
+
+                   if (Context.IsWorldReady)
+                   {
+                       var currentdeathcount = (int)Game1.stats.timesUnconscious + 1;
+
+                       return new[]
+                       {
+                            currentdeathcount.ToString()
+                       };
+                   }
+
+                   return null;
+               });
+
+            // Register "DeathCountMarriedPK" token
+            api.RegisterToken(
+               this.ModManifest,
+               "DeathCountMarriedPK",
+               () =>
+               {
+                   if (Context.IsWorldReady)
+                   {
+                       /* 
+                       CP won't load content after token is updated during the PlayerKilled event, 
+                       Adding 1 to the value if married ensures token value is correct when content is loaded for event
+                       To ensure CP will update the token, ensure an Update field of OnLocationChange or OnTimeChange or both
+                       is included with the patch using the token
+                       */
                        var currentdeathcountmarried = Game1.player.isMarried()
-                           ? PlayerDataToWrite.DeathCountMarried
-                           : 0;
+                       ? PlayerDataToWrite.DeathCountMarried + 1
+                       : 0;
 
-                       if (Game1.killScreen == true)
+                       return new[]
                        {
-                           /* 
-                           CP won't load content after token is updated during the PlayerKilled event, 
-                           Adding 1 to the value if married ensures token value is correct when content is loaded for event
-                           To ensure CP will update the token, ensure an Update field of OnLocationChange or OnTimeChange or both
-                           is included with the patch using the token
-                           */
+                            currentdeathcountmarried.ToString()
+                       };
 
-                           currentdeathcountmarried = Game1.player.isMarried() 
-                           ? PlayerDataToWrite.DeathCountMarried + 1
-                           : 0;
-
-                           return new[]
-                           {
-                               currentdeathcountmarried.ToString()
-                           };
-                       }
-                       else
-                       {
-                           return new[]
-                           {
-                               currentdeathcountmarried.ToString()
-                           };
-                       }
-       
                    }
 
                    return null;
@@ -293,7 +333,6 @@ namespace CustomTokens
             // Update tracker if player died, is married and tracker should update
             if(Game1.killScreen == true && Game1.player.isMarried() == true && update == true)
             {
-                
                 // Increment tracker
                 PlayerDataToWrite.DeathCountMarried++;
 
