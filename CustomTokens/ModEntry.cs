@@ -22,7 +22,10 @@ namespace CustomTokens
     {
         private ModConfig config;
 
-        public bool update = false;
+        public bool updatedeath = false;
+
+        public bool updatepassout = false;
+
         public static PlayerData PlayerData { get; private set; } = new PlayerData();
 
         public static PlayerDataToWrite PlayerDataToWrite { get; private set; } = new PlayerDataToWrite();
@@ -152,13 +155,63 @@ namespace CustomTokens
                {
                    if (Context.IsWorldReady)
                    {
-                           /* 
-                           CP won't load content after token is updated, 
-                           Adding 1 to the value if married ensures token value is correct when content is loaded
-                           To ensure CP will update the token, ensure an Update field of OnLocationChange or OnTimeChange or both
-                           is included with the patch using the token
-                           */
-                       var currentdeathcountmarried = Game1.player.isMarried() is true
+                       /* 
+                       CP won't load content after token is updated during the PlayerKilled event, 
+                       Adding 1 to the value if married ensures token value is correct when content is loaded for event
+                       To ensure CP will update the token, ensure an Update field of OnLocationChange or OnTimeChange or both
+                       is included with the patch using the token
+                       */
+                       var currentdeathcountmarried = Game1.player.isMarried() 
+                       ? PlayerDataToWrite.DeathCountMarried
+                       : 0;
+
+                       return new[]
+                       {
+                            currentdeathcountmarried.ToString()
+                       };
+
+                   }
+
+                   return null;
+               });
+
+            // Register "DeathCountPK" token
+            api.RegisterToken(
+               this.ModManifest,
+               "DeathCountPK",
+               () =>
+               {
+                   /* 
+                   CP won't use correct value of DeathCountMarried token  during the PlayerKilled event as the token is updated outside of the useable update rates, 
+                   Adding 1 to the value of that token ensures token value is correct when content is loaded for event
+                   */
+
+                   if (Context.IsWorldReady)
+                   {
+                       var currentdeathcount = (int)Game1.stats.timesUnconscious + 1;
+
+                       return new[]
+                       {
+                            currentdeathcount.ToString()
+                       };
+                   }
+
+                   return null;
+               });
+
+            // Register "DeathCountMarriedPK" token
+            api.RegisterToken(
+               this.ModManifest,
+               "DeathCountMarriedPK",
+               () =>
+               {
+                   if (Context.IsWorldReady)
+                   {
+                       /* 
+                       CP won't use correct value of DeathCountMarried token  during the PlayerKilled event as the token is updated outside of the useable update rates, 
+                       Adding 1 to the value of that token ensures token value is correct when content is loaded for event
+                       */
+                       var currentdeathcountmarried = Game1.player.isMarried()
                        ? PlayerDataToWrite.DeathCountMarried + 1
                        : 0;
 
@@ -166,6 +219,27 @@ namespace CustomTokens
                        {
                             currentdeathcountmarried.ToString()
                        };
+
+                   }
+
+                   return null;
+               });
+
+            // Register "PassOutCount" token
+            api.RegisterToken(
+               this.ModManifest,
+               "PassOutCount",
+               () =>
+               {
+                   if (Context.IsWorldReady)
+                   {
+                       var currentpassoutcount = PlayerDataToWrite.PassOutCount;
+
+                       return new[]
+                       {
+                            currentpassoutcount.ToString()
+                       };
+
                    }
 
                    return null;
@@ -183,7 +257,11 @@ namespace CustomTokens
             // Get Anniversary date
             var anniversary = SDate.Now().AddDays(-(DaysMarried - 1));
 
-            
+            updatedeath = true;
+            updatepassout = true;
+
+            this.Monitor.Log($"Trackers set to update");
+
             // Read JSON file and create if needed
             PlayerDataToWrite = Helper.Data.ReadJsonFile<PlayerDataToWrite>($"data\\{Constants.SaveFolderName}.json") ?? new PlayerDataToWrite();
 
@@ -234,7 +312,6 @@ namespace CustomTokens
             if (!(mineShaft is null))
             {
                 // Yes, update tracker
-
                 this.Monitor.Log($"{Game1.player.Name} is on level {mineShaft.mineLevel}.");
 
                 PlayerData.CurrentMineLevel = mineShaft.mineLevel;
@@ -262,7 +339,10 @@ namespace CustomTokens
                     $"\nAnniversaryDay: {PlayerData.AnniversaryDay}" +
                     $"\nAnniversarySeason: {PlayerData.AnniversarySeason}" +
                     $"\nDeathCount: {Game1.stats.timesUnconscious}" +
-                    $"\nDeathCountMarried: {PlayerDataToWrite.DeathCountMarried}", LogLevel.Debug);
+                    $"\nDeathCountMarried: {PlayerDataToWrite.DeathCountMarried}" +
+                    $"\nDeathCountPK: {Game1.stats.timesUnconscious + 1}" +
+                    $"\nDeathCountMarriedPK: {PlayerDataToWrite.DeathCountMarried + 1}" +
+                    $"\nPassOutCount: {PlayerDataToWrite.PassOutCount}", LogLevel.Debug);
             }
             catch
             {
@@ -275,14 +355,13 @@ namespace CustomTokens
         private void UpdateTicked(object sender, UpdateTickedEventArgs e)
         {
             // Update tracker if player died, is married and tracker should update
-            if(Game1.killScreen == true && Game1.player.isMarried() == true && update == true)
+            if(Game1.killScreen == true && Game1.player.isMarried() == true && updatedeath == true)
             {
-                
                 // Increment tracker
                 PlayerDataToWrite.DeathCountMarried++;
 
                 // Already updated, ensures tracker won't repeatedly increment
-                update = false;
+                updatedeath = false;
 
                 if(this.config.ResetDeathCountMarriedWhenDivorced == true)
                 {
@@ -290,17 +369,47 @@ namespace CustomTokens
                 }
                 else
                 {
-                    this.Monitor.Log($"{Game1.player.Name} has died {PlayerDataToWrite.DeathCountMarried} time(s) since marriage.");
+                    this.Monitor.Log($"{Game1.player.Name} has died {PlayerDataToWrite.DeathCountMarried} time(s) whilst married.");
                 }               
 
                 // Save any data to JSON file
                 this.Helper.Data.WriteJsonFile<PlayerDataToWrite>($"data\\{Constants.SaveFolderName}.json", ModEntry.PlayerDataToWrite);
             }
 
-            else if(Game1.killScreen == false && update == false)
+            else if(Game1.killScreen == false && updatedeath == false)
             {
                 // Tracker should be updated next death
-                update = true;
+                updatedeath = true;
+            }
+
+            // Has player passed out?
+            else if(updatepassout == true && (Game1.timeOfDay == 2600 || Game1.player.stamina <= -15))
+            {
+                // Yes, update tracker
+
+                // Increment tracker
+                PlayerDataToWrite.PassOutCount++;
+                // Already updated, ensures tracker won't repeatedly increment
+                updatepassout = false;
+
+                if(PlayerDataToWrite.PassOutCount > 20)
+                {
+                    this.Monitor.Log($"{Game1.player.Name} has passed out {PlayerDataToWrite.PassOutCount} time(s). Maybe you should go to bed earlier.");
+                }
+                else
+                {
+                    this.Monitor.Log($"{Game1.player.Name} has passed out {PlayerDataToWrite.PassOutCount} time(s).");
+                }
+
+            }
+
+            else if(Game1.timeOfDay == 2610 && updatepassout == false)
+            {
+                // Decrement tracker, player can stay up later
+                PlayerDataToWrite.PassOutCount--;
+                // Already updated, ensures tracker won't repeatedly decrement
+                updatepassout = true;
+                this.Monitor.Log($"Nevermind, {Game1.player.Name} has actually passed out {PlayerDataToWrite.PassOutCount} time(s). Aren't you getting tired?");
             }
         }
 

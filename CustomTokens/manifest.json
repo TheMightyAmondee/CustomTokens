@@ -1,14 +1,14 @@
 {
 	"Name":"Custom Tokens",
 	"Author":"TheMightyAmondee",
-	"Version":"1.0.0",
+	"Version":"1.1.0",
 	"Description":"Provides some custom tokens for use with Content Patcher",
 	"UniqueID": "TheMightyAmondee.CustomTokens",
 	"EntryDll":"CustomTokens.dll",
 	"UpdateKeys":["Nexus:7517"],
 	"Dependencies":[
 		{
-			"UniqueID":"PathosChild.ContentPatcher",
+			"UniqueID":"Pathoschild.ContentPatcher",
 			"IsRequired":false
 		}
 	]
