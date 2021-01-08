@@ -6,7 +6,10 @@ Custom Tokens is a mod that provides some basic additional tokens for Content Pa
 - Anniversary of the player, split into two tokens, AnniversaryDay and AnniversarySeason
 - YearsMarried
 - DeathCount
-- DeathCountMarried, an extension of DeathCount that tracks how many times a player has died after being married. 
+- DeathCountMarried, an extension of DeathCount that tracks how many times a player has died after being married.
+- DeathCountPK, (provides a more accurate value than the DeathCount token for use in the PlayerKilled event)
+- DeathCountMarriedPK, an extension of DeathCountPK that tracks how many times a player has died after being married.
+- PassOutCount, how many times a player has passed out.
 
 ### Using Custom Tokens:
 - SMAPI must be installed
