@@ -8,7 +8,7 @@
 	"UpdateKeys":["Nexus:7517"],
 	"Dependencies":[
 		{
-			"UniqueID":"Pathoschild.ContentPatcher",
+			"UniqueID":"PathosChild.ContentPatcher",
 			"IsRequired":false
 		}
 	]
