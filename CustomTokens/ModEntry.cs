@@ -22,7 +22,9 @@ namespace CustomTokens
     {
         private ModConfig config;
 
-        public bool update = false;
+        public bool updatedeath = false;
+
+        public bool updatepassout = false;
 
         public static PlayerData PlayerData { get; private set; } = new PlayerData();
 
@@ -255,7 +257,9 @@ namespace CustomTokens
             // Get Anniversary date
             var anniversary = SDate.Now().AddDays(-(DaysMarried - 1));
 
-            update = true;
+            updatedeath = true;
+            updatepassout = true;
+
             this.Monitor.Log($"Trackers set to update");
 
             // Read JSON file and create if needed
@@ -308,7 +312,6 @@ namespace CustomTokens
             if (!(mineShaft is null))
             {
                 // Yes, update tracker
-
                 this.Monitor.Log($"{Game1.player.Name} is on level {mineShaft.mineLevel}.");
 
                 PlayerData.CurrentMineLevel = mineShaft.mineLevel;
@@ -352,13 +355,13 @@ namespace CustomTokens
         private void UpdateTicked(object sender, UpdateTickedEventArgs e)
         {
             // Update tracker if player died, is married and tracker should update
-            if(Game1.killScreen == true && Game1.player.isMarried() == true && update == true)
+            if(Game1.killScreen == true && Game1.player.isMarried() == true && updatedeath == true)
             {
                 // Increment tracker
                 PlayerDataToWrite.DeathCountMarried++;
 
                 // Already updated, ensures tracker won't repeatedly increment
-                update = false;
+                updatedeath = false;
 
                 if(this.config.ResetDeathCountMarriedWhenDivorced == true)
                 {
@@ -366,36 +369,47 @@ namespace CustomTokens
                 }
                 else
                 {
-                    this.Monitor.Log($"{Game1.player.Name} has died {PlayerDataToWrite.DeathCountMarried} time(s) since marriage.");
+                    this.Monitor.Log($"{Game1.player.Name} has died {PlayerDataToWrite.DeathCountMarried} time(s) whilst married.");
                 }               
 
                 // Save any data to JSON file
                 this.Helper.Data.WriteJsonFile<PlayerDataToWrite>($"data\\{Constants.SaveFolderName}.json", ModEntry.PlayerDataToWrite);
             }
 
-            else if(Game1.killScreen == false && update == false)
+            else if(Game1.killScreen == false && updatedeath == false)
             {
                 // Tracker should be updated next death
-                update = true;
+                updatedeath = true;
             }
 
-            // Has player passed out
-            else if(update == true && (Game1.timeOfDay == 2600 || Game1.player.stamina <= -15))
+            // Has player passed out?
+            else if(updatepassout == true && (Game1.timeOfDay == 2600 || Game1.player.stamina <= -15))
             {
+                // Yes, update tracker
+
                 // Increment tracker
                 PlayerDataToWrite.PassOutCount++;
                 // Already updated, ensures tracker won't repeatedly increment
-                update = false;
-                this.Monitor.Log($"{Game1.player.Name} has passed out {PlayerDataToWrite.PassOutCount} time(s).");
+                updatepassout = false;
+
+                if(PlayerDataToWrite.PassOutCount > 20)
+                {
+                    this.Monitor.Log($"{Game1.player.Name} has passed out {PlayerDataToWrite.PassOutCount} time(s). Maybe you should go to bed earlier.");
+                }
+                else
+                {
+                    this.Monitor.Log($"{Game1.player.Name} has passed out {PlayerDataToWrite.PassOutCount} time(s).");
+                }
+
             }
 
-            else if(Game1.timeOfDay == 2610 && update == false)
+            else if(Game1.timeOfDay == 2610 && updatepassout == false)
             {
                 // Decrement tracker, player can stay up later
                 PlayerDataToWrite.PassOutCount--;
                 // Already updated, ensures tracker won't repeatedly decrement
-                update = true;
-                this.Monitor.Log($"Nevermind, {Game1.player.Name} has actually passed out {PlayerDataToWrite.PassOutCount} time(s).");
+                updatepassout = true;
+                this.Monitor.Log($"Nevermind, {Game1.player.Name} has actually passed out {PlayerDataToWrite.PassOutCount} time(s). Aren't you getting tired?");
             }
         }
 
