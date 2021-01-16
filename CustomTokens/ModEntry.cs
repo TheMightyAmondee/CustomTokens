@@ -71,6 +71,25 @@ namespace CustomTokens
                     return null;
                 });
 
+            // Register "VolcanoFloor" token
+            api.RegisterToken(
+                this.ModManifest,
+                "VolcanoFloor",
+                () =>
+                {
+                    if (Context.IsWorldReady)
+                    {
+                        var currentVolcanoFloor = PlayerData.CurrentVolcanoFloor;
+
+                        return new[]
+                        {
+                            currentVolcanoFloor.ToString()
+                        };
+                    }
+
+                    return null;
+                });
+
             // Register "AnniversaryDay" token
             api.RegisterToken(
                 this.ModManifest,
@@ -307,12 +326,26 @@ namespace CustomTokens
         {
             // Get current location as a MineShaft
             var mineShaft = Game1.currentLocation as MineShaft;
+
+            var VolcanoShaft = Game1.currentLocation as VolcanoDungeon;
            
             // Test to see if current location is a MineShaft
             if (!(mineShaft is null))
             {
                 // Yes, update tracker
-                this.Monitor.Log($"{Game1.player.Name} is on level {mineShaft.mineLevel}.");
+                if(mineShaft.mineLevel < 121)
+                {
+                    this.Monitor.Log($"{Game1.player.Name} is on level {mineShaft.mineLevel} of the mine.");
+                }
+                else if(mineShaft.mineLevel == 77377)
+                {
+                    this.Monitor.Log($"{Game1.player.Name} is in the Quarry Mine.");
+                }
+                else
+                {
+                    this.Monitor.Log($"{Game1.player.Name} on level {mineShaft.mineLevel} (level {mineShaft.mineLevel - 120} of the Skull Cavern).");
+                }
+
 
                 PlayerData.CurrentMineLevel = mineShaft.mineLevel;
             }
@@ -327,6 +360,34 @@ namespace CustomTokens
                     this.Monitor.Log($"Minelevel tracker reset");
                 }
             }
+
+            // Test to see if current location is a Volcano Floor
+            if (!(VolcanoShaft is null))
+            {
+                // Yes, update tracker
+                if(VolcanoShaft.level != 5)
+                {
+                    this.Monitor.Log($"{Game1.player.Name} is on volcano floor {VolcanoShaft.level}.");
+                }
+                else
+                {
+                    this.Monitor.Log($"{Game1.player.Name} is at the volcano dwarf shop. (Buy something?)");
+                }
+
+
+                PlayerData.CurrentVolcanoFloor = VolcanoShaft.level;
+            }
+
+            else
+            {
+                // No, does the tracker reflect this?
+                if (PlayerData.CurrentVolcanoFloor > 0)
+                {
+                    // No, reset mine level tracker
+                    PlayerData.CurrentVolcanoFloor = 0;
+                    this.Monitor.Log($"VolcanoFloor tracker reset");
+                }
+            }
         }
 
         private void TellMe(string command, string[] args)
@@ -334,14 +395,15 @@ namespace CustomTokens
             try 
             {
                 // Display information in SMAPI console
-                this.Monitor.Log($"\n\nCurrentMineLevel: {PlayerData.CurrentMineLevel}" +
-                    $"\nCurrentYearsMarried: {PlayerData.CurrentYearsMarried}" +
+                this.Monitor.Log($"\n\nMineLevel: {PlayerData.CurrentMineLevel}" +
+                    $"\nVolcanoFloor: {PlayerData.CurrentVolcanoFloor}" +
+                    $"\nYearsMarried: {PlayerData.CurrentYearsMarried}" +
                     $"\nAnniversaryDay: {PlayerData.AnniversaryDay}" +
                     $"\nAnniversarySeason: {PlayerData.AnniversarySeason}" +
                     $"\nDeathCount: {Game1.stats.timesUnconscious}" +
                     $"\nDeathCountMarried: {PlayerDataToWrite.DeathCountMarried}" +
-                    $"\nDeathCountPK: {Game1.stats.timesUnconscious + 1}" +
-                    $"\nDeathCountMarriedPK: {PlayerDataToWrite.DeathCountMarried + 1}" +
+                    $"\nDeathCountPK: {(Game1.player.isMarried() ? Game1.stats.timesUnconscious + 1 : 0)}" +
+                    $"\nDeathCountMarriedPK: {(Game1.player.isMarried() ? PlayerDataToWrite.DeathCountMarried + 1 : 0)}" +
                     $"\nPassOutCount: {PlayerDataToWrite.PassOutCount}", LogLevel.Debug);
             }
             catch
