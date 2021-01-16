@@ -26,7 +26,7 @@ Custom Tokens is a mod that provides some basic additional tokens for Content Pa
 ### Tokens in more detail:
 Token | default value | What it tracks | Notes
 ----- | ------------- | -------------- | --------
-Minelevel | 0 | Players current minelevel | Add 120 to Skull Cavern floors for token value
+Minelevel | 0 | Players current minelevel | Add 120 to Skull Cavern floors for token value. The quarry mine has a minelevel of 77377
 AnniversaryDay | 0 | The day the player was married on
 AnniversarySeason | No season | The season the player was married in | Value is in all lower-case
 DeathCount | 0 | The number of deaths
