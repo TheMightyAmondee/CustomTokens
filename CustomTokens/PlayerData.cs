@@ -1,5 +1,4 @@
-﻿
-namespace CustomTokens
+﻿namespace CustomTokens
 {
     public class PlayerData
     {
