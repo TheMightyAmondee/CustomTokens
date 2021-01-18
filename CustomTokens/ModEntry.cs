@@ -16,7 +16,11 @@ namespace CustomTokens
 {
     public interface IContentPatcherAPI
     {
+        // Basic api
         void RegisterToken(IManifest mod, string name, Func<IEnumerable<string>> getValue);
+
+        // Advanced api
+        void RegisterToken(IManifest mod, string name, object token);
     }
 
     public class ModEntry 
@@ -311,13 +315,16 @@ namespace CustomTokens
                        completed quests must be entered in the JSON manually
                        */
 
+                       // Create array with the length of the QuestsCompleted array list
+                       string[] questsdone = new string[PlayerDataToWrite.QuestsCompleted.Count];
+
+                       // Set each value in new array to be the same as in QuestCompleted
                        foreach(var quest in PlayerDataToWrite.QuestsCompleted)
                        {
-                           return new[]
-                           {
-                               quest.ToString()
-                           };
+                           questsdone.SetValue(quest, PlayerDataToWrite.QuestsCompleted.IndexOf(quest));
                        }
+
+                       return questsdone;
 
                    }
 
@@ -446,10 +453,7 @@ namespace CustomTokens
                     PlayerData.CurrentVolcanoFloor = 0;
                     this.Monitor.Log($"VolcanoFloor tracker reset");
                 }
-            }
-
-           
-
+            }         
         }
 
         private void TellMe(string command, string[] args)
