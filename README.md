@@ -3,6 +3,7 @@ Custom Tokens is a mod that provides some basic additional tokens for Content Pa
 
 ### Custom Tokens registers the following tokens:
 - MineLevel the player is currently on
+- VolcanoFloor the player is currently on
 - Anniversary of the player, split into two tokens, AnniversaryDay and AnniversarySeason
 - YearsMarried
 - DeathCount
