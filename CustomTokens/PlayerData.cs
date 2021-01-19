@@ -1,4 +1,6 @@
-﻿namespace CustomTokens
+﻿using System.Collections;
+
+namespace CustomTokens
 {
     public class PlayerData
     {
@@ -7,5 +9,7 @@
         public double CurrentYearsMarried { get; set; }
         public int AnniversaryDay { get; set; }
         public string AnniversarySeason { get; set; } = "No season";
+
+        public ArrayList SpecialOrdersCompleted = new ArrayList();
     }
 }
