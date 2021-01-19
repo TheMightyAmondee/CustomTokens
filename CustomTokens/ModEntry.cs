@@ -327,7 +327,7 @@ namespace CustomTokens
             // Register "SONamesCompleted" token
             api.RegisterToken(
                this.ModManifest,
-               "SONamesCompleted",
+               "SOKeysCompleted",
                () =>
                {
                    if (Context.IsWorldReady)
@@ -337,9 +337,9 @@ namespace CustomTokens
                        string[] ordersdone = new string[PlayerData.SpecialOrdersCompleted.Count];
 
                        // Set each value in new array to be the same as in SpecialOrdersCompleted
-                       foreach (var quest in PlayerData.SpecialOrdersCompleted)
+                       foreach (var order in PlayerData.SpecialOrdersCompleted)
                        {
-                           ordersdone.SetValue(quest, PlayerData.SpecialOrdersCompleted.IndexOf(quest));
+                           ordersdone.SetValue(order, PlayerData.SpecialOrdersCompleted.IndexOf(order));
                        }
 
                        return ordersdone;
@@ -543,7 +543,8 @@ namespace CustomTokens
                     $"\nVolcanoFloor: {PlayerData.CurrentVolcanoFloor}" +
                     $"\nYearsMarried: {PlayerData.CurrentYearsMarried}" +
                     $"\nQuestIDsCompleted: {Quests(PlayerDataToWrite.QuestsCompleted)}" +
-                    $"\nSpecialOrdersCompleted: {Quests(PlayerData.SpecialOrdersCompleted)}" +
+                    $"\nSONamesCompleted: {Quests(PlayerData.SpecialOrdersCompleted)}" +
+                    $"\nSOCompleted: {PlayerData.SpecialOrdersCompleted.Count}" +
                     $"\nQuestsCompleted: {Game1.stats.questsCompleted}" +
                     $"\nAnniversaryDay: {PlayerData.AnniversaryDay}" +
                     $"\nAnniversarySeason: {PlayerData.AnniversarySeason}" +
@@ -654,12 +655,12 @@ namespace CustomTokens
 
             if (PlayerData.SpecialOrdersCompleted.Count == 0 || PlayerData.SpecialOrdersCompleted.Count < order.Count())
             {
-                foreach (string name in new List<string>(order.Keys))
+                foreach (string questkey in new List<string>(order.Keys))
                 {
-                    if (!PlayerData.SpecialOrdersCompleted.Contains(name))
+                    if (!PlayerData.SpecialOrdersCompleted.Contains(questkey))
                     {
-                        PlayerData.SpecialOrdersCompleted.Add(name);
-                        this.Monitor.Log($"Special Order with name {name} has been completed");
+                        PlayerData.SpecialOrdersCompleted.Add(questkey);
+                        this.Monitor.Log($"Special Order with key {questkey} has been completed");
                     }
                 }
             }
