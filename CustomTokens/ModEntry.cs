@@ -686,6 +686,7 @@ namespace CustomTokens
             {
                 PlayerData.SpecialOrdersCompleted.Clear();
                 this.Monitor.Log("Clearing Special Order data, ready for new save");
+                this.Monitor.Log("Test");
             }
         }
     }
