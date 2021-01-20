@@ -314,7 +314,7 @@ namespace CustomTokens
                        // Set each value in new array to be the same as in QuestCompleted
                        foreach(var quest in PlayerDataToWrite.QuestsCompleted)
                        {
-                           questsdone.SetValue(quest, PlayerDataToWrite.QuestsCompleted.IndexOf(quest));
+                           questsdone.SetValue(quest.ToString(), PlayerDataToWrite.QuestsCompleted.IndexOf(quest));
                        }
 
                        return questsdone;
@@ -640,10 +640,10 @@ namespace CustomTokens
                         // Quest has been completed
                         && quest.completed == true
                         // Quest has not already been added to array list
-                        && PlayerDataToWrite.QuestsCompleted.Contains(quest.id.ToString()) == false)
+                        && PlayerDataToWrite.QuestsCompleted.Contains(quest.id) == false)
                     {
                         // Yes, add it to quest array if it hasn't been added already
-                        PlayerDataToWrite.QuestsCompleted.Add(quest.id.ToString());
+                        PlayerDataToWrite.QuestsCompleted.Add(quest.id);
                         // Display trace information in SMAPI log
                         this.Monitor.Log($"Quest with id {quest.id} has been completed");
                     }
