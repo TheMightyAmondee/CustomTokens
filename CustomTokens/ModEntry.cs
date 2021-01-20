@@ -34,8 +34,8 @@ namespace CustomTokens
         public bool updatepassout = false;
 
         public static PlayerData PlayerData { get; private set; } = new PlayerData();
-
         public static PlayerDataToWrite PlayerDataToWrite { get; private set; } = new PlayerDataToWrite();
+        public static QuestsCompleted QuestsCompleted { get; private set; } = new QuestsCompleted();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -427,10 +427,13 @@ namespace CustomTokens
                 PlayerDataToWrite.DeathCountMarried = PlayerDataToWrite.DeathCountMarriedOld;
             }
 
+            QuestsCompleted.AddCompletedQuests(ModEntry.PlayerDataToWrite);
+
             // Save any data to JSON file
             this.Monitor.Log("Writing data to JSON file");
             this.Helper.Data.WriteJsonFile<PlayerDataToWrite>($"data\\{Constants.SaveFolderName}.json", ModEntry.PlayerDataToWrite);
         }
+
         /// <summary>Raised after the current player moves to a new location.</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
@@ -686,7 +689,6 @@ namespace CustomTokens
             {
                 PlayerData.SpecialOrdersCompleted.Clear();
                 this.Monitor.Log("Clearing Special Order data, ready for new save");
-                this.Monitor.Log("Test");
             }
         }
     }
