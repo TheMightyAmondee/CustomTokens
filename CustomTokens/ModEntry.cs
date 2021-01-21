@@ -309,12 +309,12 @@ namespace CustomTokens
                        */
 
                        // Create array with the length of the QuestsCompleted array list
-                       string[] questsdone = new string[PlayerDataToWrite.QuestsCompleted.Count];
+                       string[] questsdone = new string[PlayerData.QuestsCompleted.Count];
 
                        // Set each value in new array to be the same as in QuestCompleted
-                       foreach(var quest in PlayerDataToWrite.QuestsCompleted)
+                       foreach(var quest in PlayerData.QuestsCompleted)
                        {
-                           questsdone.SetValue(quest.ToString(), PlayerDataToWrite.QuestsCompleted.IndexOf(quest));
+                           questsdone.SetValue(quest.ToString(), PlayerData.QuestsCompleted.IndexOf(quest));
                        }
 
                        return questsdone;
@@ -427,7 +427,11 @@ namespace CustomTokens
                 PlayerDataToWrite.DeathCountMarried = PlayerDataToWrite.DeathCountMarriedOld;
             }
 
-            QuestsCompleted.AddCompletedQuests(ModEntry.PlayerDataToWrite);
+            if (!System.Diagnostics.Debugger.IsAttached)
+            {
+                //System.Diagnostics.Debugger.Launch();
+            }
+            QuestsCompleted.AddCompletedQuests(ModEntry.PlayerData, ModEntry.PlayerDataToWrite);
 
             // Save any data to JSON file
             this.Monitor.Log("Writing data to JSON file");
@@ -545,7 +549,7 @@ namespace CustomTokens
                 this.Monitor.Log($"\n\nMineLevel: {PlayerData.CurrentMineLevel}" +
                     $"\nVolcanoFloor: {PlayerData.CurrentVolcanoFloor}" +
                     $"\nYearsMarried: {PlayerData.CurrentYearsMarried}" +
-                    $"\nQuestIDsCompleted: {Quests(PlayerDataToWrite.QuestsCompleted)}" +
+                    $"\nQuestIDsCompleted: {Quests(PlayerData.QuestsCompleted)}" +
                     $"\nSONamesCompleted: {Quests(PlayerData.SpecialOrdersCompleted)}" +
                     $"\nSOCompleted: {PlayerData.SpecialOrdersCompleted.Count}" +
                     $"\nQuestsCompleted: {Game1.stats.questsCompleted}" +
@@ -586,7 +590,7 @@ namespace CustomTokens
                 else
                 {
                     this.Monitor.Log($"{Game1.player.Name} has died {PlayerDataToWrite.DeathCountMarried} time(s) whilst married.");
-                }               
+                }
 
                 // Save any data to JSON file
                 this.Helper.Data.WriteJsonFile<PlayerDataToWrite>($"data\\{Constants.SaveFolderName}.json", ModEntry.PlayerDataToWrite);
@@ -643,12 +647,18 @@ namespace CustomTokens
                         // Quest has been completed
                         && quest.completed == true
                         // Quest has not already been added to array list
-                        && PlayerDataToWrite.QuestsCompleted.Contains(quest.id) == false)
+                        && PlayerData.QuestsCompleted.Contains(quest.id) == false)
                     {
                         // Yes, add it to quest array if it hasn't been added already
-                        PlayerDataToWrite.QuestsCompleted.Add(quest.id);
+                        PlayerData.QuestsCompleted.Add(quest.id);
                         // Display trace information in SMAPI log
                         this.Monitor.Log($"Quest with id {quest.id} has been completed");
+
+                        if((quest.id == 2 || quest.id == 6 || quest.id == 16 || quest.id == 128 || quest.id == 129 || quest.id == 130) && PlayerDataToWrite.AdditionalQuestsCompleted.Contains(quest.id) == false)
+                        {
+                            PlayerDataToWrite.AdditionalQuestsCompleted.Add(quest.id);
+                            this.Helper.Data.WriteJsonFile<PlayerDataToWrite>($"data\\{Constants.SaveFolderName}.json", ModEntry.PlayerDataToWrite);
+                        }
                     }
                 }
                 
@@ -668,6 +678,7 @@ namespace CustomTokens
                 }
             }
         }
+
         /// <summary>Raised before/after the game writes data to save file (except the initial save creation). 
         /// This is also raised for farmhands in multiplayer.</summary>
         /// <param name="sender">The event sender.</param>
@@ -689,6 +700,12 @@ namespace CustomTokens
             {
                 PlayerData.SpecialOrdersCompleted.Clear();
                 this.Monitor.Log("Clearing Special Order data, ready for new save");
+            }
+
+            if(PlayerData.QuestsCompleted.Count != 0)
+            {
+                PlayerData.QuestsCompleted.Clear();
+                this.Monitor.Log("Clearing Quest data, ready for new save");
             }
         }
     }

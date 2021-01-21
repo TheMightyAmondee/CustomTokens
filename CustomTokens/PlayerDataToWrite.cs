@@ -8,6 +8,6 @@ namespace CustomTokens
         public int DeathCountMarriedOld { get; set; }
         public int PassOutCount { get; set; }
 
-        public ArrayList QuestsCompleted = new ArrayList();
+        public ArrayList AdditionalQuestsCompleted = new ArrayList();
     }
 }

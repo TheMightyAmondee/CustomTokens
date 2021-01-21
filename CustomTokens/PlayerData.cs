@@ -11,5 +11,7 @@ namespace CustomTokens
         public string AnniversarySeason { get; set; } = "No season";
 
         public ArrayList SpecialOrdersCompleted = new ArrayList();
+
+        public ArrayList QuestsCompleted = new ArrayList();
     }
 }
