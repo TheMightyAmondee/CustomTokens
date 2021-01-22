@@ -37,6 +37,8 @@ namespace CustomTokens
         public static PlayerDataToWrite PlayerDataToWrite { get; private set; } = new PlayerDataToWrite();
         public static QuestsCompleted QuestsCompleted { get; private set; } = new QuestsCompleted();
 
+        private static readonly PerScreen<PlayerData> perScreen = new PerScreen<PlayerData>(createNewState: () => PlayerData);
+
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
@@ -75,7 +77,7 @@ namespace CustomTokens
                 {
                     if (Context.IsWorldReady)
                     {
-                        var currentMineLevel = PlayerData.CurrentMineLevel;
+                        var currentMineLevel = ModEntry.perScreen.Value.CurrentMineLevel;
 
                         return new[]
                         {
@@ -94,7 +96,7 @@ namespace CustomTokens
                 {
                     if (Context.IsWorldReady)
                     {
-                        var currentVolcanoFloor = PlayerData.CurrentVolcanoFloor;
+                        var currentVolcanoFloor = ModEntry.perScreen.Value.CurrentVolcanoFloor;
 
                         return new[]
                         {
@@ -113,7 +115,7 @@ namespace CustomTokens
                 {
                     if (Context.IsWorldReady)
                     {
-                        var AnniversaryDay = PlayerData.AnniversaryDay;
+                        var AnniversaryDay = ModEntry.perScreen.Value.AnniversaryDay;
 
                         return new[]
                         {
@@ -132,7 +134,7 @@ namespace CustomTokens
                 {
                     if (Context.IsWorldReady)
                     {
-                        var AnniversarySeason = PlayerData.AnniversarySeason;
+                        var AnniversarySeason = ModEntry.perScreen.Value.AnniversarySeason;
 
                         return new[]
                         {
@@ -151,7 +153,7 @@ namespace CustomTokens
                {
                    if (Context.IsWorldReady)
                    {
-                       var currentYearsMarried = PlayerData.CurrentYearsMarried;
+                       var currentYearsMarried = ModEntry.perScreen.Value.CurrentYearsMarried;
 
                        return new[]
                        {
@@ -309,12 +311,12 @@ namespace CustomTokens
                        */
 
                        // Create array with the length of the QuestsCompleted array list
-                       string[] questsdone = new string[PlayerData.QuestsCompleted.Count];
+                       string[] questsdone = new string[ModEntry.perScreen.Value.QuestsCompleted.Count];
 
                        // Set each value in new array to be the same as in QuestCompleted
-                       foreach(var quest in PlayerData.QuestsCompleted)
+                       foreach(var quest in ModEntry.perScreen.Value.QuestsCompleted)
                        {
-                           questsdone.SetValue(quest.ToString(), PlayerData.QuestsCompleted.IndexOf(quest));
+                           questsdone.SetValue(quest.ToString(), ModEntry.perScreen.Value.QuestsCompleted.IndexOf(quest));
                        }
 
                        return questsdone;
@@ -334,12 +336,12 @@ namespace CustomTokens
                    {
                        
                        // Create array with the length of the SpecialOrdersCompleted array list
-                       string[] ordersdone = new string[PlayerData.SpecialOrdersCompleted.Count];
+                       string[] ordersdone = new string[ModEntry.perScreen.Value.SpecialOrdersCompleted.Count];
 
                        // Set each value in new array to be the same as in SpecialOrdersCompleted
-                       foreach (var order in PlayerData.SpecialOrdersCompleted)
+                       foreach (var order in ModEntry.perScreen.Value.SpecialOrdersCompleted)
                        {
-                           ordersdone.SetValue(order, PlayerData.SpecialOrdersCompleted.IndexOf(order));
+                           ordersdone.SetValue(order, ModEntry.perScreen.Value.SpecialOrdersCompleted.IndexOf(order));
                        }
 
                        return ordersdone;
@@ -357,7 +359,7 @@ namespace CustomTokens
                {
                    if (Context.IsWorldReady)
                    {
-                       var totalspecialorderscompleted = PlayerData.SpecialOrdersCompleted.Count;
+                       var totalspecialorderscompleted = ModEntry.perScreen.Value.SpecialOrdersCompleted.Count;
 
                        return new[]
                        {
@@ -392,11 +394,11 @@ namespace CustomTokens
             PlayerDataToWrite = Helper.Data.ReadJsonFile<PlayerDataToWrite>($"data\\{Constants.SaveFolderName}.json") ?? new PlayerDataToWrite();
 
             // Set tokens for the start of the day
-            PlayerData.CurrentYearsMarried = Game1.player.isMarried() == true ? YearsMarried : 0;
+            ModEntry.perScreen.Value.CurrentYearsMarried = Game1.player.isMarried() == true ? YearsMarried : 0;
 
-            PlayerData.AnniversarySeason = Game1.player.isMarried() == true ? anniversary.Season : "No season";
+            ModEntry.perScreen.Value.AnniversarySeason = Game1.player.isMarried() == true ? anniversary.Season : "No season";
 
-            PlayerData.AnniversaryDay = Game1.player.isMarried() == true ? anniversary.Day : 0;
+            ModEntry.perScreen.Value.AnniversaryDay = Game1.player.isMarried() == true ? anniversary.Day : 0;
 
             // Test if player is married
             if (Game1.player.isMarried() is false)
@@ -429,9 +431,10 @@ namespace CustomTokens
 
             if (!System.Diagnostics.Debugger.IsAttached)
             {
-                //System.Diagnostics.Debugger.Launch();
+                System.Diagnostics.Debugger.Launch();
             }
-            QuestsCompleted.AddCompletedQuests(ModEntry.PlayerData, ModEntry.PlayerDataToWrite);
+
+            QuestsCompleted.AddCompletedQuests(ModEntry.perScreen, ModEntry.PlayerDataToWrite);
 
             // Save any data to JSON file
             this.Monitor.Log("Writing data to JSON file");
@@ -468,16 +471,16 @@ namespace CustomTokens
                 }
 
                 // Update tracker
-                PlayerData.CurrentMineLevel = mineShaft.mineLevel;
+                ModEntry.perScreen.Value.CurrentMineLevel = mineShaft.mineLevel;
             }
 
             else
             {
                 // No, does the tracker reflect this?
-                if(PlayerData.CurrentMineLevel > 0)
+                if(ModEntry.perScreen.Value.CurrentMineLevel > 0)
                 {
                     // No, reset mine level tracker
-                    PlayerData.CurrentMineLevel = 0;
+                    ModEntry.perScreen.Value.CurrentMineLevel = 0;
                     this.Monitor.Log($"Minelevel tracker reset");
                 }
             }
@@ -498,16 +501,16 @@ namespace CustomTokens
                 }
 
                 // Update tracker
-                PlayerData.CurrentVolcanoFloor = VolcanoShaft.level;
+                ModEntry.perScreen.Value.CurrentVolcanoFloor = VolcanoShaft.level;
             }
 
             else
             {
                 // No, does the tracker reflect this?
-                if (PlayerData.CurrentVolcanoFloor > 0)
+                if (ModEntry.perScreen.Value.CurrentVolcanoFloor > 0)
                 {
                     // No, reset mine level tracker
-                    PlayerData.CurrentVolcanoFloor = 0;
+                    ModEntry.perScreen.Value.CurrentVolcanoFloor = 0;
                     this.Monitor.Log($"VolcanoFloor tracker reset");
                 }
             }
@@ -546,15 +549,15 @@ namespace CustomTokens
             try
             {
                 // Display information in SMAPI console
-                this.Monitor.Log($"\n\nMineLevel: {PlayerData.CurrentMineLevel}" +
-                    $"\nVolcanoFloor: {PlayerData.CurrentVolcanoFloor}" +
-                    $"\nYearsMarried: {PlayerData.CurrentYearsMarried}" +
-                    $"\nQuestIDsCompleted: {Quests(PlayerData.QuestsCompleted)}" +
-                    $"\nSONamesCompleted: {Quests(PlayerData.SpecialOrdersCompleted)}" +
-                    $"\nSOCompleted: {PlayerData.SpecialOrdersCompleted.Count}" +
+                this.Monitor.Log($"\n\nMineLevel: {ModEntry.perScreen.Value.CurrentMineLevel}" +
+                    $"\nVolcanoFloor: {ModEntry.perScreen.Value.CurrentVolcanoFloor}" +
+                    $"\nYearsMarried: {ModEntry.perScreen.Value.CurrentYearsMarried}" +
+                    $"\nQuestIDsCompleted: {Quests(ModEntry.perScreen.Value.QuestsCompleted)}" +
+                    $"\nSONamesCompleted: {Quests(ModEntry.perScreen.Value.SpecialOrdersCompleted)}" +
+                    $"\nSOCompleted: {ModEntry.perScreen.Value.SpecialOrdersCompleted.Count}" +
                     $"\nQuestsCompleted: {Game1.stats.questsCompleted}" +
-                    $"\nAnniversaryDay: {PlayerData.AnniversaryDay}" +
-                    $"\nAnniversarySeason: {PlayerData.AnniversarySeason}" +
+                    $"\nAnniversaryDay: {ModEntry.perScreen.Value.AnniversaryDay}" +
+                    $"\nAnniversarySeason: {ModEntry.perScreen.Value.AnniversarySeason}" +
                     $"\nDeathCount: {Game1.stats.timesUnconscious}" +
                     $"\nDeathCountMarried: {PlayerDataToWrite.DeathCountMarried}" +
                     $"\nDeathCountPK: {(Game1.player.isMarried() ? Game1.stats.timesUnconscious + 1 : 0)}" +
@@ -637,6 +640,7 @@ namespace CustomTokens
             // If there are quests, check if any are completed
             if (Game1.player.questLog.Count > 0)
             {
+                //ModEntry.perScreen.Value.QuestsCompleted = new ArrayList();
                 // Iterate through each active quest
                 foreach (Quest quest in Game1.player.questLog)
                 {
@@ -647,10 +651,10 @@ namespace CustomTokens
                         // Quest has been completed
                         && quest.completed == true
                         // Quest has not already been added to array list
-                        && PlayerData.QuestsCompleted.Contains(quest.id) == false)
+                        && ModEntry.perScreen.Value.QuestsCompleted.Contains(quest.id) == false)
                     {
                         // Yes, add it to quest array if it hasn't been added already
-                        PlayerData.QuestsCompleted.Add(quest.id);
+                        ModEntry.perScreen.Value.QuestsCompleted.Add(quest.id);
                         // Display trace information in SMAPI log
                         this.Monitor.Log($"Quest with id {quest.id} has been completed");
 
@@ -664,19 +668,21 @@ namespace CustomTokens
                 
             }
 
-            var order = Game1.player.team.completedSpecialOrders;
+            var order = Game1.player.team.completedSpecialOrders;             
 
-            if (PlayerData.SpecialOrdersCompleted.Count == 0 || PlayerData.SpecialOrdersCompleted.Count < order.Count())
+            if (ModEntry.perScreen.Value.SpecialOrdersCompleted.Count == 0 || ModEntry.perScreen.Value.SpecialOrdersCompleted.Count < order.Count())
             {
                 foreach (string questkey in new List<string>(order.Keys))
                 {
-                    if (!PlayerData.SpecialOrdersCompleted.Contains(questkey))
+
+                    if (!ModEntry.perScreen.Value.SpecialOrdersCompleted.Contains(questkey))
                     {
-                        PlayerData.SpecialOrdersCompleted.Add(questkey);
+                        ModEntry.perScreen.Value.SpecialOrdersCompleted.Add(questkey);
                         this.Monitor.Log($"Special Order with key {questkey} has been completed");
                     }
                 }
             }
+
         }
 
         /// <summary>Raised before/after the game writes data to save file (except the initial save creation). 
@@ -696,15 +702,15 @@ namespace CustomTokens
 
         private void Title(object sender, ReturnedToTitleEventArgs e)
         {
-            if(PlayerData.SpecialOrdersCompleted.Count != 0)
+            if(ModEntry.perScreen.Value.SpecialOrdersCompleted.Count != 0)
             {
-                PlayerData.SpecialOrdersCompleted.Clear();
+                ModEntry.perScreen.Value.SpecialOrdersCompleted.Clear();
                 this.Monitor.Log("Clearing Special Order data, ready for new save");
             }
 
-            if(PlayerData.QuestsCompleted.Count != 0)
+            if (ModEntry.perScreen.Value.QuestsCompleted.Count != 0)
             {
-                PlayerData.QuestsCompleted.Clear();
+                ModEntry.perScreen.Value.QuestsCompleted.Clear();
                 this.Monitor.Log("Clearing Quest data, ready for new save");
             }
         }

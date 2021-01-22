@@ -17,12 +17,12 @@ namespace CustomTokens
     public class QuestsCompleted
     {
         public ArrayList Questlogids = new ArrayList();
-        public void AddCompletedQuests(PlayerData data, PlayerDataToWrite datatowrite)
+        public void AddCompletedQuests(PerScreen<PlayerData> data, PlayerDataToWrite datatowrite)
         {
             
             var questlog = Game1.player.questLog;
 
-            var questdata = data.QuestsCompleted;
+            var questdata = data.Value.QuestsCompleted;
 
             // Get quests in questlog and add to an array
             foreach (Quest quest in questlog)
