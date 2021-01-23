@@ -544,13 +544,13 @@ namespace CustomTokens
                 // Display information in SMAPI console
                 this.Monitor.Log($"\n\nMineLevel: {ModEntry.perScreen.Value.CurrentMineLevel}" +
                     $"\nVolcanoFloor: {ModEntry.perScreen.Value.CurrentVolcanoFloor}" +
-                    $"\nYearsMarried: {ModEntry.perScreen.Value.CurrentYearsMarried}" +
-                    $"\nQuestIDsCompleted: {Quests(ModEntry.perScreen.Value.QuestsCompleted)}" +
-                    $"\nSONamesCompleted: {Quests(ModEntry.perScreen.Value.SpecialOrdersCompleted)}" +
-                    $"\nSOCompleted: {ModEntry.perScreen.Value.SpecialOrdersCompleted.Count}" +
-                    $"\nQuestsCompleted: {Game1.stats.questsCompleted}" +
+                    $"\nYearsMarried: {ModEntry.perScreen.Value.CurrentYearsMarried}" +                    
                     $"\nAnniversaryDay: {ModEntry.perScreen.Value.AnniversaryDay}" +
                     $"\nAnniversarySeason: {ModEntry.perScreen.Value.AnniversarySeason}" +
+                    $"\nQuestIDsCompleted: {Quests(ModEntry.perScreen.Value.QuestsCompleted)}" +
+                    $"\nSOKeysCompleted: {Quests(ModEntry.perScreen.Value.SpecialOrdersCompleted)}" +
+                    $"\nSOCompleted: {ModEntry.perScreen.Value.SpecialOrdersCompleted.Count}" +
+                    $"\nQuestsCompleted: {Game1.stats.questsCompleted}" +
                     $"\nDeathCount: {Game1.stats.timesUnconscious}" +
                     $"\nDeathCountMarried: {PlayerDataToWrite.DeathCountMarried}" +
                     $"\nDeathCountPK: {(Game1.player.isMarried() ? Game1.stats.timesUnconscious + 1 : 0)}" +
