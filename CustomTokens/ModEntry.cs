@@ -304,10 +304,7 @@ namespace CustomTokens
                    if (Context.IsWorldReady)
                    {
                        /*
-                       Will only add completed quests for quests completed after mod is added or updated
-                       as the mod can't determine specifically which quests have been completed in the past
-                       No flags or trackable changes occur to determine past quest completion so past 
-                       completed quests must be entered in the JSON manually
+                       Some previously completed quests still need to be added manually (2,6,16,128 or 129 and 130)
                        */
 
                        // Create array with the length of the QuestsCompleted array list
@@ -428,12 +425,10 @@ namespace CustomTokens
                 this.Monitor.Log("Fixing tracker to discard unsaved data");
                 PlayerDataToWrite.DeathCountMarried = PlayerDataToWrite.DeathCountMarriedOld;
             }
-
             if (!System.Diagnostics.Debugger.IsAttached)
             {
                 System.Diagnostics.Debugger.Launch();
             }
-
             QuestsCompleted.AddCompletedQuests(ModEntry.perScreen, ModEntry.PlayerDataToWrite);
 
             // Save any data to JSON file
@@ -651,17 +646,26 @@ namespace CustomTokens
                         // Quest has been completed
                         && quest.completed == true
                         // Quest has not already been added to array list
-                        && ModEntry.perScreen.Value.QuestsCompleted.Contains(quest.id) == false)
+                        && ModEntry.perScreen.Value.QuestsCompleted.Contains(quest.id.Value) == false)
                     {
                         // Yes, add it to quest array if it hasn't been added already
-                        ModEntry.perScreen.Value.QuestsCompleted.Add(quest.id);
+                        ModEntry.perScreen.Value.QuestsCompleted.Add(quest.id.Value);
                         // Display trace information in SMAPI log
-                        this.Monitor.Log($"Quest with id {quest.id} has been completed");
+                        this.Monitor.Log($"Quest with id {quest.id.Value} has been completed");
 
-                        if((quest.id == 2 || quest.id == 6 || quest.id == 16 || quest.id == 128 || quest.id == 129 || quest.id == 130) && PlayerDataToWrite.AdditionalQuestsCompleted.Contains(quest.id) == false)
+                       
+                        if(true 
+                            && (false
+                            // If these quests are completed, add it to PlayerDataToWrite
+                            || quest.id == 2 
+                            || quest.id == 6 
+                            || quest.id == 16 
+                            || quest.id == 128 
+                            || quest.id == 129 
+                            || quest.id == 130)
+                            && PlayerDataToWrite.AdditionalQuestsCompleted.Contains(quest.id.Value) == false)
                         {
-                            PlayerDataToWrite.AdditionalQuestsCompleted.Add(quest.id);
-                            this.Helper.Data.WriteJsonFile<PlayerDataToWrite>($"data\\{Constants.SaveFolderName}.json", ModEntry.PlayerDataToWrite);
+                            PlayerDataToWrite.AdditionalQuestsCompleted.Add(quest.id.Value);
                         }
                     }
                 }
