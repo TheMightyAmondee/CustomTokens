@@ -31,6 +31,7 @@ Minelevel | 0 | Players current minelevel | Add 120 to Skull Cavern floors for t
 VolcanoFloor | 0 | Players current floor in the Volcano Dungeon
 AnniversaryDay | 0 | The day the player was married on
 AnniversarySeason | No season | The season the player was married in | Value is in all lower-case
+Years Married | 0 | The number of years the player has been married for
 DeathCount | 0 | The number of deaths
 DeathCountPK | 0 | Value is DeathCount + 1 when save is loaded |Because there are limits on the update rate of tokens in CP, this token can be used as a more accurate snapshot of DeathCount in some cases, mainly the PlayerKilled event
 DeathCountMarried | 0 | The number of deaths that occur when the player is married
