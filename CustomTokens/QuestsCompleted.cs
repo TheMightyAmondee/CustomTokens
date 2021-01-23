@@ -31,7 +31,15 @@ namespace CustomTokens
             // Method for determining whether a quest received in the mail is completed
             void MailQuests(int questid, string mailname)
             {
-                if (Game1.player.hasOrWillReceiveMail(mailname) && !Questlogids.Contains(questid) && !Game1.player.mailbox.Contains(mailname) && !questdata.Contains(questid))
+                if (true
+                    // Player has or will receive the mail to begin the quest
+                    && Game1.player.hasOrWillReceiveMail(mailname) == true
+                    // Quest is not present in the questlog
+                    && Questlogids.Contains(questid) == false
+                    // Player's mailbox does not contain the mail, they have actually begun and finished the quest
+                    && Game1.player.mailbox.Contains(mailname) == false
+                    // questdata does not currently contain the quest id
+                    && questdata.Contains(questid) == false)
                 {
                     questdata.Add(questid);
                 }
@@ -40,7 +48,13 @@ namespace CustomTokens
             // Method for determining whether a quest that involves an event is completed
             void EventQuest(int questid, int eventid)
             {
-                if (Game1.player.eventsSeen.Contains(eventid) && !Questlogids.Contains(questid) && !questdata.Contains(questid))
+                if (true 
+                    // Player has seen the event that finishes or begins the quest
+                    && Game1.player.eventsSeen.Contains(eventid) == true
+                    // Quest is not present in the questlog
+                    && Questlogids.Contains(questid) == false
+                    // questdata does not currently contain the quest id
+                    && questdata.Contains(questid) == false)
                 {
                     questdata.Add(questid);
                 }
@@ -49,14 +63,20 @@ namespace CustomTokens
             // Method for determining whether a quest that requires another quest to have been completed is completed
             void QuestPreReq(int questid, int questprereq)
             {
-                if (questdata.Contains(questprereq) && !Questlogids.Contains(questid) && !questdata.Contains(questid))
+                if (true
+                    // questdata contains the id of the quest that must be completed before this quest can be done
+                    && questdata.Contains(questprereq) == true
+                    // Quest is not present in the questlog
+                    && Questlogids.Contains(questid) == false
+                    // questdata does not currently contain the quest id
+                    && questdata.Contains(questid) == false)
                 {
                     questdata.Add(questid);
                 }
             }
 
             // Introductions quest, if it's not in the log, it would have been completed
-            if (!Questlogids.Contains(9))
+            if (Questlogids.Contains(9) == false)
             {
                 questdata.Add(9);
             }
@@ -83,7 +103,7 @@ namespace CustomTokens
             QuestPreReq(18, 17);
 
             // The skull key quest
-            if (Game1.player.hasSkullKey == true && !Questlogids.Contains(19))
+            if (Game1.player.hasSkullKey == true && Questlogids.Contains(19) == false)
             {
                 questdata.Add(19);
             }
@@ -118,13 +138,13 @@ namespace CustomTokens
             QuestPreReq(5, 4);
 
             // Cryptic note quest
-            if (Game1.player.secretNotesSeen.Contains(10) && !Questlogids.Contains(30) && !questdata.Contains(30))
+            if (Game1.player.secretNotesSeen.Contains(10) == true && Questlogids.Contains(30) == false && questdata.Contains(30) == false)
             {
                 questdata.Add(30);
             }
 
             // Strange note quest
-            if (Game1.player.secretNotesSeen.Contains(23) && !Questlogids.Contains(29) && !questdata.Contains(30))
+            if (Game1.player.secretNotesSeen.Contains(23) == true && Questlogids.Contains(29) == false && questdata.Contains(30) == false)
             {
                 questdata.Add(29);
             }
@@ -183,7 +203,7 @@ namespace CustomTokens
             MailQuests(125, "winter_19_2");
 
             // Qi's challenge quest
-            if (Game1.player.hasOrWillReceiveMail("QiChallengeComplete"))
+            if (Game1.player.hasOrWillReceiveMail("QiChallengeComplete") == true)
             {
                 questdata.Add(20);
             }

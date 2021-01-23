@@ -677,7 +677,7 @@ namespace CustomTokens
                 foreach (string questkey in new List<string>(order.Keys))
                 {
 
-                    if (!ModEntry.perScreen.Value.SpecialOrdersCompleted.Contains(questkey))
+                    if (ModEntry.perScreen.Value.SpecialOrdersCompleted.Contains(questkey) == false)
                     {
                         ModEntry.perScreen.Value.SpecialOrdersCompleted.Add(questkey);
                         this.Monitor.Log($"Special Order with key {questkey} has been completed");
