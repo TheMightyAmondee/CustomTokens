@@ -1,16 +1,8 @@
 ﻿using System;
 using System.Collections;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using Microsoft.Xna.Framework;
-using System.Text;
 using StardewValley.Quests;
-using StardewModdingAPI;
-using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
-using StardewValley.Locations;
-using System.Collections.Generic;
 
 namespace CustomTokens
 {

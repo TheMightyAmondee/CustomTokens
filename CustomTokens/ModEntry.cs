@@ -425,11 +425,9 @@ namespace CustomTokens
                 this.Monitor.Log("Fixing tracker to discard unsaved data");
                 PlayerDataToWrite.DeathCountMarried = PlayerDataToWrite.DeathCountMarriedOld;
             }
-            if (!System.Diagnostics.Debugger.IsAttached)
-            {
-                System.Diagnostics.Debugger.Launch();
-            }
+
             QuestsCompleted.AddCompletedQuests(ModEntry.perScreen, ModEntry.PlayerDataToWrite);
+            this.Monitor.Log("Determining previously completed quest");
 
             // Save any data to JSON file
             this.Monitor.Log("Writing data to JSON file");
