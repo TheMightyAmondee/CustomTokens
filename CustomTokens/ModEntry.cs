@@ -304,7 +304,7 @@ namespace CustomTokens
                    if (Context.IsWorldReady)
                    {
                        /*
-                       Some previously completed quests still need to be added manually (2,6,16,128 or 129 and 130)
+                       Some previously completed quests still need to be added manually (2, 6, 16, 128 or 129 and 130)
                        */
 
                        // Create array with the length of the QuestsCompleted array list
@@ -427,7 +427,7 @@ namespace CustomTokens
             }
 
             QuestsCompleted.AddCompletedQuests(ModEntry.perScreen, ModEntry.PlayerDataToWrite);
-            this.Monitor.Log("Determining previously completed quest");
+            this.Monitor.Log("Determining previously completed quests... As best as I can");
 
             // Save any data to JSON file
             this.Monitor.Log("Writing data to JSON file");
@@ -560,7 +560,7 @@ namespace CustomTokens
             catch(Exception ex)
             {
                 // Throw an exception if command failed to execute
-                throw new Exception("Command failed", ex);
+                throw new Exception("Command failed somehow", ex);
             }
             
         }

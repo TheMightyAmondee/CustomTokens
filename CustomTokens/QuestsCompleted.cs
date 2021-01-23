@@ -37,7 +37,7 @@ namespace CustomTokens
                 }
             }
 
-            // Method for determining whether a quest that involve an event is completed
+            // Method for determining whether a quest that involves an event is completed
             void EventQuest(int questid, int eventid)
             {
                 if (Game1.player.eventsSeen.Contains(eventid) && !Questlogids.Contains(questid) && !questdata.Contains(questid))
@@ -152,10 +152,7 @@ namespace CustomTokens
             }
 
             // Meet the wizard quest
-            if (Game1.player.hasOrWillReceiveMail("wizardJunimoNote") && questdata.Contains(26) && !Game1.player.mailbox.Contains("wizardJunimoNote"))
-            {
-                questdata.Add(1);
-            }
+            EventQuest(1, 112);
 
             // Mail quests
             MailQuests(100, "spring_11_1");
