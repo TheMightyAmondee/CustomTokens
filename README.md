@@ -6,8 +6,8 @@ Custom Tokens is a mod that provides some basic additional tokens for Content Pa
 - VolcanoFloor the player is currently on
 - Anniversary of the player, split into two tokens, AnniversaryDay and AnniversarySeason
 - YearsMarried
-- QuestIDsCompleted, a list of quest ids that the player has completed, this only records quests with ids as specified in the Quests.xnb
-- QuestsCompleted, the total number of quests completed, including those with no ids
+- QuestIDsCompleted, a list of quest ids that the player has completed
+- QuestsCompleted, the total number of quests completed
 - SOKeysCompleted, a list of the special orders a player has completed. See Special order data for how to interpret return values
 - SOCompleted, total number of special orders completed
 - DeathCount
@@ -27,7 +27,7 @@ Custom Tokens is a mod that provides some basic additional tokens for Content Pa
   - If you have completed "Initiation" and entered the Adventurer's Guild, add 16
   - If you have completed the first part of "The Mysterious Mr. Qi" (battery pack in tunnel), add 2
   - If you have given the ornate necklace to Abigail, add 128
-  - If you have given the ornate necklace to Abigail, add 129
+  - If you have given the ornate necklace to Caroline, add 129
   - If you have finished "The Pirate's Wife", add 130
 
 ### Config:
