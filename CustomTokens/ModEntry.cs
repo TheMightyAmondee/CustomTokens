@@ -35,7 +35,7 @@ namespace CustomTokens
 
         public static PlayerData PlayerData { get; private set; } = new PlayerData();
         public static PlayerDataToWrite PlayerDataToWrite { get; private set; } = new PlayerDataToWrite();
-        public static QuestsCompleted QuestsCompleted { get; private set; } = new QuestsCompleted();
+        public static QuestData QuestData { get; private set; } = new QuestData();
 
         private static readonly PerScreen<PlayerData> perScreen = new PerScreen<PlayerData>(createNewState: () => PlayerData);
 
@@ -426,7 +426,7 @@ namespace CustomTokens
                 PlayerDataToWrite.DeathCountMarried = PlayerDataToWrite.DeathCountMarriedOld;
             }
 
-            QuestsCompleted.AddCompletedQuests(ModEntry.perScreen, ModEntry.PlayerDataToWrite);
+            QuestData.AddCompletedQuests(ModEntry.perScreen, ModEntry.PlayerDataToWrite);
             this.Monitor.Log("Determining previously completed quests... As best as I can");
 
             // Save any data to JSON file

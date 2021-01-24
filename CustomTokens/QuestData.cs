@@ -6,7 +6,7 @@ using StardewValley;
 
 namespace CustomTokens
 {
-    public class QuestsCompleted
+    public class QuestData
     {
         public ArrayList Questlogids = new ArrayList();
         public void AddCompletedQuests(PerScreen<PlayerData> data, PlayerDataToWrite datatowrite)
