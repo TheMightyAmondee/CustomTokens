@@ -54,7 +54,7 @@
     <Compile Include="PlayerData.cs" />
     <Compile Include="PlayerDataToWrite.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QuestsCompleted.cs" />
+    <Compile Include="QuestData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="manifest.json" />
