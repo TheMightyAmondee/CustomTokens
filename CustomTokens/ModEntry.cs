@@ -630,45 +630,7 @@ namespace CustomTokens
                 this.Monitor.Log($"Nevermind, {Game1.player.Name} has actually passed out {PlayerDataToWrite.PassOutCount} time(s). Aren't you getting tired?");
             }
 
-            // If there are quests, check if any are completed
-            if (Game1.player.questLog.Count > 0)
-            {
-                //ModEntry.perScreen.Value.QuestsCompleted = new ArrayList();
-                // Iterate through each active quest
-                foreach (Quest quest in Game1.player.questLog)
-                {
-                    // Is the quest complete?
-                    if (true 
-                        // Quest has an id
-                        && quest.id != null
-                        // Quest has been completed
-                        && quest.completed == true
-                        // Quest has not already been added to array list
-                        && ModEntry.perScreen.Value.QuestsCompleted.Contains(quest.id.Value) == false)
-                    {
-                        // Yes, add it to quest array if it hasn't been added already
-                        ModEntry.perScreen.Value.QuestsCompleted.Add(quest.id.Value);
-                        // Display trace information in SMAPI log
-                        this.Monitor.Log($"Quest with id {quest.id.Value} has been completed");
-
-                       
-                        if(true 
-                            && (false
-                            // If these quests are completed, add it to PlayerDataToWrite
-                            || quest.id == 2 
-                            || quest.id == 6 
-                            || quest.id == 16 
-                            || quest.id == 128 
-                            || quest.id == 129 
-                            || quest.id == 130)
-                            && PlayerDataToWrite.AdditionalQuestsCompleted.Contains(quest.id.Value) == false)
-                        {
-                            PlayerDataToWrite.AdditionalQuestsCompleted.Add(quest.id.Value);
-                        }
-                    }
-                }
-                
-            }
+            
 
             var order = Game1.player.team.completedSpecialOrders;             
 

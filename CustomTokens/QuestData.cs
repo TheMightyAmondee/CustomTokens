@@ -207,12 +207,66 @@ namespace CustomTokens
             {
                 questdata.Add(20);
             }
+           
+            // Quests 130, 129, 128 and 16 must also be added manually
+
+            // If there are quests, check if any are completed
+            if (Game1.player.questLog.Count > 0)
+            {
+                // Iterate through each active quest
+                foreach (Quest quest in Game1.player.questLog)
+                {
+                    // Is the quest complete?
+                    if (true
+                        // Quest has an id
+                        && quest.id != null
+                        // Quest has been completed
+                        && quest.completed == true
+                        // Quest has not already been added to array list
+                        && questdata.Contains(quest.id.Value) == false)
+                    {
+                        // Yes, add it to quest array if it hasn't been added already
+                        questdata.Add(quest.id.Value);
+
+                        if (true
+                            && (false
+                            // If these quests are completed, add it to PlayerDataToWrite
+                            || quest.id.Value == 2
+                            || quest.id.Value == 6
+                            || quest.id.Value == 16
+                            || quest.id.Value == 128
+                            || quest.id.Value == 129
+                            || quest.id.Value == 130)
+                            && datatowrite.AdditionalQuestsCompleted.Contains(quest.id.Value) == false)
+                        {
+                            datatowrite.AdditionalQuestsCompleted.Add(quest.id.Value);
+                        }
+                    }
+                }
+
+            }
 
             // Sort array and clear unnecessary data
             questdata.Sort();
             Questlogids.Clear();
 
-            // Quests 130, 129, 128 and 16 must also be added manually
+        }
+
+        public void AddCompletedQuests(int questid, PerScreen<PlayerData> data)
+        {
+            var questdata = data.Value.QuestsCompleted;
+
+            if (Game1.player.hasQuest(questid) == true && Questlogids.Contains(questid) == false)
+            {
+                Questlogids.Add(questid);
+            }
+
+            else if (Game1.player.hasQuest(questid) == false && Questlogids.Contains(questid) == true && questdata.Contains(questid) == false)
+            {
+                questdata.Add(questid);
+            }
         }
     }
+
+    
 }
