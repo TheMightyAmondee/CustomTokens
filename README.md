@@ -42,7 +42,7 @@ VolcanoFloor | 0 | Players current floor in the Volcano Dungeon
 AnniversaryDay | 0 | The day the player was married on
 AnniversarySeason | No season | The season the player was married in | Value is in all lower-case
 Years Married | 0 | The number of years the player has been married for
-QuestIDsCompleted | None | A list of quest ids that the player has completed | Only records quests with ids as specified in the Quests.xnb. New completed quests are only recorded at the start of each day
+QuestIDsCompleted | None | A list of quest ids that the player has completed | Only records quests with ids as specified in the Quests.xnb
 QuestsCompleted | 0 | The total number of quests completed | Includes quests with no ids e.g Bulletin board quests
 SOKeysCompleted | None | A list of the special orders a player has completed 
 SOCompleted | 0 | Total number of special orders completed
