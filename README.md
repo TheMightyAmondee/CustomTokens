@@ -35,21 +35,21 @@ Custom Tokens is a mod that provides some basic additional tokens for Content Pa
 - ResetDeathCountMarriedWhenDivorced will cause the DeathCountMarried token to reset to 0 when divorced, default is true.
 
 ### Tokens in more detail:
-Token | default value | What it tracks | Notes
------ | ------------- | -------------- | --------
+Token | default value | What it tracks | Notes 
+----- | ------------- | -------------- | ------
 Minelevel | 0 | Players current minelevel | Add 120 to Skull Cavern floors for token value. The quarry mine has a minelevel of 77377
 VolcanoFloor | 0 | Players current floor in the Volcano Dungeon
 AnniversaryDay | 0 | The day the player was married on
 AnniversarySeason | No season | The season the player was married in | Value is in all lower-case
 Years Married | 0 | The number of years the player has been married for
-QuestIDsCompleted | None | A list of quest ids that the player has completed | Only records quests with ids as specified in the Quests.xnb
+QuestIDsCompleted | None | A list of quest ids that the player has completed | Only records quests with ids as specified in the Quests.xnb. New completed quests are only recorded at the start of each day
 QuestsCompleted | 0 | The total number of quests completed | Includes quests with no ids e.g Bulletin board quests
-SOKeysCompleted | None | A list of the special orders a player has completed
+SOKeysCompleted | None | A list of the special orders a player has completed 
 SOCompleted | 0 | Total number of special orders completed
 DeathCount | 0 | The number of deaths
 DeathCountPK | 0 | Value is DeathCount + 1 when save is loaded |Because there are limits on the update rate of tokens in CP, this token can be used as a more accurate snapshot of DeathCount in some cases, mainly the PlayerKilled event
 DeathCountMarried | 0 | The number of deaths that occur when the player is married
-DeathCountMarriedPK | 0 | Value is DeathCountMarried + 1 when married |Because there are limits on the update rate of tokens in CP, this token can be used as a more accurate snapshot of DeathCountMarried in some cases, mainly the PlayerKilled event
+DeathCountMarriedPK | 0 | Value is DeathCountMarried + 1 when married | Because there are limits on the update rate of tokens in CP, this token can be used as a more accurate snapshot of DeathCountMarried in some cases, mainly the PlayerKilled event
 PassOutCount | 0 | The number of times the player has passed out, either from exhaustion or it reaching 2AM
 
 ### Special Order data
