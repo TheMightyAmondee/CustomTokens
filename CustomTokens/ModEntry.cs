@@ -426,6 +426,7 @@ namespace CustomTokens
                 PlayerDataToWrite.DeathCountMarried = PlayerDataToWrite.DeathCountMarriedOld;
             }
 
+            QuestData.CheckForCompletedQuests(ModEntry.perScreen, ModEntry.PlayerDataToWrite, this.Monitor);
             QuestData.AddCompletedQuests(ModEntry.perScreen, ModEntry.PlayerDataToWrite);
             this.Monitor.Log("Determining previously completed quests... As best as I can");
 
@@ -630,7 +631,9 @@ namespace CustomTokens
                 this.Monitor.Log($"Nevermind, {Game1.player.Name} has actually passed out {PlayerDataToWrite.PassOutCount} time(s). Aren't you getting tired?");
             }
 
-            
+            // If there are quests, check if any are completed
+            QuestData.UpdateQuestLog();
+            QuestData.CheckForCompletedQuests(ModEntry.perScreen, ModEntry.PlayerDataToWrite, this.Monitor);
 
             var order = Game1.player.team.completedSpecialOrders;             
 
@@ -675,6 +678,8 @@ namespace CustomTokens
             if (ModEntry.perScreen.Value.QuestsCompleted.Count != 0)
             {
                 ModEntry.perScreen.Value.QuestsCompleted.Clear();
+                QuestData.QuestlogidsNew.Clear();
+                QuestData.QuestlogidsOld.Clear();
                 this.Monitor.Log("Clearing Quest data, ready for new save");
             }
         }

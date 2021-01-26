@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using StardewValley.Quests;
+using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 
@@ -8,7 +9,11 @@ namespace CustomTokens
 {
     public class QuestData
     {
-        public ArrayList Questlogids = new ArrayList();
+        public ArrayList QuestlogidsOld = new ArrayList();
+
+        public ArrayList QuestlogidsNew = new ArrayList();
+
+        public int[] Norewardquests = new int[] { 1, 2, 3, 4, 5, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 26, 27, 28, 29, 30, 31, 107, 110, 126, 127, 128, 129, 130 };
         public void AddCompletedQuests(PerScreen<PlayerData> data, PlayerDataToWrite datatowrite)
         {
             
@@ -19,7 +24,7 @@ namespace CustomTokens
             // Get quests in questlog and add to an array
             foreach (Quest quest in questlog)
             {
-                Questlogids.Add(quest.id);
+                QuestlogidsNew.Add(quest.id.Value);
             }
 
             // Get additional quests completed, manually added quests
@@ -35,7 +40,7 @@ namespace CustomTokens
                     // Player has or will receive the mail to begin the quest
                     && Game1.player.hasOrWillReceiveMail(mailname) == true
                     // Quest is not present in the questlog
-                    && Questlogids.Contains(questid) == false
+                    && QuestlogidsNew.Contains(questid) == false
                     // Player's mailbox does not contain the mail, they have actually begun and finished the quest
                     && Game1.player.mailbox.Contains(mailname) == false
                     // questdata does not currently contain the quest id
@@ -52,7 +57,7 @@ namespace CustomTokens
                     // Player has seen the event that finishes or begins the quest
                     && Game1.player.eventsSeen.Contains(eventid) == true
                     // Quest is not present in the questlog
-                    && Questlogids.Contains(questid) == false
+                    && QuestlogidsNew.Contains(questid) == false
                     // questdata does not currently contain the quest id
                     && questdata.Contains(questid) == false)
                 {
@@ -67,7 +72,7 @@ namespace CustomTokens
                     // questdata contains the id of the quest that must be completed before this quest can be done
                     && questdata.Contains(questprereq) == true
                     // Quest is not present in the questlog
-                    && Questlogids.Contains(questid) == false
+                    && QuestlogidsNew.Contains(questid) == false
                     // questdata does not currently contain the quest id
                     && questdata.Contains(questid) == false)
                 {
@@ -76,7 +81,7 @@ namespace CustomTokens
             }
 
             // Introductions quest, if it's not in the log, it would have been completed
-            if (Questlogids.Contains(9) == false)
+            if (QuestlogidsNew.Contains(9) == false)
             {
                 questdata.Add(9);
             }
@@ -103,7 +108,7 @@ namespace CustomTokens
             QuestPreReq(18, 17);
 
             // The skull key quest
-            if (Game1.player.hasSkullKey == true && Questlogids.Contains(19) == false)
+            if (Game1.player.hasSkullKey == true && QuestlogidsNew.Contains(19) == false)
             {
                 questdata.Add(19);
             }
@@ -138,13 +143,13 @@ namespace CustomTokens
             QuestPreReq(5, 4);
 
             // Cryptic note quest
-            if (Game1.player.secretNotesSeen.Contains(10) == true && Questlogids.Contains(30) == false && questdata.Contains(30) == false)
+            if (Game1.player.secretNotesSeen.Contains(10) == true && QuestlogidsNew.Contains(30) == false && questdata.Contains(30) == false)
             {
                 questdata.Add(30);
             }
 
             // Strange note quest
-            if (Game1.player.secretNotesSeen.Contains(23) == true && Questlogids.Contains(29) == false && questdata.Contains(30) == false)
+            if (Game1.player.secretNotesSeen.Contains(23) == true && QuestlogidsNew.Contains(29) == false && questdata.Contains(30) == false)
             {
                 questdata.Add(29);
             }
@@ -210,60 +215,103 @@ namespace CustomTokens
            
             // Quests 130, 129, 128 and 16 must also be added manually
 
-            // If there are quests, check if any are completed
-            if (Game1.player.questLog.Count > 0)
-            {
-                // Iterate through each active quest
-                foreach (Quest quest in Game1.player.questLog)
-                {
-                    // Is the quest complete?
-                    if (true
-                        // Quest has an id
-                        && quest.id != null
-                        // Quest has been completed
-                        && quest.completed == true
-                        // Quest has not already been added to array list
-                        && questdata.Contains(quest.id.Value) == false)
-                    {
-                        // Yes, add it to quest array if it hasn't been added already
-                        questdata.Add(quest.id.Value);
-
-                        if (true
-                            && (false
-                            // If these quests are completed, add it to PlayerDataToWrite
-                            || quest.id.Value == 2
-                            || quest.id.Value == 6
-                            || quest.id.Value == 16
-                            || quest.id.Value == 128
-                            || quest.id.Value == 129
-                            || quest.id.Value == 130)
-                            && datatowrite.AdditionalQuestsCompleted.Contains(quest.id.Value) == false)
-                        {
-                            datatowrite.AdditionalQuestsCompleted.Add(quest.id.Value);
-                        }
-                    }
-                }
-
-            }
+            
 
             // Sort array and clear unnecessary data
             questdata.Sort();
-            Questlogids.Clear();
+            QuestlogidsNew.Clear();
 
         }
 
-        public void AddCompletedQuests(int questid, PerScreen<PlayerData> data)
+        /// <summary>
+        /// Updates quest log to add new quests, without removing previously held quests. Use to check completed quests with no reward
+        /// </summary>
+        public void UpdateQuestLog()
         {
+            foreach(Quest quest in Game1.player.questLog)
+            {
+                if (QuestlogidsOld.Contains(quest.id.Value) == false)
+                {
+                    QuestlogidsOld.Add(quest.id.Value);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Determines whether a quest is complete
+        /// </summary>
+        /// <param name="data">Where to save data</param>
+        /// <param name="datatowrite">Where to write data that will be written</param>
+        public void CheckForCompletedQuests(PerScreen<PlayerData> data, PlayerDataToWrite datatowrite, IMonitor monitor)
+        {
+            QuestlogidsNew.Clear();
+
+            var questlog = Game1.player.questLog;
+
             var questdata = data.Value.QuestsCompleted;
 
-            if (Game1.player.hasQuest(questid) == true && Questlogids.Contains(questid) == false)
-            {
-                Questlogids.Add(questid);
+            // Iterate through each active quest
+            foreach (Quest quest in questlog)
+            {              
+                // Is the quest complete?
+                if (true
+                    // Quest has an id
+                    && quest.id != null
+                    // Quest has been completed
+                    && quest.completed == true
+                    // Quest has not already been added to array list
+                    && questdata.Contains(quest.id.Value) == false)
+                {
+                    // Yes, add it to quest array if it hasn't been added already
+                    questdata.Add(quest.id.Value);
+                    monitor.Log($"Quest with id {quest.id.Value} has been completed");
+
+                    if (quest.id.Value == 6 && datatowrite.AdditionalQuestsCompleted.Contains(quest.id.Value) == false)
+                    {
+                        datatowrite.AdditionalQuestsCompleted.Add(quest.id.Value);
+                    }
+                }
+                // Add current quests to QuestlogidsNew
+                else if(QuestlogidsNew.Contains(quest.id.Value) == false && quest.completed == false)
+                {
+                    QuestlogidsNew.Add(quest.id.Value);
+                }
             }
 
-            else if (Game1.player.hasQuest(questid) == false && Questlogids.Contains(questid) == true && questdata.Contains(questid) == false)
+            // Check for completed quests with no rewards by comparing two arrays
+            foreach(int questid in QuestlogidsOld)
             {
-                questdata.Add(questid);
+                // If QuestlogidsOld contains an id that QuestlogidsNew doesn't, the quest with that id is completed
+                if (QuestlogidsNew.Contains(questid) == false && questdata.Contains(questid) == false)
+                {
+                    questdata.Add(questid);
+                    monitor.Log($"Quest with id {questid} has been completed");
+                    
+                    
+                   
+                    if (true
+                       && (false
+                       // If these quests are completed, add it to PlayerDataToWrite
+                       || questid == 2
+                       || questid == 16
+                       || questid == 128
+                       || questid == 129
+                       || questid == 130)
+                       && datatowrite.AdditionalQuestsCompleted.Contains(questid) == false)
+                    {
+                        datatowrite.AdditionalQuestsCompleted.Add(questid);
+                    }
+                }
+                
+            }
+
+            if (questdata.Contains(128) == true)
+            {
+                QuestlogidsOld.Remove(129);
+            }
+            else if (questdata.Contains(129) == true)
+            {
+                QuestlogidsOld.Remove(128);
             }
         }
     }
