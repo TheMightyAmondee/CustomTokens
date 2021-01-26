@@ -12,16 +12,13 @@ namespace CustomTokens
         public ArrayList QuestlogidsOld = new ArrayList();
 
         public ArrayList QuestlogidsNew = new ArrayList();
-
-        public int[] Norewardquests = new int[] { 1, 2, 3, 4, 5, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 26, 27, 28, 29, 30, 31, 107, 110, 126, 127, 128, 129, 130 };
         public void AddCompletedQuests(PerScreen<PlayerData> data, PlayerDataToWrite datatowrite)
-        {
-            
+        {            
             var questlog = Game1.player.questLog;
 
             var questdata = data.Value.QuestsCompleted;
 
-            // Get quests in questlog and add to an array
+            // Get quests in questlog and add to an array temporarily for determining previously completed quests
             foreach (Quest quest in questlog)
             {
                 QuestlogidsNew.Add(quest.id.Value);
@@ -80,6 +77,15 @@ namespace CustomTokens
                 }
             }
 
+            // Method for determining whether a quest that requires a secret note to be seen is complete
+            void NoteQuest(int questid, int noteseen)
+            {
+                if (Game1.player.secretNotesSeen.Contains(noteseen) == true && QuestlogidsNew.Contains(questid) == false && questdata.Contains(questid) == false)
+                {
+                    questdata.Add(questid);
+                }
+            }
+
             // Introductions quest, if it's not in the log, it would have been completed
             if (QuestlogidsNew.Contains(9) == false)
             {
@@ -89,13 +95,13 @@ namespace CustomTokens
             // How to win friends quest
             QuestPreReq(25, 9);
 
-            // Raising animals quest, 6 must be added manually
+            // Raising animals quest, 6 must be added manually for old saves
             QuestPreReq(7, 6);
 
             // To the beach quest
             EventQuest(13, 739330);
 
-            // Advancement quest, 6 must be added manually
+            // Advancement quest, 6 must be added manually for old saves
             QuestPreReq(8, 6);
 
             // Explore the mines quest
@@ -108,7 +114,7 @@ namespace CustomTokens
             QuestPreReq(18, 17);
 
             // The skull key quest
-            if (Game1.player.hasSkullKey == true && QuestlogidsNew.Contains(19) == false)
+            if (Game1.player.hasUnlockedSkullDoor == true)
             {
                 questdata.Add(19);
             }
@@ -137,22 +143,16 @@ namespace CustomTokens
             // Hayley's cake-walk quest
             EventQuest(127, 6184644);
 
-            // The mysterious Mr. Qi quests, 2 needs to be added manually
+            // The mysterious Mr. Qi quests, 2 needs to be added manually for old saves
             QuestPreReq(3, 2);
             QuestPreReq(4, 3);
             QuestPreReq(5, 4);
 
             // Cryptic note quest
-            if (Game1.player.secretNotesSeen.Contains(10) == true && QuestlogidsNew.Contains(30) == false && questdata.Contains(30) == false)
-            {
-                questdata.Add(30);
-            }
+            NoteQuest(30, 10);
 
             // Strange note quest
-            if (Game1.player.secretNotesSeen.Contains(23) == true && QuestlogidsNew.Contains(29) == false && questdata.Contains(30) == false)
-            {
-                questdata.Add(29);
-            }
+            NoteQuest(29, 23);
 
             // A winter mystery quest (Is the figure Krobus? You decide.)
             EventQuest(31, 2120303);
@@ -213,19 +213,15 @@ namespace CustomTokens
                 questdata.Add(20);
             }
            
-            // Quests 130, 129, 128 and 16 must also be added manually
+            // Quests 130, 129, 128 and 16 must also be added manually for old saves            
 
-            
-
-            // Sort array and clear unnecessary data
+            // Sort array and clear temporary data
             questdata.Sort();
             QuestlogidsNew.Clear();
 
         }
 
-        /// <summary>
-        /// Updates quest log to add new quests, without removing previously held quests. Use to check completed quests with no reward
-        /// </summary>
+        /// <summary>Updates quest log to add new quests, without removing previously held quests. Use to check completed quests with no reward.</summary>
         public void UpdateQuestLog()
         {
             foreach(Quest quest in Game1.player.questLog)
@@ -237,13 +233,13 @@ namespace CustomTokens
             }
         }
 
-        /// <summary>
-        /// Determines whether a quest is complete
-        /// </summary>
+        /// <summary>Determines whether a quest is complete.</summary>
         /// <param name="data">Where to save data</param>
         /// <param name="datatowrite">Where to write data that will be written</param>
+        /// <param name="monitor">Provides access to the SMAPI monitor</param>
         public void CheckForCompletedQuests(PerScreen<PlayerData> data, PlayerDataToWrite datatowrite, IMonitor monitor)
         {
+            // Clear QuestlogidsNew array
             QuestlogidsNew.Clear();
 
             var questlog = Game1.player.questLog;
@@ -266,32 +262,34 @@ namespace CustomTokens
                     questdata.Add(quest.id.Value);
                     monitor.Log($"Quest with id {quest.id.Value} has been completed");
 
+                    // If quest with id 6 is completed, add it to PlayerDataToWrite if it isn't already an element
                     if (quest.id.Value == 6 && datatowrite.AdditionalQuestsCompleted.Contains(quest.id.Value) == false)
                     {
                         datatowrite.AdditionalQuestsCompleted.Add(quest.id.Value);
                     }
                 }
+
                 // Add current quests to QuestlogidsNew
-                else if(QuestlogidsNew.Contains(quest.id.Value) == false && quest.completed == false)
+                else if (QuestlogidsNew.Contains(quest.id.Value) == false && quest.completed == false)
                 {
                     QuestlogidsNew.Add(quest.id.Value);
                 }
             }
 
             // Check for completed quests with no rewards by comparing two arrays
-            foreach(int questid in QuestlogidsOld)
+
+            // Iterate through each quest id recorded in QuestlogidsOld
+            foreach (int questid in QuestlogidsOld)
             {
                 // If QuestlogidsOld contains an id that QuestlogidsNew doesn't, the quest with that id is completed
                 if (QuestlogidsNew.Contains(questid) == false && questdata.Contains(questid) == false)
                 {
                     questdata.Add(questid);
-                    monitor.Log($"Quest with id {questid} has been completed");
-                    
-                    
+                    monitor.Log($"Quest with id {questid} has been completed");                                       
                    
                     if (true
                        && (false
-                       // If these quests are completed, add it to PlayerDataToWrite
+                       // If these quests are completed, add it to PlayerDataToWrite if it isn't already an element
                        || questid == 2
                        || questid == 16
                        || questid == 128
@@ -305,10 +303,13 @@ namespace CustomTokens
                 
             }
 
+            // Necklace given to Abigail, remove alternate quest so it won't be marked as completed
             if (questdata.Contains(128) == true)
             {
                 QuestlogidsOld.Remove(129);
             }
+
+            // Necklace given to Caroline, remove alternate quest so it won't be marked as completed
             else if (questdata.Contains(129) == true)
             {
                 QuestlogidsOld.Remove(128);
