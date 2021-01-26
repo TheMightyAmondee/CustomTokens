@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using Microsoft.Xna.Framework;
 using System.Text;
-using StardewValley.Quests;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
@@ -570,8 +566,10 @@ namespace CustomTokens
         /// <param name="e">The event arguments.</param>
         private void UpdateTicked(object sender, UpdateTickedEventArgs e)
         {
+            var order = Game1.player.team.completedSpecialOrders;
+
             // Update tracker if player died, is married and tracker should update
-            if(Game1.killScreen == true && Game1.player.isMarried() == true && updatedeath == true)
+            if (Game1.killScreen == true && Game1.player.isMarried() == true && updatedeath == true)
             {
                 // Increment tracker
                 PlayerDataToWrite.DeathCountMarried++;
@@ -631,13 +629,13 @@ namespace CustomTokens
                 this.Monitor.Log($"Nevermind, {Game1.player.Name} has actually passed out {PlayerDataToWrite.PassOutCount} time(s). Aren't you getting tired?");
             }
 
-            // If there are quests, check if any are completed
+            // Check for new added quests
             QuestData.UpdateQuestLog();
+            // Check if any quests have been completed
             QuestData.CheckForCompletedQuests(ModEntry.perScreen, ModEntry.PlayerDataToWrite, this.Monitor);
-
-            var order = Game1.player.team.completedSpecialOrders;             
-
-            if (ModEntry.perScreen.Value.SpecialOrdersCompleted.Count == 0 || ModEntry.perScreen.Value.SpecialOrdersCompleted.Count < order.Count())
+            
+            // Check for completed special orders
+            if (ModEntry.perScreen.Value.SpecialOrdersCompleted.Count < order.Count())
             {
                 foreach (string questkey in new List<string>(order.Keys))
                 {
