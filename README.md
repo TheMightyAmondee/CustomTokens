@@ -8,7 +8,7 @@ Custom Tokens is a mod that provides some basic additional tokens for Content Pa
 - YearsMarried
 - QuestIDsCompleted, a list of quest ids that the player has completed
 - QuestsCompleted, the total number of quests completed
-- SOKeysCompleted, a list of the special orders a player has completed. See Special order data for how to interpret return values
+- SOIDsCompleted, a list of the special orders a player has completed. See Special order data for how to interpret return values
 - SOCompleted, total number different of special orders completed
 - DeathCount
 - DeathCountMarried, an extension of DeathCount that tracks how many times a player has died after being married.
@@ -50,7 +50,7 @@ AnniversarySeason | No season | The season the player was married in | Value is 
 Years Married | 0 | The number of years the player has been married for
 QuestIDsCompleted | None | A list of quest ids that the player has completed | Only records quests with ids as specified in the Quests.xnb
 QuestsCompleted | 0 | The total number of quests completed | Includes quests with no ids e.g Bulletin board quests
-SOKeysCompleted | None | A list of the special orders a player has completed | Repeating the same order will not add the key to the token again 
+SOIDsCompleted | None | A list of the special orders a player has completed | Repeating the same order will not add the key to the token again 
 SOCompleted | 0 | Total number of different special orders completed | Only tracks different orders, won't include repeated orders
 DeathCount | 0 | The number of deaths
 DeathCountPK | 0 | Value is DeathCount + 1 when save is loaded |Because there are limits on the update rate of tokens in CP, this token can be used as a more accurate snapshot of DeathCount in some cases, mainly the PlayerKilled event
@@ -61,7 +61,7 @@ PassOutCount | 0 | The number of times the player has passed out, either from ex
 ### Special Order data
 Since Special Orders don't have an id like quests they are recorded in the save file using a unique key as shown in the table below. The mod will return this unique key for each Special Order completed in the SOKeysCompleted token
 
-Key | Special Order Name
+ID | Special Order Name
 ----|------------------
 Willy | Juicy Bugs Wanted!
 Willy2 | Tropical Fish
