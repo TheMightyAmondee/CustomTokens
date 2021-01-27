@@ -27,7 +27,10 @@ namespace CustomTokens
             // Get additional quests completed, manually added quests
             foreach(long questid in datatowrite.AdditionalQuestsCompleted)
             {
-                questdata.Add((int)questid);
+                if(questdata.Contains((int)questid) == false)
+                {
+                    questdata.Add((int)questid);
+                }
             }
 
             // Method for determining whether a quest received in the mail is completed
@@ -87,7 +90,7 @@ namespace CustomTokens
             }
 
             // Introductions quest, if it's not in the log, it would have been completed
-            if (QuestlogidsNew.Contains(9) == false)
+            if (QuestlogidsNew.Contains(9) == false && questdata.Contains(9) == false)
             {
                 questdata.Add(9);
             }
@@ -114,7 +117,7 @@ namespace CustomTokens
             QuestPreReq(18, 17);
 
             // The skull key quest
-            if (Game1.player.hasUnlockedSkullDoor == true)
+            if (Game1.player.hasUnlockedSkullDoor == true && questdata.Contains(19) == false)
             {
                 questdata.Add(19);
             }
@@ -143,10 +146,17 @@ namespace CustomTokens
             // Hayley's cake-walk quest
             EventQuest(127, 6184644);
 
+            
+            if(questdata.Contains(2) == false && (QuestlogidsNew.Contains(3) == true || QuestlogidsNew.Contains(4) == true || QuestlogidsNew.Contains(5) == true || Game1.player.hasClubCard == true))
+            {
+                questdata.Add(2);
+            }
+
             // The mysterious Mr. Qi quests, 2 needs to be added manually for old saves
             QuestPreReq(3, 2);
             QuestPreReq(4, 3);
             QuestPreReq(5, 4);
+
 
             // Cryptic note quest
             NoteQuest(30, 10);
@@ -165,13 +175,13 @@ namespace CustomTokens
             EventQuest(22, 95);
 
             // Dark talisman quest
-            if (Game1.player.hasDarkTalisman == true)
+            if (Game1.player.hasDarkTalisman == true && questdata.Contains(28) == false)
             {
                 questdata.Add(28);
             }
 
             // Goblin problem quest
-            if (Game1.player.hasMagicInk == true)
+            if (Game1.player.hasMagicInk == true && questdata.Contains(27) == false)
             {
                 questdata.Add(27);
             }
@@ -208,7 +218,7 @@ namespace CustomTokens
             MailQuests(125, "winter_19_2");
 
             // Qi's challenge quest
-            if (Game1.player.hasOrWillReceiveMail("QiChallengeComplete") == true)
+            if (Game1.player.hasOrWillReceiveMail("QiChallengeComplete") == true && questdata.Contains(20) == false)
             {
                 questdata.Add(20);
             }
@@ -290,7 +300,7 @@ namespace CustomTokens
                     if (true
                        && (false
                        // If these quests are completed, add it to PlayerDataToWrite if it isn't already an element
-                       || questid == 2
+                       //|| questid == 2
                        || questid == 16
                        || questid == 128
                        || questid == 129

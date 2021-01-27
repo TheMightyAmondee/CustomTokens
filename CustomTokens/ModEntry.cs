@@ -440,11 +440,12 @@ namespace CustomTokens
                 this.Monitor.Log("Clearing Special Order data, ready for new save");
             }
 
+            QuestData.QuestlogidsNew.Clear();
+            QuestData.QuestlogidsOld.Clear();
+
             if (ModEntry.perScreen.Value.QuestsCompleted.Count != 0)
             {
-                ModEntry.perScreen.Value.QuestsCompleted.Clear();
-                QuestData.QuestlogidsNew.Clear();
-                QuestData.QuestlogidsOld.Clear();
+                ModEntry.perScreen.Value.QuestsCompleted.Clear();               
                 this.Monitor.Log("Clearing Quest data, ready for new save");
             }
         }
