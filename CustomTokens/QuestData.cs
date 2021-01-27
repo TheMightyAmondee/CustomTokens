@@ -27,7 +27,7 @@ namespace CustomTokens
             // Get additional quests completed, manually added quests
             foreach(long questid in datatowrite.AdditionalQuestsCompleted)
             {
-                if(questdata.Contains((int)questid) == false)
+                if (questdata.Contains((int)questid) == false)
                 {
                     questdata.Add((int)questid);
                 }
@@ -147,7 +147,7 @@ namespace CustomTokens
             EventQuest(127, 6184644);
 
             
-            if(true
+            if (true
                 /* 
                 Any quest from The mysterious Mr. Qi questline present in the questlog or if the player has the clubcard
                 indicates that quest with id 2 has been completed 
@@ -243,7 +243,7 @@ namespace CustomTokens
         /// <summary>Updates quest log to add new quests, without removing previously held quests. Use to check completed quests with no reward.</summary>
         public void UpdateQuestLog()
         {
-            foreach(Quest quest in Game1.player.questLog)
+            foreach (Quest quest in Game1.player.questLog)
             {
                 if (QuestlogidsOld.Contains(quest.id.Value) == false)
                 {

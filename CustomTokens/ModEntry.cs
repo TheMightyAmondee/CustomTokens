@@ -297,7 +297,7 @@ namespace CustomTokens
                    if (Context.IsWorldReady)
                    {
                        /*
-                       Some previously completed quests still need to be added manually (2, 6, 16, 128 or 129 and 130)
+                       Some previously completed quests still need to be added manually (6, 16, 128 or 129 and 130)
                        */
 
                        // Create array with the length of the QuestsCompleted array list
@@ -434,7 +434,7 @@ namespace CustomTokens
 
         private void Title(object sender, ReturnedToTitleEventArgs e)
         {
-            if(ModEntry.perScreen.Value.SpecialOrdersCompleted.Count != 0)
+            if (ModEntry.perScreen.Value.SpecialOrdersCompleted.Count != 0)
             {
                 ModEntry.perScreen.Value.SpecialOrdersCompleted.Clear();
                 this.Monitor.Log("Clearing Special Order data, ready for new save");
