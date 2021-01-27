@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections;
-using System.Text;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
-using StardewValley.Locations;
 using System.Collections.Generic;
 
 
@@ -23,15 +20,15 @@ namespace CustomTokens
     public class ModEntry 
         : Mod
     {
-        private ModConfig config;
-
-        public bool updatedeath = false;
-
-        public bool updatepassout = false;
+        internal ModConfig config;
 
         public static PlayerData PlayerData { get; private set; } = new PlayerData();
         public static PlayerDataToWrite PlayerDataToWrite { get; private set; } = new PlayerDataToWrite();
-        public static QuestData QuestData { get; private set; } = new QuestData();
+        internal static TrackerCommand TrackerCommand { get; private set; } = new TrackerCommand();
+        internal static LocationTokens LocationTokens { get; private set; } = new LocationTokens();
+        internal static DeathAndExhaustionTokens DeathAndExhaustionTokens { get; private set; } = new DeathAndExhaustionTokens();
+        internal static MarriageTokens MarriageTokens { get; private set; } = new MarriageTokens();
+        internal static QuestData QuestData { get; private set; } = new QuestData();
 
         private static readonly PerScreen<PlayerData> perScreen = new PerScreen<PlayerData>(createNewState: () => PlayerData);
 
@@ -370,58 +367,15 @@ namespace CustomTokens
         /// <param name="e">The event arguments.</param>
         private void DayStarted(object sender, DayStartedEventArgs e)
         {
-            // Get days married
-            int DaysMarried = Game1.player.GetDaysMarried();
-            float Years = DaysMarried / 112;
-            // Get years married
-            double YearsMarried = Math.Floor(Years);
-            // Get Anniversary date
-            var anniversary = SDate.Now().AddDays(-(DaysMarried - 1));
+            // Read JSON file and create if needed
+            PlayerDataToWrite = this.Helper.Data.ReadJsonFile<PlayerDataToWrite>($"data\\{Constants.SaveFolderName}.json") ?? new PlayerDataToWrite();
 
-            updatedeath = true;
-            updatepassout = true;
-
+            DeathAndExhaustionTokens.updatepassout = true;
+            DeathAndExhaustionTokens.updatedeath = true;
             this.Monitor.Log($"Trackers set to update");
 
-            // Read JSON file and create if needed
-            PlayerDataToWrite = Helper.Data.ReadJsonFile<PlayerDataToWrite>($"data\\{Constants.SaveFolderName}.json") ?? new PlayerDataToWrite();
-
-            // Set tokens for the start of the day
-            ModEntry.perScreen.Value.CurrentYearsMarried = Game1.player.isMarried() == true ? YearsMarried : 0;
-
-            ModEntry.perScreen.Value.AnniversarySeason = Game1.player.isMarried() == true ? anniversary.Season : "No season";
-
-            ModEntry.perScreen.Value.AnniversaryDay = Game1.player.isMarried() == true ? anniversary.Day : 0;
-
-            // Test if player is married
-            if (Game1.player.isMarried() is false)
-            {
-                // No, relevant trackers will use their default values
-
-                this.Monitor.Log($"{Game1.player.Name} is not married");
-
-                if (this.config.ResetDeathCountMarriedWhenDivorced == true && PlayerDataToWrite.DeathCountMarried != 0)
-                {
-                    // Reset tracker if player is no longer married
-                    PlayerDataToWrite.DeathCountMarried = 0;
-                }
-            }
-
-            // Yes, tokens exist
-            else
-            {
-                this.Monitor.Log($"{Game1.player.Name} has been married for {YearsMarried} year(s)");
-
-                this.Monitor.Log($"Anniversary is the {anniversary.Day} of {anniversary.Season}");
-            }
-
-            // Fix death tracker
-            if (PlayerDataToWrite.DeathCountMarriedOld < PlayerDataToWrite.DeathCountMarried)
-            {
-                this.Monitor.Log("Fixing tracker to discard unsaved data");
-                PlayerDataToWrite.DeathCountMarried = PlayerDataToWrite.DeathCountMarriedOld;
-            }
-
+            MarriageTokens.UpdateMarriageTokens(this.Monitor, ModEntry.perScreen, ModEntry.PlayerDataToWrite, this.config);
+           
             QuestData.CheckForCompletedQuests(ModEntry.perScreen, ModEntry.PlayerDataToWrite, this.Monitor);
             QuestData.AddCompletedQuests(ModEntry.perScreen, ModEntry.PlayerDataToWrite);
             this.Monitor.Log("Determining previously completed quests... As best as I can");
@@ -436,74 +390,7 @@ namespace CustomTokens
         /// <param name="e">The event arguments.</param>
         private void LocationChange(object sender, WarpedEventArgs e)
         {
-            // Get current location as a MineShaft
-            var mineShaft = Game1.currentLocation as MineShaft;
-            // Get current location as a VolcanoDungeon
-            var VolcanoShaft = Game1.currentLocation as VolcanoDungeon;
-           
-            // Test to see if current location is a MineShaft
-            if (!(mineShaft is null))
-            {
-                // Yes, update tracker with new data
-
-                // Display trace information in SMAPI log
-                if (mineShaft.mineLevel < 121)
-                {
-                    this.Monitor.Log($"{Game1.player.Name} is on level {mineShaft.mineLevel} of the mine.");
-                }
-                else if (mineShaft.mineLevel == 77377)
-                {
-                    this.Monitor.Log($"{Game1.player.Name} is in the Quarry Mine.");
-                }
-                else
-                {
-                    this.Monitor.Log($"{Game1.player.Name} on level {mineShaft.mineLevel} (level {mineShaft.mineLevel - 120} of the Skull Cavern).");
-                }
-
-                // Update tracker
-                ModEntry.perScreen.Value.CurrentMineLevel = mineShaft.mineLevel;
-            }
-
-            else
-            {
-                // No, does the tracker reflect this?
-                if(ModEntry.perScreen.Value.CurrentMineLevel > 0)
-                {
-                    // No, reset mine level tracker
-                    ModEntry.perScreen.Value.CurrentMineLevel = 0;
-                    this.Monitor.Log($"Minelevel tracker reset");
-                }
-            }
-
-            // Test to see if current location is a Volcano Floor
-            if (!(VolcanoShaft is null))
-            {
-                // Yes, update tracker with new data
-
-                // Display trace information in SMAPI log
-                if (VolcanoShaft.level != 5)
-                {
-                    this.Monitor.Log($"{Game1.player.Name} is on volcano floor {VolcanoShaft.level}.");
-                }
-                else
-                {
-                    this.Monitor.Log($"{Game1.player.Name} is at the volcano dwarf shop. (Buy something?)");
-                }
-
-                // Update tracker
-                ModEntry.perScreen.Value.CurrentVolcanoFloor = VolcanoShaft.level;
-            }
-
-            else
-            {
-                // No, does the tracker reflect this?
-                if (ModEntry.perScreen.Value.CurrentVolcanoFloor > 0)
-                {
-                    // No, reset mine level tracker
-                    ModEntry.perScreen.Value.CurrentVolcanoFloor = 0;
-                    this.Monitor.Log($"VolcanoFloor tracker reset");
-                }
-            }
+            LocationTokens.UpdateLoactionTokens(this.Monitor, ModEntry.perScreen);
         }
 
         /// <summary>Raised when the tracker command is entered into the SMAPI console.</summary>
@@ -511,142 +398,22 @@ namespace CustomTokens
         /// <param name="args">The command arguments</param>
         private void Tracker(string command, string[] args)
         {
-            string Quests(ArrayList collection)
-            {
-                StringBuilder questsasstring = new StringBuilder("None");
-
-                // Remove default string if array isn't empty
-                if (collection.Count > 0)
-                {
-                    questsasstring.Remove(0, 4);
-                }
-
-                // Add each quest id to string
-                foreach (var quest in collection)
-                {
-                    questsasstring.Append($", {quest}");
-
-                    // Remove whitespace and comma if id is the first in the array
-                    if (collection.IndexOf(quest) == 0)
-                    {
-                        questsasstring.Remove(0, 2);
-                    }
-                }
-
-                return questsasstring.ToString();
-            }
-
-            try
-            {
-                // Display information in SMAPI console
-                this.Monitor.Log($"\n\nMineLevel: {ModEntry.perScreen.Value.CurrentMineLevel}" +
-                    $"\nVolcanoFloor: {ModEntry.perScreen.Value.CurrentVolcanoFloor}" +
-                    $"\nYearsMarried: {ModEntry.perScreen.Value.CurrentYearsMarried}" +                    
-                    $"\nAnniversaryDay: {ModEntry.perScreen.Value.AnniversaryDay}" +
-                    $"\nAnniversarySeason: {ModEntry.perScreen.Value.AnniversarySeason}" +
-                    $"\nQuestIDsCompleted: {Quests(ModEntry.perScreen.Value.QuestsCompleted)}" +
-                    $"\nSOKeysCompleted: {Quests(ModEntry.perScreen.Value.SpecialOrdersCompleted)}" +
-                    $"\nSOCompleted: {ModEntry.perScreen.Value.SpecialOrdersCompleted.Count}" +
-                    $"\nQuestsCompleted: {Game1.stats.questsCompleted}" +
-                    $"\nDeathCount: {Game1.stats.timesUnconscious}" +
-                    $"\nDeathCountMarried: {PlayerDataToWrite.DeathCountMarried}" +
-                    $"\nDeathCountPK: {(Game1.player.isMarried() ? Game1.stats.timesUnconscious + 1 : 0)}" +
-                    $"\nDeathCountMarriedPK: {(Game1.player.isMarried() ? PlayerDataToWrite.DeathCountMarried + 1 : 0)}" +
-                    $"\nPassOutCount: {PlayerDataToWrite.PassOutCount}", LogLevel.Info);
-            }
-            catch(Exception ex)
-            {
-                // Throw an exception if command failed to execute
-                throw new Exception("Command failed somehow", ex);
-            }
-            
+            TrackerCommand.DisplayInfo(this.Monitor, ModEntry.perScreen, ModEntry.PlayerDataToWrite);
         }
+
         /// <summary>Raised after the game state is updated (≈60 times per second).</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
         private void UpdateTicked(object sender, UpdateTickedEventArgs e)
-        {
-            var order = Game1.player.team.completedSpecialOrders;
-
-            // Update tracker if player died, is married and tracker should update
-            if (Game1.killScreen == true && Game1.player.isMarried() == true && updatedeath == true)
-            {
-                // Increment tracker
-                PlayerDataToWrite.DeathCountMarried++;
-
-                // Already updated, ensures tracker won't repeatedly increment
-                updatedeath = false;
-
-                // Display trace information in SMAPI log
-                if(this.config.ResetDeathCountMarriedWhenDivorced == true)
-                {
-                    this.Monitor.Log($"{Game1.player.Name} has died {PlayerDataToWrite.DeathCountMarried} time(s) since last marriage.");
-                }
-                else
-                {
-                    this.Monitor.Log($"{Game1.player.Name} has died {PlayerDataToWrite.DeathCountMarried} time(s) whilst married.");
-                }
-
-                // Save any data to JSON file
-                this.Helper.Data.WriteJsonFile<PlayerDataToWrite>($"data\\{Constants.SaveFolderName}.json", ModEntry.PlayerDataToWrite);
-            }
-
-            else if(Game1.killScreen == false && updatedeath == false)
-            {
-                // Tracker should be updated next death
-                updatedeath = true;
-            }
-
-            // Has player passed out?
-            else if(updatepassout == true && (Game1.timeOfDay == 2600 || Game1.player.stamina <= -15))
-            {
-                // Yes, update tracker
-
-                // Increment tracker
-                PlayerDataToWrite.PassOutCount++;
-                // Already updated, ensures tracker won't repeatedly increment
-                updatepassout = false;
-
-                // Display trace information in SMAPI log
-                if (PlayerDataToWrite.PassOutCount > 20)
-                {
-                    this.Monitor.Log($"{Game1.player.Name} has passed out {PlayerDataToWrite.PassOutCount} time(s). Maybe you should go to bed earlier.");
-                }
-                else
-                {
-                    this.Monitor.Log($"{Game1.player.Name} has passed out {PlayerDataToWrite.PassOutCount} time(s).");
-                }
-
-            }
-
-            else if (Game1.timeOfDay == 2610 && updatepassout == false)
-            {
-                // Decrement tracker, player can stay up later
-                PlayerDataToWrite.PassOutCount--;
-                // Already updated, ensures tracker won't repeatedly decrement
-                updatepassout = true;
-                // Display trace information in SMAPI log
-                this.Monitor.Log($"Nevermind, {Game1.player.Name} has actually passed out {PlayerDataToWrite.PassOutCount} time(s). Aren't you getting tired?");
-            }
+        {          
+            DeathAndExhaustionTokens.UpdateDeathAndExhaustionTokens(this.Helper, this.Monitor, ModEntry.PlayerDataToWrite, this.config);
 
             // Check for new added quests
             QuestData.UpdateQuestLog();
             // Check if any quests have been completed
             QuestData.CheckForCompletedQuests(ModEntry.perScreen, ModEntry.PlayerDataToWrite, this.Monitor);
-            
-            // Check for completed special orders
-            if (ModEntry.perScreen.Value.SpecialOrdersCompleted.Count < order.Count())
-            {
-                foreach (string questkey in new List<string>(order.Keys))
-                {
-
-                    if (ModEntry.perScreen.Value.SpecialOrdersCompleted.Contains(questkey) == false)
-                    {
-                        ModEntry.perScreen.Value.SpecialOrdersCompleted.Add(questkey);
-                        this.Monitor.Log($"Special Order with key {questkey} has been completed");
-                    }
-                }
-            }
+            // Check if any special orders have been completed
+            QuestData.CheckForCompletedSpecialOrders(ModEntry.perScreen, this.Monitor);
 
         }
 

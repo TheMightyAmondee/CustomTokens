@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using StardewValley.Quests;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
@@ -11,7 +12,7 @@ namespace CustomTokens
         public ArrayList QuestlogidsOld = new ArrayList();
 
         public ArrayList QuestlogidsNew = new ArrayList();
-        public void AddCompletedQuests(PerScreen<PlayerData> data, PlayerDataToWrite datatowrite)
+        internal void AddCompletedQuests(PerScreen<PlayerData> data, PlayerDataToWrite datatowrite)
         {            
             var questlog = Game1.player.questLog;
 
@@ -236,7 +237,7 @@ namespace CustomTokens
         /// <param name="data">Where to save data</param>
         /// <param name="datatowrite">Where to write data that will be written</param>
         /// <param name="monitor">Provides access to the SMAPI monitor</param>
-        public void CheckForCompletedQuests(PerScreen<PlayerData> data, PlayerDataToWrite datatowrite, IMonitor monitor)
+        internal void CheckForCompletedQuests(PerScreen<PlayerData> data, PlayerDataToWrite datatowrite, IMonitor monitor)
         {
             // Clear QuestlogidsNew array
             QuestlogidsNew.Clear();
@@ -313,6 +314,24 @@ namespace CustomTokens
             {
                 QuestlogidsOld.Remove(128);
             }
+        }
+        internal void CheckForCompletedSpecialOrders(PerScreen<PlayerData> data, IMonitor monitor)
+        {
+            var order = Game1.player.team.completedSpecialOrders;
+
+            // Check for completed special orders
+            if (data.Value.SpecialOrdersCompleted.Count < order.Count())
+            {
+                foreach (string questkey in new List<string>(order.Keys))
+                {
+                    if (data.Value.SpecialOrdersCompleted.Contains(questkey) == false)
+                    {
+                        data.Value.SpecialOrdersCompleted.Add(questkey);
+                        monitor.Log($"Special Order with key {questkey} has been completed");
+                    }
+                }
+            }
+
         }
     }
 
