@@ -143,7 +143,7 @@ namespace CustomTokens
             // Errand for your wife quest
             EventQuest(126, 3917601);
 
-            // Hayley's cake-walk quest
+            // Haley's cake-walk quest
             EventQuest(127, 6184644);
 
             
