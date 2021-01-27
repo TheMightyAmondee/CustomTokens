@@ -145,7 +145,6 @@ namespace CustomTokens
 
             // Haley's cake-walk quest
             EventQuest(127, 6184644);
-
             
             if (true
                 /* 
@@ -349,7 +348,6 @@ namespace CustomTokens
                     }
                 }
             }
-
         }
     }
 

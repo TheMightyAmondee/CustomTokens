@@ -45,7 +45,7 @@ namespace CustomTokens
                     $"\nAnniversaryDay: {data.Value.AnniversaryDay}" +
                     $"\nAnniversarySeason: {data.Value.AnniversarySeason}" +
                     $"\nQuestIDsCompleted: {Quests(data.Value.QuestsCompleted)}" +
-                    $"\nSOKeysCompleted: {Quests(data.Value.SpecialOrdersCompleted)}" +
+                    $"\nSOIDsCompleted: {Quests(data.Value.SpecialOrdersCompleted)}" +
                     $"\nSOCompleted: {data.Value.SpecialOrdersCompleted.Count}" +
                     $"\nQuestsCompleted: {Game1.stats.questsCompleted}" +
                     $"\nDeathCount: {Game1.stats.timesUnconscious}" +

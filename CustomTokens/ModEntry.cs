@@ -319,7 +319,7 @@ namespace CustomTokens
             // Register "SONamesCompleted" token
             api.RegisterToken(
                this.ModManifest,
-               "SOKeysCompleted",
+               "SOIDsCompleted",
                () =>
                {
                    if (Context.IsWorldReady)
