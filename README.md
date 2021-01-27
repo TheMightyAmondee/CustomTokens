@@ -21,13 +21,19 @@ Custom Tokens is a mod that provides some basic additional tokens for Content Pa
 - Ensure Custom Tokens is listed as a dependency in your content pack
 - Tokens used must be prefixed with the mod's unique ID e.g TheMightyAmondee.CustomTokens/MineLevel
 - Many tokens require an update rate faster than CP's default as they can change throughout the day
-- A per-save JSON file will be generated after the day is started for each save so the mod can track values not tracked by the game. These can be adjusted as needed as they will have an initial value of 0, which may not be accurate for older saves. Ensure the old tracker value is also updated to the same value as the current tracker value when changing values
-- While the mod can determine whether most quests have been completed, some quest ids from previously completed quests in old save files need to be added manually to the save's JSON file in AdditionalQuestsCompleted. Custom quest ids can also be added here. The field should look something like this "AdditionalQuestsCompleted": [6,16,128,130] depending on what quests have previously been completed.
+
+### Getting old save files up to speed:
+Old or current save files require some additional set-up. This isn't strictly necessary but may result in incorrect token values.
+
+A per-save JSON file will be generated after the day is started for each save so the mod can track values not tracked by the game. These can be adjusted as needed as they will have an initial value of 0, which may not be accurate for older saves. Ensure the old tracker value is also updated to the same value as the current tracker value when changing values
+ 
+While the mod can determine whether most quests have been completed, some quest ids from previously completed quests in old save files need to be added manually to the save's JSON file in AdditionalQuestsCompleted. Custom quest ids can also be added here. The field should look something like this "AdditionalQuestsCompleted": [6,16,128,130] depending on what quests have previously been completed.
   - If you have completed "Getting Started", add 6
   - If you have entered the Adventurer's Guild, add 16
   - If you have done secret note 25 (Abigail), add 128
   - If you have done secret note 25 (Caroline), add 129
   - If you have finished "The Pirate's Wife", add 130
+
   
 
 ### Config:
