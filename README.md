@@ -9,7 +9,7 @@ Custom Tokens is a mod that provides some basic additional tokens for Content Pa
 - QuestIDsCompleted, a list of quest ids that the player has completed
 - QuestsCompleted, the total number of quests completed
 - SOKeysCompleted, a list of the special orders a player has completed. See Special order data for how to interpret return values
-- SOCompleted, total number of special orders completed
+- SOCompleted, total number different of special orders completed
 - DeathCount
 - DeathCountMarried, an extension of DeathCount that tracks how many times a player has died after being married.
 - DeathCountPK, (provides a more accurate value than the DeathCount token for use in the PlayerKilled event)
@@ -22,13 +22,13 @@ Custom Tokens is a mod that provides some basic additional tokens for Content Pa
 - Tokens used must be prefixed with the mod's unique ID e.g TheMightyAmondee.CustomTokens/MineLevel
 - Many tokens require an update rate faster than CP's default as they can change throughout the day
 - A per-save JSON file will be generated after the day is started for each save so the mod can track values not tracked by the game. These can be adjusted as needed as they will have an initial value of 0, which may not be accurate for older saves. Ensure the old tracker value is also updated to the same value as the current tracker value when changing values
-- While the mod can determine whether most quests have been completed, some quest ids from previously completed quests in old save files need to be added manually to the save's JSON file in AdditionalQuestsCompleted. Custom quest ids can also be added here
+- While the mod can determine whether most quests have been completed, some quest ids from previously completed quests in old save files need to be added manually to the save's JSON file in AdditionalQuestsCompleted. Custom quest ids can also be added here. The field should look something like this "AdditionalQuestsCompleted": [6,16,128,130] depending on what quests have previously been completed.
   - If you have completed "Getting Started", add 6
-  - If you have completed "Initiation" and entered the Adventurer's Guild, add 16
-  - If you have completed the first part of "The Mysterious Mr. Qi" (battery pack in tunnel), add 2
-  - If you have given the ornate necklace to Abigail, add 128
-  - If you have given the ornate necklace to Caroline, add 129
+  - If you have entered the Adventurer's Guild, add 16
+  - If you have done secret note 25 (Abigail), add 128
+  - If you have done secret note 25 (Caroline), add 129
   - If you have finished "The Pirate's Wife", add 130
+  
 
 ### Config:
 - AllowDebugging adds a single debug command so the values of the tokens can be viewed in the SMAPI console. When enabled typing "tracker" in the console will display a list of token values
@@ -44,8 +44,8 @@ AnniversarySeason | No season | The season the player was married in | Value is 
 Years Married | 0 | The number of years the player has been married for
 QuestIDsCompleted | None | A list of quest ids that the player has completed | Only records quests with ids as specified in the Quests.xnb
 QuestsCompleted | 0 | The total number of quests completed | Includes quests with no ids e.g Bulletin board quests
-SOKeysCompleted | None | A list of the special orders a player has completed 
-SOCompleted | 0 | Total number of special orders completed
+SOKeysCompleted | None | A list of the special orders a player has completed | Repeating the same order will not add the key to the token again 
+SOCompleted | 0 | Total number of different special orders completed | Only tracks different orders, won't include repeated orders
 DeathCount | 0 | The number of deaths
 DeathCountPK | 0 | Value is DeathCount + 1 when save is loaded |Because there are limits on the update rate of tokens in CP, this token can be used as a more accurate snapshot of DeathCount in some cases, mainly the PlayerKilled event
 DeathCountMarried | 0 | The number of deaths that occur when the player is married
