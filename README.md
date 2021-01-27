@@ -59,7 +59,7 @@ DeathCountMarriedPK | 0 | Value is DeathCountMarried + 1 when married | Because 
 PassOutCount | 0 | The number of times the player has passed out, either from exhaustion or it reaching 2AM
 
 ### Special Order data
-Since Special Orders don't have an id like quests they are recorded in the save file using a unique key as shown in the table below. The mod will return this unique key for each Special Order completed in the SOKeysCompleted token
+Since Special Orders don't have a number id like quests they are recorded in the save file using a unique string as shown in the table below. The mod will return this unique string as an ID for each Special Order completed in the SOKeysCompleted token
 
 ID | Special Order Name
 ----|------------------
