@@ -147,25 +147,34 @@ namespace CustomTokens
             EventQuest(127, 6184644);
 
             
-            if(questdata.Contains(2) == false && (QuestlogidsNew.Contains(3) == true || QuestlogidsNew.Contains(4) == true || QuestlogidsNew.Contains(5) == true || Game1.player.hasClubCard == true))
+            if(true
+                /* 
+                Any quest from The mysterious Mr. Qi questline present in the questlog or if the player has the clubcard
+                indicates that quest with id 2 has been completed 
+                */
+                && questdata.Contains(2) == false 
+                && (false 
+                || QuestlogidsNew.Contains(3) == true 
+                || QuestlogidsNew.Contains(4) == true 
+                || QuestlogidsNew.Contains(5) == true 
+                || Game1.player.hasClubCard == true))
             {
                 questdata.Add(2);
             }
 
-            // The mysterious Mr. Qi quests, 2 needs to be added manually for old saves
+            // The mysterious Mr. Qi quests
             QuestPreReq(3, 2);
             QuestPreReq(4, 3);
             QuestPreReq(5, 4);
-
 
             // Cryptic note quest
             NoteQuest(30, 10);
 
             // Strange note quest
-            NoteQuest(29, 23);
+            EventQuest(29, 2120303);
 
             // A winter mystery quest (Is the figure Krobus? You decide.)
-            EventQuest(31, 2120303);
+            EventQuest(31, 520702);
 
             // Marnie's request quest
             EventQuest(21, 92);
@@ -300,7 +309,6 @@ namespace CustomTokens
                     if (true
                        && (false
                        // If these quests are completed, add it to PlayerDataToWrite if it isn't already an element
-                       //|| questid == 2
                        || questid == 16
                        || questid == 128
                        || questid == 129
