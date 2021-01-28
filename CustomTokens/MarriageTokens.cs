@@ -7,6 +7,7 @@ namespace CustomTokens
 {
     public class MarriageTokens
     {
+
         internal void UpdateMarriageTokens(IMonitor monitor, PerScreen<PlayerData> data, PlayerDataToWrite datatowrite, ModConfig config)
         {
             // Get days married

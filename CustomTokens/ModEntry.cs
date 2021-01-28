@@ -316,7 +316,7 @@ namespace CustomTokens
                    return null;
                });
 
-            // Register "SONamesCompleted" token
+            // Register "SOIDsCompleted" token
             api.RegisterToken(
                this.ModManifest,
                "SOIDsCompleted",
@@ -362,6 +362,7 @@ namespace CustomTokens
                });
 
         }
+
         /// <summary>The method called after a new day starts.</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
@@ -376,7 +377,6 @@ namespace CustomTokens
 
             MarriageTokens.UpdateMarriageTokens(this.Monitor, ModEntry.perScreen, ModEntry.PlayerDataToWrite, this.config);
            
-            QuestData.CheckForCompletedQuests(ModEntry.perScreen, ModEntry.PlayerDataToWrite, this.Monitor);
             QuestData.AddCompletedQuests(ModEntry.perScreen, ModEntry.PlayerDataToWrite);
             this.Monitor.Log("Determining previously completed quests... As best as I can");
 

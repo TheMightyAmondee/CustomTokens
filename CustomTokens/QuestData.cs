@@ -12,6 +12,7 @@ namespace CustomTokens
         public ArrayList QuestlogidsOld = new ArrayList();
 
         public ArrayList QuestlogidsNew = new ArrayList();
+
         internal void AddCompletedQuests(PerScreen<PlayerData> data, PlayerDataToWrite datatowrite)
         {            
             var questlog = Game1.player.questLog;
@@ -316,8 +317,7 @@ namespace CustomTokens
                     {
                         datatowrite.AdditionalQuestsCompleted.Add(questid);
                     }
-                }
-                
+                }               
             }
 
             // Necklace given to Abigail, remove alternate quest so it won't be marked as completed
@@ -332,6 +332,7 @@ namespace CustomTokens
                 QuestlogidsOld.Remove(128);
             }
         }
+
         internal void CheckForCompletedSpecialOrders(PerScreen<PlayerData> data, IMonitor monitor)
         {
             var order = Game1.player.team.completedSpecialOrders;

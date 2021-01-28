@@ -8,6 +8,7 @@ namespace CustomTokens
 {
     public class LocationTokens
     {
+
         internal void UpdateLoactionTokens(IMonitor monitor, PerScreen<PlayerData> data)
         {
             // Get current location as a MineShaft

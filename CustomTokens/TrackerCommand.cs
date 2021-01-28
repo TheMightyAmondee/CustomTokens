@@ -9,8 +9,10 @@ namespace CustomTokens
 {
     public class TrackerCommand
     {
+
         internal void DisplayInfo(IMonitor monitor, PerScreen<PlayerData> data, PlayerDataToWrite datatowrite)
         {
+
             string Quests(ArrayList collection)
             {
                 StringBuilder questsasstring = new StringBuilder("None");
