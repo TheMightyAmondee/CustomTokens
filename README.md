@@ -5,12 +5,12 @@ Custom Tokens is a mod that provides some basic additional tokens for Content Pa
 - MineLevel the player is currently on
 - VolcanoFloor the player is currently on
 - Anniversary of the player, split into two tokens, AnniversaryDay and AnniversarySeason
-- YearsMarried
+- YearsMarried, total number of years married
 - QuestIDsCompleted, a list of quest ids that the player has completed
 - QuestsCompleted, the total number of quests completed
-- SOIDsCompleted, a list of the special orders a player has completed. See Special order data for how to interpret return values
-- SOCompleted, total number different of special orders completed
-- DeathCount
+- SOIDsCompleted, a list of the special orders a player has completed. See Special Order data for how to interpret return values
+- SOCompleted, total number of different special orders completed
+- DeathCount, total number of times the player has died
 - DeathCountMarried, an extension of DeathCount that tracks how many times a player has died after being married.
 - DeathCountPK, (provides a more accurate value than the DeathCount token for use in the PlayerKilled event)
 - DeathCountMarriedPK, an extension of DeathCountPK that tracks how many times a player has died after being married.
