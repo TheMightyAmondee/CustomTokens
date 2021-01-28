@@ -25,7 +25,7 @@ Custom Tokens is a mod that provides some basic additional tokens for Content Pa
 ### Getting old save files up to speed:
 Old or current save files require some additional set-up. This isn't strictly necessary but may result in incorrect token values.
 
-A per-save JSON file will be generated after the day is started for each save so the mod can track values not tracked by the game. These can be adjusted as needed as they will have an initial value of 0, which may not be accurate for older saves. Ensure the old tracker value is also updated to the same value as the current tracker value when changing values
+A per-save JSON file will be generated after the day is started for each save so the mod can track values not tracked by the game. This is found in the data folder located in the mod folder. These values can be adjusted as needed as they will have an initial value of 0, which may not be accurate for older saves. Ensure the old tracker value is also updated to the same value as the current tracker value when changing values
  
 While the mod can determine whether most quests have been completed, some quest ids from previously completed quests in old save files need to be added manually to the save's JSON file in AdditionalQuestsCompleted. Custom quest ids can also be added here. The field should look something like this "AdditionalQuestsCompleted": [6,16,128,130] depending on what quests have previously been completed.
   - If you have completed "Getting Started", add 6
@@ -35,13 +35,12 @@ While the mod can determine whether most quests have been completed, some quest 
   - If you have finished "The Pirate's Wife", add 130
 
   
-
 ### Config:
-- AllowDebugging adds a single debug command so the values of the tokens can be viewed in the SMAPI console. When enabled typing "tracker" in the console will display a list of token values
+- AllowDebugging adds a single debug command so the values of the tokens can be viewed in the SMAPI console. When enabled typing "tracker" in the console will display a list of token values, this does not indicate whether CP has updated the token to this value. Use patch summary for that.
 - ResetDeathCountMarriedWhenDivorced will cause the DeathCountMarried token to reset to 0 when divorced, default is true.
 
 ### Tokens in more detail:
-Token | default value | What it tracks | Notes 
+Token | Default value | What it tracks | Notes 
 ----- | ------------- | -------------- | ------
 Minelevel | 0 | Players current minelevel | Add 120 to Skull Cavern floors for token value. The quarry mine has a minelevel of 77377
 VolcanoFloor | 0 | Players current floor in the Volcano Dungeon
