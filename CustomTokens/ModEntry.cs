@@ -81,6 +81,25 @@ namespace CustomTokens
                     return null;
                 });
 
+            // Register "DeepestMineLevel" token
+            api.RegisterToken(
+                this.ModManifest,
+                "DeepestMineLevel",
+                () =>
+                {
+                    if (Context.IsWorldReady)
+                    {
+                        var deepestMineLevel = ModEntry.perScreen.Value.DeepestMineLevel;
+
+                        return new[]
+                        {
+                            deepestMineLevel.ToString()
+                        };
+                    }
+
+                    return null;
+                });
+
             // Register "VolcanoFloor" token
             api.RegisterToken(
                 this.ModManifest,
@@ -370,6 +389,8 @@ namespace CustomTokens
         {
             // Read JSON file and create if needed
             PlayerDataToWrite = this.Helper.Data.ReadJsonFile<PlayerDataToWrite>($"data\\{Constants.SaveFolderName}.json") ?? new PlayerDataToWrite();
+
+            ModEntry.perScreen.Value.DeepestMineLevel = Game1.player.deepestMineLevel;
 
             DeathAndExhaustionTokens.updatepassout = true;
             DeathAndExhaustionTokens.updatedeath = true;

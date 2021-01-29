@@ -35,8 +35,9 @@ namespace CustomTokens
                     monitor.Log($"{Game1.player.Name} on level {mineShaft.mineLevel} (level {mineShaft.mineLevel - 120} of the Skull Cavern).");
                 }
 
-                // Update tracker
+                // Update trackers
                 data.Value.CurrentMineLevel = mineShaft.mineLevel;
+                data.Value.DeepestMineLevel = Game1.player.deepestMineLevel;
             }
 
             else
