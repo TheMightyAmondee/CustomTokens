@@ -37,7 +37,9 @@ namespace CustomTokens
 
                 // Update trackers
                 data.Value.CurrentMineLevel = mineShaft.mineLevel;
+
                 data.Value.DeepestMineLevel = Game1.player.deepestMineLevel;
+                monitor.Log($"Deepest mine level reached by {Game1.player.Name} is {data.Value.DeepestMineLevel}");
             }
 
             else
