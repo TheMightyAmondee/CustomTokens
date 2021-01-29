@@ -43,6 +43,7 @@ namespace CustomTokens
                 // Display information in SMAPI console
                 monitor.Log($"\n\nMineLevel: {data.Value.CurrentMineLevel}" +
                     $"\nVolcanoFloor: {data.Value.CurrentVolcanoFloor}" +
+                    $"\nDeepestMineLevel: {data.Value.DeepestMineLevel}" +
                     $"\nYearsMarried: {data.Value.CurrentYearsMarried}" +
                     $"\nAnniversaryDay: {data.Value.AnniversaryDay}" +
                     $"\nAnniversarySeason: {data.Value.AnniversarySeason}" +
