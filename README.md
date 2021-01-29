@@ -4,6 +4,7 @@ Custom Tokens is a mod that provides some basic additional tokens for Content Pa
 ### Custom Tokens registers the following tokens:
 - MineLevel the player is currently on
 - VolcanoFloor the player is currently on
+- DeepestMineLevel, the deepest minelevel the player has reached
 - Anniversary of the player, split into two tokens, AnniversaryDay and AnniversarySeason
 - YearsMarried, total number of years married
 - QuestIDsCompleted, a list of quest ids that the player has completed
@@ -44,6 +45,7 @@ Token | Default value | What it tracks | Notes
 ----- | ------------- | -------------- | ------
 Minelevel | 0 | Players current minelevel | Add 120 to Skull Cavern floors for token value. The quarry mine has a minelevel of 77377
 VolcanoFloor | 0 | Players current floor in the Volcano Dungeon
+DeepestMineLevel | 0 | The deepest minelevel the player has reached | Skull Cavern floors included
 AnniversaryDay | 0 | The day the player was married on
 AnniversarySeason | No season | The season the player was married in | Value is in all lower-case
 Years Married | 0 | The number of years the player has been married for
