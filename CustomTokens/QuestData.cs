@@ -293,6 +293,11 @@ namespace CustomTokens
                 {
                     QuestlogidsNew.Add(quest.id.Value);
                 }
+
+                else if(quest.destroy.Value == true)
+                {
+                    QuestlogidsOld.Remove(quest.id.Value);
+                }
             }
 
             // Check for completed quests with no rewards by comparing two arrays
