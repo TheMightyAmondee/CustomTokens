@@ -32,6 +32,8 @@ namespace CustomTokens
 
         private static readonly PerScreen<PlayerData> perScreen = new PerScreen<PlayerData>(createNewState: () => PlayerData);
 
+        private static readonly string[] tokens = { "DeathCountMarried", "PassOutCount", "QuestsCompleted" };
+
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
@@ -40,7 +42,7 @@ namespace CustomTokens
             helper.Events.Player.Warped += this.LocationChange;
             helper.Events.GameLoop.GameLaunched += this.GameLaunched;
             helper.Events.GameLoop.UpdateTicked += this.UpdateTicked;
-            helper.Events.GameLoop.Saved += this.Saved;
+            helper.Events.GameLoop.Saving += this.Saving;
             helper.Events.GameLoop.ReturnedToTitle += this.Title;
             helper.Events.GameLoop.DayStarted += this.DayStarted;
 
@@ -387,8 +389,15 @@ namespace CustomTokens
         /// <param name="e">The event arguments.</param>
         private void DayStarted(object sender, DayStartedEventArgs e)
         {
+            foreach(var token in tokens)
+            {
+                if (!Game1.player.modData.ContainsKey($"{this.ModManifest.UniqueID}.{token}"))
+                {
+                    Game1.player.modData.Add($"{this.ModManifest.UniqueID}.{token}", "");
+                }
+            }
             // Read JSON file and create if needed
-            PlayerDataToWrite = this.Helper.Data.ReadJsonFile<PlayerDataToWrite>($"data\\{Constants.SaveFolderName}.json") ?? new PlayerDataToWrite();
+            //PlayerDataToWrite = this.Helper.Data.ReadJsonFile<PlayerDataToWrite>($"data\\{Constants.SaveFolderName}.json") ?? new PlayerDataToWrite();
 
             ModEntry.perScreen.Value.DeepestMineLevel = Game1.player.deepestMineLevel;
 
@@ -427,7 +436,7 @@ namespace CustomTokens
         /// <param name="e">The event arguments.</param>
         private void UpdateTicked(object sender, UpdateTickedEventArgs e)
         {          
-            DeathAndExhaustionTokens.UpdateDeathAndExhaustionTokens(this.Helper, this.Monitor, ModEntry.PlayerDataToWrite, this.config);
+            DeathAndExhaustionTokens.UpdateDeathAndExhaustionTokens(this.Helper, this.Monitor, ModEntry.PlayerData, this.config);
 
             // Check for new added quests
             QuestData.UpdateQuestLog();
@@ -442,15 +451,16 @@ namespace CustomTokens
         /// This is also raised for farmhands in multiplayer.</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-        private void Saved(object sender, SavedEventArgs e)
+        private void Saving(object sender, SavingEventArgs e)
         {
             // Update old tracker
-            PlayerDataToWrite.DeathCountMarriedOld = PlayerDataToWrite.DeathCountMarried;
-            this.Monitor.Log("Old death tracker updated for new day");
+            Game1.player.modData[$"{this.ModManifest.UniqueID}.DeathCountMarried"] = ModEntry.perScreen.Value.DeathCountMarried.ToString();
+            Game1.player.modData[$"{this.ModManifest.UniqueID}.PassOutCount"] = ModEntry.perScreen.Value.PassOutCount.ToString();
+            this.Monitor.Log("Death tracker updated for new day");
 
             // Save any data to JSON file
-            this.Monitor.Log("Writing data to JSON file");
-            this.Helper.Data.WriteJsonFile<PlayerDataToWrite>($"data\\{Constants.SaveFolderName}.json", ModEntry.PlayerDataToWrite);
+            //this.Monitor.Log("Writing data to JSON file");
+            //this.Helper.Data.WriteJsonFile<PlayerDataToWrite>($"data\\{Constants.SaveFolderName}.json", ModEntry.PlayerDataToWrite);
         }
 
         private void Title(object sender, ReturnedToTitleEventArgs e)
