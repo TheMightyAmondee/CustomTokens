@@ -13,11 +13,11 @@ namespace CustomTokens
 
         public ArrayList QuestlogidsNew = new ArrayList();
 
-        internal void AddCompletedQuests(PerScreen<PlayerData> data, PlayerDataToWrite datatowrite)
+        internal void AddCompletedQuests(PerScreen<PlayerData> data)
         {            
             var questlog = Game1.player.questLog;
 
-            var questdata = data.Value.QuestsCompleted;
+            //var questdata = data.Value.QuestsCompleted;
 
             // Get quests in questlog and add to an array temporarily for determining previously completed quests
             foreach (Quest quest in questlog)
@@ -25,6 +25,7 @@ namespace CustomTokens
                 QuestlogidsNew.Add(quest.id.Value);
             }
 
+            /*
             // Get additional quests completed, manually added quests
             foreach(long questid in datatowrite.AdditionalQuestsCompleted)
             {
@@ -148,10 +149,10 @@ namespace CustomTokens
             EventQuest(127, 6184644);
             
             if (true
-                /* 
+                 
                 Any quest from The mysterious Mr. Qi questline present in the questlog or if the player has the clubcard
                 indicates that quest with id 2 has been completed 
-                */
+                
                 && questdata.Contains(2) == false 
                 && (false 
                 || QuestlogidsNew.Contains(3) == true 
@@ -237,8 +238,9 @@ namespace CustomTokens
             // Sort array and clear temporary data
             questdata.Sort();
             QuestlogidsNew.Clear();
-
+        */
         }
+
 
         /// <summary>Updates quest log to add new quests, without removing previously held quests. Use to check completed quests with no reward.</summary>
         public void UpdateQuestLog()
@@ -268,24 +270,18 @@ namespace CustomTokens
             // Iterate through each active quest
             foreach (Quest quest in questlog)
             {              
-                // Is the quest complete?
+                // Is the quest complete?               
                 if (true
                     // Quest has an id
                     && quest.id != null
                     // Quest has been completed
-                    && quest.completed == true
+                    && (quest.completed == true || quest.destroy == true)
                     // Quest has not already been added to array list
                     && questdata.Contains(quest.id.Value) == false)
                 {
                     // Yes, add it to quest array if it hasn't been added already
                     questdata.Add(quest.id.Value);
                     monitor.Log($"Quest with id {quest.id.Value} has been completed");
-
-                    // If quest with id 6 is completed, add it to PlayerDataToWrite if it isn't already an element
-                    if (quest.id.Value == 6 && datatowrite.AdditionalQuestsCompleted.Contains(quest.id.Value) == false)
-                    {
-                        datatowrite.AdditionalQuestsCompleted.Add(quest.id.Value);
-                    }
                 }
 
                 // Add current quests to QuestlogidsNew
@@ -297,6 +293,7 @@ namespace CustomTokens
 
             // Check for completed quests with no rewards by comparing two arrays
 
+            /*
             // Iterate through each quest id recorded in QuestlogidsOld
             foreach (int questid in QuestlogidsOld)
             {
@@ -304,19 +301,7 @@ namespace CustomTokens
                 if (QuestlogidsNew.Contains(questid) == false && questdata.Contains(questid) == false)
                 {
                     questdata.Add(questid);
-                    monitor.Log($"Quest with id {questid} has been completed");                                       
-                   
-                    if (true
-                       && (false
-                       // If these quests are completed, add it to PlayerDataToWrite if it isn't already an element
-                       || questid == 16
-                       || questid == 128
-                       || questid == 129
-                       || questid == 130)
-                       && datatowrite.AdditionalQuestsCompleted.Contains(questid) == false)
-                    {
-                        datatowrite.AdditionalQuestsCompleted.Add(questid);
-                    }
+                    monitor.Log($"Quest with id {questid} has been completed");                                                         
                 }               
             }
 
@@ -331,6 +316,7 @@ namespace CustomTokens
             {
                 QuestlogidsOld.Remove(128);
             }
+            */
         }
 
         internal void CheckForCompletedSpecialOrders(PerScreen<PlayerData> data, IMonitor monitor)
