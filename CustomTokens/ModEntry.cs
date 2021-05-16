@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Text;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
@@ -22,15 +24,11 @@ namespace CustomTokens
         : Mod
     {
         internal ModConfig config;
-
-        public static PlayerData PlayerData { get; private set; } = new PlayerData();
-        internal static TrackerCommand TrackerCommand { get; private set; } = new TrackerCommand();
         internal static LocationTokens LocationTokens { get; private set; } = new LocationTokens();
         internal static DeathAndExhaustionTokens DeathAndExhaustionTokens { get; private set; } = new DeathAndExhaustionTokens();
-        internal static MarriageTokens MarriageTokens { get; private set; } = new MarriageTokens();
         internal static QuestData QuestData { get; private set; } = new QuestData();
 
-        public static readonly PerScreen<PlayerData> perScreen = new PerScreen<PlayerData>(createNewState: () => PlayerData);
+        public static readonly PerScreen<PlayerData> perScreen = new PerScreen<PlayerData>(createNewState: () => null);
 
         private static readonly string[] tokens = { "DeathCountMarried", "PassOutCount", "QuestsCompleted" };
 
@@ -52,7 +50,7 @@ namespace CustomTokens
             // Add debug command if AllowDebugging is true
             if (this.config.AllowDebugging == true)
             {
-                helper.ConsoleCommands.Add("tracker", "Displays the current tracked values", this.Tracker);
+                helper.ConsoleCommands.Add("tracker", "Displays the current tracked values", this.DisplayInfo);
             }
 
             var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
@@ -399,11 +397,10 @@ namespace CustomTokens
                 if (!Game1.player.modData.ContainsKey($"{this.ModManifest.UniqueID}.{token}"))
                 {
                     Game1.player.modData.Add($"{this.ModManifest.UniqueID}.{token}", "");
+                    this.Monitor.Log($"Added save data {this.ModManifest.UniqueID}.{token}");
                 }
             }
-            // Read JSON file and create if needed
-            //PlayerDataToWrite = this.Helper.Data.ReadJsonFile<PlayerDataToWrite>($"data\\{Constants.SaveFolderName}.json") ?? new PlayerDataToWrite();
-
+           
             string[] QuestsComplete = Game1.player.modData[$"{this.ModManifest.UniqueID}.QuestsCompleted"].Split('/');
 
             foreach(string questid in QuestsComplete)
@@ -419,8 +416,43 @@ namespace CustomTokens
             DeathAndExhaustionTokens.updatepassout = true;
             DeathAndExhaustionTokens.updatedeath = true;
             this.Monitor.Log($"Trackers set to update");
+           
+            // Get days married
+            int DaysMarried = Game1.player.GetDaysMarried();
+            float Years = DaysMarried / 112;
+            // Get years married
+            double YearsMarried = Math.Floor(Years);
+            // Get Anniversary date
+            var anniversary = SDate.Now().AddDays(-(DaysMarried - 1));
 
-            MarriageTokens.UpdateMarriageTokens(this.Monitor, ModEntry.perScreen, this.config);
+            // Set tokens for the start of the day
+            ModEntry.perScreen.Value.CurrentYearsMarried = Game1.player.isMarried() == true ? YearsMarried : 0;
+
+            ModEntry.perScreen.Value.AnniversarySeason = Game1.player.isMarried() == true ? anniversary.Season : "No season";
+
+            ModEntry.perScreen.Value.AnniversaryDay = Game1.player.isMarried() == true ? anniversary.Day : 0;
+
+            // Test if player is married
+            if (Game1.player.isMarried() is false)
+            {
+                // No, relevant trackers will use their default values
+
+                this.Monitor.Log($"{Game1.player.Name} is not married");
+
+                if (config.ResetDeathCountMarriedWhenDivorced == true && ModEntry.perScreen.Value.DeathCountMarried != 0)
+                {
+                    // Reset tracker if player is no longer married
+                    ModEntry.perScreen.Value.DeathCountMarried = 0;
+                }
+            }
+
+            // Yes, tokens exist
+            else
+            {
+                this.Monitor.Log($"{Game1.player.Name} has been married for {YearsMarried} year(s)");
+
+                this.Monitor.Log($"Anniversary is the {anniversary.Day} of {anniversary.Season}");
+            }
         }
 
         /// <summary>Raised after the current player moves to a new location.</summary>
@@ -431,20 +463,12 @@ namespace CustomTokens
             LocationTokens.UpdateLocationTokens(this.Monitor, ModEntry.perScreen);
         }
 
-        /// <summary>Raised when the tracker command is entered into the SMAPI console.</summary>
-        /// <param name="command">The command name (tracker)</param>
-        /// <param name="args">The command arguments</param>
-        private void Tracker(string command, string[] args)
-        {
-            TrackerCommand.DisplayInfo(this.Monitor, ModEntry.perScreen);
-        }
-
         /// <summary>Raised after the game state is updated (≈60 times per second).</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
         private void UpdateTicked(object sender, UpdateTickedEventArgs e)
         {          
-            DeathAndExhaustionTokens.UpdateDeathAndExhaustionTokens(this.Helper, this.Monitor, ModEntry.PlayerData, this.config);
+            DeathAndExhaustionTokens.UpdateDeathAndExhaustionTokens(this.Helper, this.Monitor, ModEntry.perScreen, this.config);
             // Check if any special orders have been completed
             QuestData.CheckForCompletedSpecialOrders(ModEntry.perScreen, this.Monitor);
 
@@ -492,6 +516,64 @@ namespace CustomTokens
                 ModEntry.perScreen.Value.QuestsCompleted.Clear();               
                 this.Monitor.Log("Clearing Quest data, ready for new save");
             }
+        }
+
+        /// <summary>Raised when the tracker command is entered into the SMAPI console.</summary>
+        /// <param name="command">The command name (tracker)</param>
+        /// <param name="args">The command arguments</param>
+        private void DisplayInfo(string command, string[] args)
+        {
+
+            string Quests(ArrayList collection)
+            {
+                StringBuilder questsasstring = new StringBuilder("None");
+
+                // Remove default string if array isn't empty
+                if (collection.Count > 0)
+                {
+                    questsasstring.Remove(0, 4);
+                }
+
+                // Add each quest id to string
+                foreach (var quest in collection)
+                {
+                    questsasstring.Append($", {quest}");
+
+                    // Remove whitespace and comma if id is the first in the array
+                    if (collection.IndexOf(quest) == 0)
+                    {
+                        questsasstring.Remove(0, 2);
+                    }
+                }
+
+                return questsasstring.ToString();
+            }
+
+            try
+            {
+                // Display information in SMAPI console
+                this.Monitor.Log($"\n\nMineLevel: {ModEntry.perScreen.Value.CurrentMineLevel}" +
+                    $"\nVolcanoFloor: {ModEntry.perScreen.Value.CurrentVolcanoFloor}" +
+                    $"\nDeepestMineLevel: {ModEntry.perScreen.Value.DeepestMineLevel}" +
+                    $"\nYearsMarried: {ModEntry.perScreen.Value.CurrentYearsMarried}" +
+                    $"\nAnniversaryDay: {ModEntry.perScreen.Value.AnniversaryDay}" +
+                    $"\nAnniversarySeason: {ModEntry.perScreen.Value.AnniversarySeason}" +
+                    $"\nQuestIDsCompleted: {Quests(ModEntry.perScreen.Value.QuestsCompleted)}" +
+                    $"\nSOIDsCompleted: {Quests(ModEntry.perScreen.Value.SpecialOrdersCompleted)}" +
+                    $"\nSOCompleted: {ModEntry.perScreen.Value.SpecialOrdersCompleted.Count}" +
+                    $"\nQuestsCompleted: {Game1.stats.questsCompleted}" +
+                    $"\nDeathCount: {Game1.stats.timesUnconscious}" +
+                    $"\nDeathCountMarried: {ModEntry.perScreen.Value.DeathCountMarried}" +
+                    $"\nDeathCountPK: {(Game1.player.isMarried() ? Game1.stats.timesUnconscious + 1 : 0)}" +
+                    $"\nDeathCountMarriedPK: {(Game1.player.isMarried() ? ModEntry.perScreen.Value.DeathCountMarried + 1 : 0)}" +
+                    $"\nPassOutCount: {ModEntry.perScreen.Value.PassOutCount}", LogLevel.Info);
+            }
+            catch (Exception ex)
+            {
+                // Throw an exception if command failed to execute
+                throw new Exception("Command failed somehow", ex);
+            }
+
         }
     }
 }
