@@ -10,7 +10,7 @@ namespace CustomTokens
     public class TrackerCommand
     {
 
-        internal void DisplayInfo(IMonitor monitor, PerScreen<PlayerData> data, PlayerDataToWrite datatowrite)
+        internal void DisplayInfo(IMonitor monitor, PerScreen<PlayerData> data)
         {
 
             string Quests(ArrayList collection)
@@ -52,10 +52,10 @@ namespace CustomTokens
                     $"\nSOCompleted: {data.Value.SpecialOrdersCompleted.Count}" +
                     $"\nQuestsCompleted: {Game1.stats.questsCompleted}" +
                     $"\nDeathCount: {Game1.stats.timesUnconscious}" +
-                    $"\nDeathCountMarried: {datatowrite.DeathCountMarried}" +
+                    $"\nDeathCountMarried: {ModEntry.perScreen.Value.DeathCountMarried}" +
                     $"\nDeathCountPK: {(Game1.player.isMarried() ? Game1.stats.timesUnconscious + 1 : 0)}" +
-                    $"\nDeathCountMarriedPK: {(Game1.player.isMarried() ? datatowrite.DeathCountMarried + 1 : 0)}" +
-                    $"\nPassOutCount: {datatowrite.PassOutCount}", LogLevel.Info);
+                    $"\nDeathCountMarriedPK: {(Game1.player.isMarried() ? ModEntry.perScreen.Value.DeathCountMarried + 1 : 0)}" +
+                    $"\nPassOutCount: {ModEntry.perScreen.Value.PassOutCount}", LogLevel.Info);
             }
             catch (Exception ex)
             {

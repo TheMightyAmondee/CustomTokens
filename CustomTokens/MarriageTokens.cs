@@ -8,7 +8,7 @@ namespace CustomTokens
     public class MarriageTokens
     {
 
-        internal void UpdateMarriageTokens(IMonitor monitor, PerScreen<PlayerData> data, PlayerDataToWrite datatowrite, ModConfig config)
+        internal void UpdateMarriageTokens(IMonitor monitor, PerScreen<PlayerData> data, ModConfig config)
         {
             // Get days married
             int DaysMarried = Game1.player.GetDaysMarried();
@@ -32,10 +32,10 @@ namespace CustomTokens
 
                 monitor.Log($"{Game1.player.Name} is not married");
 
-                if (config.ResetDeathCountMarriedWhenDivorced == true && datatowrite.DeathCountMarried != 0)
+                if (config.ResetDeathCountMarriedWhenDivorced == true && ModEntry.perScreen.Value.DeathCountMarried != 0)
                 {
                     // Reset tracker if player is no longer married
-                    datatowrite.DeathCountMarried = 0;
+                    ModEntry.perScreen.Value.DeathCountMarried = 0;
                 }
             }
 
@@ -45,13 +45,6 @@ namespace CustomTokens
                 monitor.Log($"{Game1.player.Name} has been married for {YearsMarried} year(s)");
 
                 monitor.Log($"Anniversary is the {anniversary.Day} of {anniversary.Season}");
-            }
-
-            // Fix death tracker
-            if (datatowrite.DeathCountMarriedOld < datatowrite.DeathCountMarried)
-            {
-                monitor.Log("Fixing tracker to discard unsaved data");
-                datatowrite.DeathCountMarried = datatowrite.DeathCountMarriedOld;
             }
         }
     }

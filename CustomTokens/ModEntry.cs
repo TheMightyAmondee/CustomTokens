@@ -4,6 +4,7 @@ using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using System.Collections.Generic;
+using Harmony;
 
 
 namespace CustomTokens
@@ -23,14 +24,13 @@ namespace CustomTokens
         internal ModConfig config;
 
         public static PlayerData PlayerData { get; private set; } = new PlayerData();
-        public static PlayerDataToWrite PlayerDataToWrite { get; private set; } = new PlayerDataToWrite();
         internal static TrackerCommand TrackerCommand { get; private set; } = new TrackerCommand();
         internal static LocationTokens LocationTokens { get; private set; } = new LocationTokens();
         internal static DeathAndExhaustionTokens DeathAndExhaustionTokens { get; private set; } = new DeathAndExhaustionTokens();
         internal static MarriageTokens MarriageTokens { get; private set; } = new MarriageTokens();
         internal static QuestData QuestData { get; private set; } = new QuestData();
 
-        private static readonly PerScreen<PlayerData> perScreen = new PerScreen<PlayerData>(createNewState: () => PlayerData);
+        public static readonly PerScreen<PlayerData> perScreen = new PerScreen<PlayerData>(createNewState: () => PlayerData);
 
         private static readonly string[] tokens = { "DeathCountMarried", "PassOutCount", "QuestsCompleted" };
 
@@ -54,6 +54,9 @@ namespace CustomTokens
             {
                 helper.ConsoleCommands.Add("tracker", "Displays the current tracked values", this.Tracker);
             }
+
+            var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
+            QuestData.Hook(harmony, this.Monitor);
         }
 
         /// <summary>Raised after the game is launched, right before the first update tick.</summary>
@@ -208,7 +211,7 @@ namespace CustomTokens
                        if (Context.IsWorldReady)
                        {
                            var currentdeathcountmarried = Game1.player.isMarried()
-                           ? PlayerDataToWrite.DeathCountMarried
+                           ? ModEntry.perScreen.Value.DeathCountMarried
                            : 0;
 
                            return new[]
@@ -258,7 +261,7 @@ namespace CustomTokens
                        Adding 1 to the value of that token ensures token value is correct when content is loaded for event
                        */
                            var currentdeathcountmarried = Game1.player.isMarried()
-                           ? PlayerDataToWrite.DeathCountMarried + 1
+                           ? ModEntry.perScreen.Value.DeathCountMarried + 1
                            : 0;
 
                            return new[]
@@ -279,7 +282,7 @@ namespace CustomTokens
                    {
                        if (Context.IsWorldReady)
                        {
-                           var currentpassoutcount = PlayerDataToWrite.PassOutCount;
+                           var currentpassoutcount = ModEntry.perScreen.Value.PassOutCount;
 
                            return new[]
                            {
@@ -318,22 +321,17 @@ namespace CustomTokens
                    () =>
                    {
                        if (Context.IsWorldReady)
-                       {
-                       /*
-                       Some previously completed quests still need to be added manually (6, 16, 128 or 129 and 130)
-                       */
+                       {                      
+                            // Create array with the length of the QuestsCompleted array list
+                            string[] questsdone = new string[ModEntry.perScreen.Value.QuestsCompleted.Count];
 
-                       // Create array with the length of the QuestsCompleted array list
-                       string[] questsdone = new string[ModEntry.perScreen.Value.QuestsCompleted.Count];
-
-                       // Set each value in new array to be the same as in QuestCompleted
-                       foreach (var quest in ModEntry.perScreen.Value.QuestsCompleted)
-                           {
-                               questsdone.SetValue(quest.ToString(), ModEntry.perScreen.Value.QuestsCompleted.IndexOf(quest));
-                           }
+                            // Set each value in new array to be the same as in QuestCompleted
+                            foreach (var quest in ModEntry.perScreen.Value.QuestsCompleted)
+                            {
+                                questsdone.SetValue(quest.ToString(), ModEntry.perScreen.Value.QuestsCompleted.IndexOf(quest));
+                            }
 
                            return questsdone;
-
                        }
 
                        return null;
@@ -422,16 +420,7 @@ namespace CustomTokens
             DeathAndExhaustionTokens.updatedeath = true;
             this.Monitor.Log($"Trackers set to update");
 
-            MarriageTokens.UpdateMarriageTokens(this.Monitor, ModEntry.perScreen, ModEntry.PlayerDataToWrite, this.config);
-
-            
-           
-            //QuestData.AddCompletedQuests(ModEntry.perScreen, ModEntry.PlayerDataToWrite);
-            //this.Monitor.Log("Determining previously completed quests... As best as I can");
-
-            // Save any data to JSON file
-            //this.Monitor.Log("Writing data to JSON file");
-            //this.Helper.Data.WriteJsonFile<PlayerDataToWrite>($"data\\{Constants.SaveFolderName}.json", ModEntry.PlayerDataToWrite);
+            MarriageTokens.UpdateMarriageTokens(this.Monitor, ModEntry.perScreen, this.config);
         }
 
         /// <summary>Raised after the current player moves to a new location.</summary>
@@ -439,7 +428,7 @@ namespace CustomTokens
         /// <param name="e">The event arguments.</param>
         private void LocationChange(object sender, WarpedEventArgs e)
         {
-            LocationTokens.UpdateLoactionTokens(this.Monitor, ModEntry.perScreen);
+            LocationTokens.UpdateLocationTokens(this.Monitor, ModEntry.perScreen);
         }
 
         /// <summary>Raised when the tracker command is entered into the SMAPI console.</summary>
@@ -447,7 +436,7 @@ namespace CustomTokens
         /// <param name="args">The command arguments</param>
         private void Tracker(string command, string[] args)
         {
-            TrackerCommand.DisplayInfo(this.Monitor, ModEntry.perScreen, ModEntry.PlayerDataToWrite);
+            TrackerCommand.DisplayInfo(this.Monitor, ModEntry.perScreen);
         }
 
         /// <summary>Raised after the game state is updated (≈60 times per second).</summary>
@@ -456,11 +445,6 @@ namespace CustomTokens
         private void UpdateTicked(object sender, UpdateTickedEventArgs e)
         {          
             DeathAndExhaustionTokens.UpdateDeathAndExhaustionTokens(this.Helper, this.Monitor, ModEntry.PlayerData, this.config);
-
-            // Check for new added quests
-            QuestData.UpdateQuestLog();
-            // Check if any quests have been completed
-            QuestData.CheckForCompletedQuests(ModEntry.perScreen, ModEntry.PlayerDataToWrite, this.Monitor);
             // Check if any special orders have been completed
             QuestData.CheckForCompletedSpecialOrders(ModEntry.perScreen, this.Monitor);
 
@@ -493,10 +477,6 @@ namespace CustomTokens
             Game1.player.modData[$"{this.ModManifest.UniqueID}.DeathCountMarried"] = ModEntry.perScreen.Value.DeathCountMarried.ToString();
             Game1.player.modData[$"{this.ModManifest.UniqueID}.PassOutCount"] = ModEntry.perScreen.Value.PassOutCount.ToString();
             this.Monitor.Log("Trackers updated for new day");
-
-            // Save any data to JSON file
-            //this.Monitor.Log("Writing data to JSON file");
-            //this.Helper.Data.WriteJsonFile<PlayerDataToWrite>($"data\\{Constants.SaveFolderName}.json", ModEntry.PlayerDataToWrite);
         }
 
         private void Title(object sender, ReturnedToTitleEventArgs e)
@@ -506,9 +486,6 @@ namespace CustomTokens
                 ModEntry.perScreen.Value.SpecialOrdersCompleted.Clear();
                 this.Monitor.Log("Clearing Special Order data, ready for new save");
             }
-
-            QuestData.QuestlogidsNew.Clear();
-            QuestData.QuestlogidsOld.Clear();
 
             if (ModEntry.perScreen.Value.QuestsCompleted.Count != 0)
             {

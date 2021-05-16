@@ -29,9 +29,6 @@ namespace CustomTokens
                 {
                     monitor.Log($"{Game1.player.Name} has died {data.DeathCountMarried} time(s) whilst married.");
                 }
-
-                // Save any data to JSON file
-                helper.Data.WriteJsonFile<PlayerDataToWrite>($"data\\{Constants.SaveFolderName}.json", ModEntry.PlayerDataToWrite);
             }
 
             else if (Game1.killScreen == false && updatedeath == false)
