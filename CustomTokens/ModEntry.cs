@@ -28,7 +28,7 @@ namespace CustomTokens
         internal static DeathAndExhaustionTokens DeathAndExhaustionTokens { get; private set; } = new DeathAndExhaustionTokens();
         internal static QuestData QuestData { get; private set; } = new QuestData();
 
-        public static readonly PerScreen<PlayerData> perScreen = new PerScreen<PlayerData>(createNewState: () => null);
+        public static readonly PerScreen<PlayerData> perScreen = new PerScreen<PlayerData>(createNewState: () => new PlayerData());
 
         private static readonly string[] tokens = { "DeathCountMarried", "PassOutCount", "QuestsCompleted" };
 
@@ -414,6 +414,12 @@ namespace CustomTokens
             }
 
             ModEntry.perScreen.Value.DeepestMineLevel = Game1.player.deepestMineLevel;
+            ModEntry.perScreen.Value.DeathCountMarried = Game1.player.modData[$"{this.ModManifest.UniqueID}.DeathCountMarried"] != "" 
+                ? int.Parse(Game1.player.modData[$"{this.ModManifest.UniqueID}.DeathCountMarried"]) 
+                : 0;
+            ModEntry.perScreen.Value.PassOutCount = Game1.player.modData[$"{this.ModManifest.UniqueID}.PassOutCount"] != "" 
+                ? int.Parse(Game1.player.modData[$"{this.ModManifest.UniqueID}.PassOutCount"])
+                : 0;
 
             // Reset booleans for new day
             DeathAndExhaustionTokens.updatepassout = true;
