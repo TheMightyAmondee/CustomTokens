@@ -392,6 +392,7 @@ namespace CustomTokens
         /// <param name="e">The event arguments.</param>
         private void DayStarted(object sender, DayStartedEventArgs e)
         {
+            // Add mod data to save file if needed
             foreach(var token in tokens)
             {
                 if (!Game1.player.modData.ContainsKey($"{this.ModManifest.UniqueID}.{token}"))
@@ -403,6 +404,7 @@ namespace CustomTokens
            
             string[] QuestsComplete = Game1.player.modData[$"{this.ModManifest.UniqueID}.QuestsCompleted"].Split('/');
 
+            // Add recorded completed quests from mod data in save file to player data
             foreach(string questid in QuestsComplete)
             {
                 if (questid != "" && ModEntry.perScreen.Value.QuestsCompleted.Contains(int.Parse(questid)) == false)
@@ -413,6 +415,7 @@ namespace CustomTokens
 
             ModEntry.perScreen.Value.DeepestMineLevel = Game1.player.deepestMineLevel;
 
+            // Reset booleans for new day
             DeathAndExhaustionTokens.updatepassout = true;
             DeathAndExhaustionTokens.updatedeath = true;
             this.Monitor.Log($"Trackers set to update");
@@ -460,6 +463,7 @@ namespace CustomTokens
         /// <param name="e">The event arguments.</param>
         private void LocationChange(object sender, WarpedEventArgs e)
         {
+            // Update location tokens if needed
             LocationTokens.UpdateLocationTokens(this.Monitor, ModEntry.perScreen);
         }
 
@@ -467,7 +471,8 @@ namespace CustomTokens
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
         private void UpdateTicked(object sender, UpdateTickedEventArgs e)
-        {          
+        {    
+            // Update death or pass out tokens if needed
             DeathAndExhaustionTokens.UpdateDeathAndExhaustionTokens(this.Helper, this.Monitor, ModEntry.perScreen, this.config);
             // Check if any special orders have been completed
             QuestData.CheckForCompletedSpecialOrders(ModEntry.perScreen, this.Monitor);
@@ -482,6 +487,7 @@ namespace CustomTokens
         {
             string[] QuestsComplete = Game1.player.modData[$"{this.ModManifest.UniqueID}.QuestsCompleted"].Split('/');
 
+            // Remove quests already in mod data so they aren't added again
             foreach(string questid in QuestsComplete)
             {
                 if(questid != "")
@@ -490,11 +496,13 @@ namespace CustomTokens
                 }
             }
 
+            // Add any newly completed quests to mod data
             foreach (int questid in ModEntry.perScreen.Value.QuestsCompleted)
             {
                 Game1.player.modData[$"{this.ModManifest.UniqueID}.QuestsCompleted"] = Game1.player.modData[$"{this.ModManifest.UniqueID}.QuestsCompleted"] + $"{questid}/";
             }
 
+            // Clear quest data for new day
             ModEntry.perScreen.Value.QuestsCompleted.Clear();
 
             // Update old tracker
@@ -503,6 +511,11 @@ namespace CustomTokens
             this.Monitor.Log("Trackers updated for new day");
         }
 
+        /// <summary>
+        /// Raised after the game returns to the title screen.
+        /// </summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="e">The event arguments.</param>
         private void Title(object sender, ReturnedToTitleEventArgs e)
         {
             if (ModEntry.perScreen.Value.SpecialOrdersCompleted.Count != 0)
