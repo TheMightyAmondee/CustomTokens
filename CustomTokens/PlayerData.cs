@@ -4,6 +4,8 @@ namespace CustomTokens
 {
     public class PlayerData
     {
+        public int DeathCountMarried { get; set; }
+        public int PassOutCount { get; set; }
         public int CurrentMineLevel { get; set; }
         public int DeepestMineLevel { get; set; }
         public int CurrentVolcanoFloor { get; set; }
