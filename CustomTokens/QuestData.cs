@@ -29,10 +29,10 @@ namespace CustomTokens
         {
             try
             {
-                if (!ModEntry.perScreen.Value.QuestsCompleted.Contains(__instance.id))
+                if (ModEntry.perScreen.Value.QuestsCompleted.Contains(__instance.id.Value) == false && __instance.id.Value != 0)
                 {
-                    ModEntry.perScreen.Value.QuestsCompleted.Add(__instance.id);
-                    monitor.Log($"Quest with id {__instance.id} has been completed");
+                    ModEntry.perScreen.Value.QuestsCompleted.Add(__instance.id.Value);
+                    monitor.Log($"Quest with id {__instance.id.Value} has been completed");
                 }
             }
             catch (Exception ex)
