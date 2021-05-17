@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using StardewValley.Quests;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
