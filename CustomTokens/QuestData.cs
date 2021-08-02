@@ -3,7 +3,7 @@ using StardewValley.Quests;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
-using Harmony;
+using HarmonyLib;
 using System;
 
 namespace CustomTokens
@@ -12,7 +12,7 @@ namespace CustomTokens
     {
         private static IMonitor monitor;
 
-        public static void Hook(HarmonyInstance harmony, IMonitor monitor)
+        public static void Hook(Harmony harmony, IMonitor monitor)
         {
             QuestData.monitor = monitor;
             monitor.Log("Initialising harmony patches...");
