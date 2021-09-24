@@ -16,7 +16,7 @@ namespace CustomTokens
         // Basic api
         void RegisterToken(IManifest mod, string name, Func<IEnumerable<string>> getValue);
 
-        // Advanced api, not currently used
+        // Advanced api
         void RegisterToken(IManifest mod, string name, object token);
     }
 
@@ -379,6 +379,29 @@ namespace CustomTokens
 
                        return null;
                    });
+
+                // Register "SOCompleted" token
+                api.RegisterToken(
+                   this.ModManifest,
+                   "SOCompleted",
+                   () =>
+                   {
+                       if (Context.IsWorldReady)
+                       {
+                           var totalspecialorderscompleted = ModEntry.perScreen.Value.SpecialOrdersCompleted.Count;
+
+                           return new[]
+                           {
+                           totalspecialorderscompleted.ToString()
+                           };
+
+                       }
+
+                       return null;
+                   });
+
+                // Register "Child" token
+                api.RegisterToken(this.ModManifest, "Child", new ChildTokens());
             }
             else
             {
