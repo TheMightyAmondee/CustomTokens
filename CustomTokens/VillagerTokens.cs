@@ -84,14 +84,11 @@ namespace CustomTokens
             string[] args = input.Split('|');
 
             string villagername = args[0].Substring(args[0].IndexOf('=') + 1).Trim().ToLower().Replace("villager", "").Replace(" ", "");
+            string villagerdata = args[1].Trim().ToLower().Replace("=", "");
 
-            foreach (var listdata in villagerdata)
+            if (TryGetValue(villagername, villagerdata, out string data) == true)
             {
-                if (TryGetValue(villagername, listdata, out string data) == true)
-                {
-                    output.Add(data);
-                }
-
+                output.Add(data);
             }
 
             return output;
@@ -106,38 +103,34 @@ namespace CustomTokens
             {
                 var villager = this.villagers[villagername];
 
-                foreach (var villagerdata in villagerdata)
-                {                    
-                    switch (data)
-                    {
-                        case "birthdayday":
-                            founddata = villager.Birthday_Day.ToString();
-                            found = true;
-                            break;
-                        case "birthdayseason":
-                            founddata = villager.Birthday_Season;
-                            found = true;
-                            break;
-                        case "age":
-                            founddata = villager.Age.ToString();
-                            found = true;
-                            break;
-                        case "manners":
-                            founddata = villager.Manners.ToString();
-                            found = true;
-                            break;
-                        case "optimism":
-                            founddata = villager.Optimism.ToString();
-                            found = true;
-                            break;
-                        case "gender":
-                            founddata = villager.Gender.ToString();
-                            found = true;
-                            break;
-                        default:
-                            break;
-                    }
-
+                switch (data)
+                {
+                    case "birthdayday":
+                        founddata = villager.Birthday_Day.ToString();
+                        found = true;
+                        break;
+                    case "birthdayseason":
+                        founddata = villager.Birthday_Season;
+                        found = true;
+                        break;
+                    case "age":
+                        founddata = villager.Age.ToString();
+                        found = true;
+                        break;
+                    case "manners":
+                        founddata = villager.Manners.ToString();
+                        found = true;
+                        break;
+                    case "optimism":
+                        founddata = villager.Optimism.ToString();
+                        found = true;
+                        break;
+                    case "gender":
+                        founddata = villager.Gender.ToString();
+                        found = true;
+                        break;
+                    default:
+                        break;
                 }
             }
             catch

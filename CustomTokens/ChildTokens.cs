@@ -8,55 +8,73 @@ using StardewModdingAPI.Events;
 using StardewValley.Characters;
 using StardewModdingAPI.Utilities;
 using StardewValley;
+using System.Reflection;
 
 namespace CustomTokens
 {
     class ChildTokens
         : BaseAdvancedToken
     {
-        private readonly List<NPC> children;
+        private readonly Dictionary<string, List<Child>>  children;
         private readonly List<string> childdata;
+        private readonly FieldInfo[] childfields;
 
         public ChildTokens()
         {
-
-            children = new List<NPC>(2);         
-            childdata = new List<string>() { "birthdayday", "birthdayseason", "age", "daysold"};
-        }
-
-        public override bool IsReady()
-        {
-            return  Context.IsWorldReady && this.children.Count > 0;
-        }
-
-        public override bool UpdateContext()
-        {
-            bool hasChanged = false;
-
-            if (Context.IsWorldReady)
+            children = new Dictionary<string, List<Child>>(StringComparer.OrdinalIgnoreCase)
             {
-                hasChanged = DidDataChange();
-            }
-
-            return hasChanged;
+                [host] = new List<Child>(),
+                [loc] = new List<Child>()
+            };       
+            childdata = new List<string>() { "birthdayday", "birthdayseason", "daysold"};
+            childfields = typeof(Child).GetFields();
         }
-
        
         public override bool TryValidateInput(string input, out string error)
         {
             error = "";
             string[] tokenarg = input.ToLower().Trim().Split('|');
 
-            if (tokenarg.Count() == 2)
+            if (tokenarg.Count() == 3)
             {
-                if (tokenarg[0].Contains("childindex=") == false)
+                if (tokenarg[0].Contains("player=") == false)
                 {
-                    error = "error 0";
-                }                
+                    error += "player argument not found";
+                }
+                else if (tokenarg[0].IndexOf('=') == tokenarg[0].Length - 1)
+                {
+                    error += "player argument not provided a value. Must be one of the following values: 'host', 'local'. ";
+                }
+                else
+                {
+                    string playerType = tokenarg[0].Substring(tokenarg[0].IndexOf('=') + 1).Trim().Replace("player", "");
 
-                else if (tokenarg[1].Contains("birthdayday") == false && tokenarg[1].Contains("birthdayseason") == false && tokenarg[1].Contains("age") == false && tokenarg[1].Contains("daysold") == false)
+                    if (playerType.Equals("host") == false && playerType.Equals("local") == false)
+                    {
+                        error += "player argument must be one of the following values: 'host', 'local'. ";
+                    }
+                }
+
+                if (tokenarg[1].Contains("childindex=") == false)
                 {
-                    error = "error 1";
+                    error += "childindex argument not found";
+                }
+                else if (tokenarg[0].IndexOf('=') == tokenarg[0].Length - 1)
+                {
+                    error += "childindex argument not provided a value.";
+                }
+                else
+                {
+                    string statArg = tokenarg[1].Substring(tokenarg[1].IndexOf('=') + 1);
+                    if (statArg.Any(ch => !char.IsLetterOrDigit(ch) && ch != ' '))
+                    {
+                        error += "childindex argument must be numeric";
+                    }
+                }
+
+                if (tokenarg[2].Contains("birthdayday") == false && tokenarg[2].Contains("birthdayseason") == false && tokenarg[2].Contains("daysold") == false)
+                {
+                    error += "unrecognised argument value at index 2. Must be one of 'birthdayday' 'birthdayseason' 'daysold'";
                 }
             }
 
@@ -79,61 +97,78 @@ namespace CustomTokens
 
             string[] args = input.Split('|');
 
-            int childindex = Convert.ToInt32(args[0].Substring(args[0].IndexOf('=') + 1).Trim().ToLower().Replace("childindex", "").Replace(" ", ""));
+            string playertype = args[0].Substring(args[0].IndexOf('=') + 1).Trim().ToLower().Replace("player", "").Replace(" ", "");
+            int childindex = Convert.ToInt32(args[1].Substring(args[1].IndexOf('=') + 1).Trim().ToLower().Replace("childindex", "").Replace(" ", ""));
+            string tokenvalue = args[2].Trim().ToLower().Replace("=","");          
 
-            foreach (var listdata in childdata)
+
+            if (playertype == "host")
             {
-                if (TryGetValue(childindex, listdata, out string data) == true)
+                bool found = TryGetValue(host, childindex, tokenvalue, out string hostdata);
+
+                if (found == true)
                 {
-                    output.Add(data);
+                    output.Add(hostdata);
                 }
-                
             }
-         
+
+            else if (playertype == "local")
+            {
+                bool found = TryGetValue(loc, childindex, tokenvalue, out string hostdata);
+
+                if (found == true)
+                {
+                    output.Add(hostdata);
+                }
+            }
+
             return output;
         }
 
-        private bool TryGetValue(int index,string data, out string founddata)
+        private bool TryGetValue(string playertype, int index, string token, out string founddata)
         {
             bool found = false;
             founddata = "";
 
-            try
+            if (Game1.IsMasterGame == true && playertype.Equals(loc) == true)
             {
-                var child = this.children.ElementAt(index);
+                playertype = host;
+            }
 
-                foreach (var childdata in childdata)
+            foreach (var child in this.children[playertype])
+            {
+                if (child.GetChildIndex() == index)
                 {
-                    var birthday = SDate.Now().AddDays(-(child as Child).daysOld - 1);
-                    switch (data)
+                    found = true;
+                    var birthday = SDate.Now().AddDays(-(child.daysOld - 1)) ?? SDate.Now();
+
+                    if (!System.Diagnostics.Debugger.IsAttached)
+                    {
+                        //System.Diagnostics.Debugger.Launch();
+                    }
+                   
+                    switch (token)
                     {
                         case "birthdayday":
                             founddata = birthday.Day.ToString();
-                            found = true;
                             break;
                         case "birthdayseason":
                             founddata = birthday.Season.ToString();
-                            found = true;
-                            break;
-                        case "age":
-                            founddata = (child as Child).Age.ToString();
-                            found = true;
                             break;
                         case "daysold":
-                            founddata = (child as Child).daysOld.ToString();
-                            found = true;
-                            break;
-                        default:
+                            founddata = child.daysOld.ToString();
                             break;
                     }
-
+                    //foreach (var field in childfields)
+                    //{
+                    //    if (field.Name.ToLower().Equals(data) == true)
+                    //    {
+                            
+                    //    }
+                    //}
                 }
             }
-            catch
-            {
-                return found;
-            }
-            
+                     
             return found;
 
         }
@@ -141,34 +176,40 @@ namespace CustomTokens
         protected override bool DidDataChange()
         {
             bool hasChanged = false;
+            string playertype;
 
-            if (Game1.player == null)
+            if (Game1.IsMasterGame == false)
             {
-                return hasChanged;
+                playertype = loc;
+
+                if (Game1.player.getChildren().Equals(this.children[playertype]) == false)
+                {
+                    hasChanged = true;
+                    this.children[playertype] = Game1.player.getChildren();
+                }
+
             }
 
-            if (Game1.player.getChildrenCount() != this.children.Count)
+            playertype = host;
+
+            if (Game1.MasterPlayer.getChildren().Equals(this.children[playertype]) == false)
             {
-                this.children.Clear();
                 hasChanged = true;
+                this.children[playertype] = Game1.MasterPlayer.getChildren();
             }
 
-            foreach(var child in Game1.player.getChildren())
-            {
-                int index = child.GetChildIndex();
+            //foreach (var field in childfields)
+            //{
+            //    if (field.FieldType.Equals(typeof(int)) && field.Name.Equals("daysOld"))
+            //    {
+            //        if (field.GetValue(Game1.MasterPlayer.getChildren()).Equals(field.GetValue(this.children[playertype])) == false)
+            //        {
+            //            hasChanged = true;
+            //            field.SetValue(this.children[playertype], field.GetValue(Game1.MasterPlayer.getChildren()));
+            //        }
+            //    }
+            //}
 
-                if (this.children.Contains(child) == false)
-                {
-                    this.children.Insert(index, child);
-                    hasChanged = true;
-                }
-
-                else if (this.children.ElementAt(index) != child)
-                {
-                    this.children[index] = child;
-                    hasChanged = true;
-                }
-            }
 
             return hasChanged;
         }
