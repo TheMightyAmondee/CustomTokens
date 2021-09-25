@@ -1,7 +1,8 @@
 
-Custom Tokens is a mod that provides some basic additional tokens for Content Patcher, extending what can be done
+Custom Tokens is a mod that provides some additional tokens for Content Patcher, extending what can be done
 
 ### Custom Tokens registers the following tokens:
+Basic Tokens:
 - MineLevel the player is currently on
 - VolcanoFloor the player is currently on
 - DeepestMineLevel, the deepest minelevel the player has reached
@@ -17,6 +18,10 @@ Custom Tokens is a mod that provides some basic additional tokens for Content Pa
 - DeathCountMarriedPK, an extension of DeathCountPK that tracks how many times a player has died after being married.
 - PassOutCount, how many times a player has passed out.
 
+Advanced Tokens:
+- Child, hold information about each childs age and birthday
+- Villager, holds information about some basic villager information
+
 ### Using Custom Tokens:
 - SMAPI must be installed
 - Ensure Custom Tokens is listed as a dependency in your content pack
@@ -29,6 +34,27 @@ Previous quest determination was removed in version 1.4.0 due to issues (unrelia
 Necessary token values are now stored in the save file, data files can be deleted as of version 1.4.0
 
 The mod works best with new save files due to these limitations, while it will still work fine with old save files, some tokens will be missing values.
+
+### Using advanced tokens:
+
+These tokens are more unstable as they use the advanced api so that input arguments are supported. They may not work fully for farmhands in split screen.
+
+#### Child:
+This token takes 3 input arguments. They are not case sensitive but characters must be an exact match
+The first argument gives the player type e.g player=host, use host for the main player and use local for connected farmhands.
+The second argument gives the child index, starting from 0 e.g childindex=1. 0 is the oldest child, 1 is the second oldest and so on.
+The third argument gives the value you want e.g daysold. Can be either birthdayday, birthdayseason or daysold.
+
+Example of a full token with input arguments: TheMightyAmondee.CustomTokens:player=host|childindex=0|birthdayday, returns the day of the month the first born child of the main player was born on.
+
+#### Villager
+This token takes 2 input arguments. They are not case sensitive but characters must be an exact match
+The first argument gives the villager name e.g villager=krobus, returns information on Krobus, custom NPCs are supported. While names are not case sensitive, using all lower case should prevent issues
+The second argument gives the value you want e.g manners, returns the integer value of the villagers manners. Accepted values are manners, optimism, socialanxiety, age, birthdayday, birthdayseason, gender.
+
+Numeric values are returned for optimism, manners, socialanxiety, age and gender.
+
+Example of a full token with input arguments: TheMightyAmondee.CustomTokens:villager=harvey|birthdayday, returns the day of the month Harvey was born on, in this case 14.
 
 ### Getting old save files up to speed (Version 1.3.1 and below):
 Old or current save files require some additional set-up. This isn't strictly necessary but may result in incorrect token values.
@@ -65,6 +91,8 @@ DeathCountPK | 0 | Value is DeathCount + 1 when save is loaded |Because there ar
 DeathCountMarried | 0 | The number of deaths that occur when the player is married
 DeathCountMarriedPK | 0 | Value is DeathCountMarried + 1 when married | Because there are limits on the update rate of tokens in CP, this token can be used as a more accurate snapshot of DeathCountMarried in some cases, mainly the PlayerKilled event
 PassOutCount | 0 | The number of times the player has passed out, either from exhaustion or it reaching 2AM
+Child | "" | Child birthday data, the token just by itself has no useable value and input arguments must be used.
+Villager | "" | Villager data, the token just by itself has no useable value and input arguments must be used.
 
 ### Special Order data
 Since Special Orders don't have a number id like quests they are recorded in the save file using a unique string as shown in the table below. The mod will return this unique string as an ID for each Special Order completed in the SOKeysCompleted token

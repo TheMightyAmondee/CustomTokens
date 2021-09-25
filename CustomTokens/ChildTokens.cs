@@ -142,11 +142,6 @@ namespace CustomTokens
                     found = true;
                     var birthday = SDate.Now().AddDays(-(child.daysOld - 1)) ?? SDate.Now();
 
-                    if (!System.Diagnostics.Debugger.IsAttached)
-                    {
-                        //System.Diagnostics.Debugger.Launch();
-                    }
-                   
                     switch (token)
                     {
                         case "birthdayday":
@@ -159,13 +154,7 @@ namespace CustomTokens
                             founddata = child.daysOld.ToString();
                             break;
                     }
-                    //foreach (var field in childfields)
-                    //{
-                    //    if (field.Name.ToLower().Equals(data) == true)
-                    //    {
-                            
-                    //    }
-                    //}
+
                 }
             }
                      
@@ -197,19 +186,6 @@ namespace CustomTokens
                 hasChanged = true;
                 this.children[playertype] = Game1.MasterPlayer.getChildren();
             }
-
-            //foreach (var field in childfields)
-            //{
-            //    if (field.FieldType.Equals(typeof(int)) && field.Name.Equals("daysOld"))
-            //    {
-            //        if (field.GetValue(Game1.MasterPlayer.getChildren()).Equals(field.GetValue(this.children[playertype])) == false)
-            //        {
-            //            hasChanged = true;
-            //            field.SetValue(this.children[playertype], field.GetValue(Game1.MasterPlayer.getChildren()));
-            //        }
-            //    }
-            //}
-
 
             return hasChanged;
         }

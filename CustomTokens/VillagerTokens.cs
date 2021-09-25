@@ -20,7 +20,7 @@ namespace CustomTokens
         public VillagerTokens()
         {
             villagers = new Dictionary<string, NPC>();
-            villagerdata = new List<string>() { "birthdayday", "birthdayseason", "age", "manners", "optimism", "gender"};
+            villagerdata = new List<string>() { "birthdayday", "birthdayseason", "age", "manners", "optimism", "gender", "socialanxiety"};
         }
 
         public override bool IsReady()
@@ -127,6 +127,10 @@ namespace CustomTokens
                         break;
                     case "gender":
                         founddata = villager.Gender.ToString();
+                        found = true;
+                        break;
+                    case "socialanxiety":
+                        founddata = villager.SocialAnxiety.ToString();
                         found = true;
                         break;
                     default:
