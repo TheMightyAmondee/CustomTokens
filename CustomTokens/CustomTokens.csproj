@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseAdvancedToken.cs" />
     <Compile Include="DeathAndExhaustionTokens.cs" />
     <Compile Include="LocationTokens.cs" />
     <Compile Include="ModConfig.cs" />
@@ -58,6 +59,7 @@
     <Compile Include="ChildTokens.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QuestData.cs" />
+    <Compile Include="VillagerTokens.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="manifest.json" />

@@ -11,29 +11,28 @@ using StardewValley;
 
 namespace CustomTokens
 {
-    class ChildTokens
+    class VillagerTokens
         : BaseAdvancedToken
     {
-        private readonly List<NPC> children;
-        private readonly List<string> childdata;
+        private readonly Dictionary<string, NPC> villagers;
+        private readonly List<string> villagerdata;
 
-        public ChildTokens()
+        public VillagerTokens()
         {
-
-            children = new List<NPC>(2);         
-            childdata = new List<string>() { "birthdayday", "birthdayseason", "age", "daysold"};
+            villagers = new Dictionary<string, NPC>();
+            villagerdata = new List<string>() { "birthdayday", "birthdayseason", "age", "manners", "optimism", "gender"};
         }
 
         public override bool IsReady()
         {
-            return  Context.IsWorldReady && this.children.Count > 0;
+            return Context.IsWorldReady && Game1.currentLocation != null;
         }
 
         public override bool UpdateContext()
         {
             bool hasChanged = false;
 
-            if (Context.IsWorldReady)
+            if (Context.IsWorldReady && Game1.currentLocation != null)
             {
                 hasChanged = DidDataChange();
             }
@@ -41,7 +40,6 @@ namespace CustomTokens
             return hasChanged;
         }
 
-       
         public override bool TryValidateInput(string input, out string error)
         {
             error = "";
@@ -49,13 +47,19 @@ namespace CustomTokens
 
             if (tokenarg.Count() == 2)
             {
-                if (tokenarg[0].Contains("childindex=") == false)
+                if (tokenarg[0].Contains("villager=") == false)
                 {
                     error = "error 0";
-                }                
+                }
 
-                else if (tokenarg[1].Contains("birthdayday") == false && tokenarg[1].Contains("birthdayseason") == false && tokenarg[1].Contains("age") == false && tokenarg[1].Contains("daysold") == false)
+                foreach (var token in villagerdata)
                 {
+                    if (tokenarg[1].Contains(token))
+                    {
+                        error = "";
+                        break;
+                    }
+
                     error = "error 1";
                 }
             }
@@ -79,48 +83,55 @@ namespace CustomTokens
 
             string[] args = input.Split('|');
 
-            int childindex = Convert.ToInt32(args[0].Substring(args[0].IndexOf('=') + 1).Trim().ToLower().Replace("childindex", "").Replace(" ", ""));
+            string villagername = args[0].Substring(args[0].IndexOf('=') + 1).Trim().ToLower().Replace("villager", "").Replace(" ", "");
 
-            foreach (var listdata in childdata)
+            foreach (var listdata in villagerdata)
             {
-                if (TryGetValue(childindex, listdata, out string data) == true)
+                if (TryGetValue(villagername, listdata, out string data) == true)
                 {
                     output.Add(data);
                 }
-                
+
             }
-         
+
             return output;
         }
 
-        private bool TryGetValue(int index,string data, out string founddata)
+        private bool TryGetValue(string villagername, string data, out string founddata)
         {
             bool found = false;
             founddata = "";
 
             try
             {
-                var child = this.children.ElementAt(index);
+                var villager = this.villagers[villagername];
 
-                foreach (var childdata in childdata)
-                {
-                    var birthday = SDate.Now().AddDays(-(child as Child).daysOld - 1);
+                foreach (var villagerdata in villagerdata)
+                {                    
                     switch (data)
                     {
                         case "birthdayday":
-                            founddata = birthday.Day.ToString();
+                            founddata = villager.Birthday_Day.ToString();
                             found = true;
                             break;
                         case "birthdayseason":
-                            founddata = birthday.Season.ToString();
+                            founddata = villager.Birthday_Season;
                             found = true;
                             break;
                         case "age":
-                            founddata = (child as Child).Age.ToString();
+                            founddata = villager.Age.ToString();
                             found = true;
                             break;
-                        case "daysold":
-                            founddata = (child as Child).daysOld.ToString();
+                        case "manners":
+                            founddata = villager.Manners.ToString();
+                            found = true;
+                            break;
+                        case "optimism":
+                            founddata = villager.Optimism.ToString();
+                            found = true;
+                            break;
+                        case "gender":
+                            founddata = villager.Gender.ToString();
                             found = true;
                             break;
                         default:
@@ -133,7 +144,7 @@ namespace CustomTokens
             {
                 return found;
             }
-            
+
             return found;
 
         }
@@ -142,34 +153,25 @@ namespace CustomTokens
         {
             bool hasChanged = false;
 
-            if (Game1.player == null)
+            if (Game1.currentLocation == null)
             {
                 return hasChanged;
             }
 
-            if (Game1.player.getChildrenCount() != this.children.Count)
+            foreach (var villager in Utility.getAllCharacters())
             {
-                this.children.Clear();
-                hasChanged = true;
-            }
-
-            foreach(var child in Game1.player.getChildren())
-            {
-                int index = child.GetChildIndex();
-
-                if (this.children.Contains(child) == false)
+                if (villager.isVillager() && this.villagers.ContainsKey(villager.Name.ToLower()) == false)
                 {
-                    this.children.Insert(index, child);
+                    villagers.Add(villager.Name.ToLower(), villager);
                     hasChanged = true;
                 }
 
-                else if (this.children.ElementAt(index) != child)
+                else if (villager.isVillager() && this.villagers[villager.Name.ToLower()] != villager)
                 {
-                    this.children[index] = child;
+                    this.villagers[villager.Name.ToLower()] = villager;
                     hasChanged = true;
                 }
             }
-
             return hasChanged;
         }
     }
