@@ -40,16 +40,21 @@ The mod works best with new save files due to these limitations, while it will s
 These tokens are more unstable as they use the advanced api so that input arguments are supported. They may not work fully for farmhands in split screen.
 
 #### Child:
-This token takes 3 input arguments. They are not case sensitive but characters must be an exact match
+This token takes 3 input arguments. They are not case sensitive but characters must be an exact match.
+
 The first argument gives the player type e.g player=host, use host for the main player and use local for connected farmhands.
+
 The second argument gives the child index, starting from 0 e.g childindex=1. 0 is the oldest child, 1 is the second oldest and so on.
+
 The third argument gives the value you want e.g daysold. Can be either birthdayday, birthdayseason or daysold.
 
 Example of a full token with input arguments: TheMightyAmondee.CustomTokens:player=host|childindex=0|birthdayday, returns the day of the month the first born child of the main player was born on.
 
 #### Villager
-This token takes 2 input arguments. They are not case sensitive but characters must be an exact match
-The first argument gives the villager name e.g villager=krobus, returns information on Krobus, custom NPCs are supported. While names are not case sensitive, using all lower case should prevent issues
+This token takes 2 input arguments. They are not case sensitive but characters must be an exact match.
+
+The first argument gives the villager name e.g villager=krobus, returns information on Krobus, custom NPCs are supported. While names are not case sensitive, using all lower case should prevent issues.
+
 The second argument gives the value you want e.g manners, returns the integer value of the villagers manners. Accepted values are manners, optimism, socialanxiety, age, birthdayday, birthdayseason, gender.
 
 Numeric values are returned for optimism, manners, socialanxiety, age and gender.
