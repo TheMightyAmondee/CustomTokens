@@ -404,7 +404,7 @@ namespace CustomTokens
                 api.RegisterToken(this.ModManifest, "Child", new ChildTokens());
 
                 // Register "Villager" token
-                api.RegisterToken(this.ModManifest, "Villager", new VillagerTokens());
+                //api.RegisterToken(this.ModManifest, "Villager", new VillagerTokens());
             }
             else
             {

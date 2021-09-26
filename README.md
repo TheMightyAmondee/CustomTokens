@@ -19,8 +19,7 @@ Basic Tokens:
 - PassOutCount, how many times a player has passed out.
 
 Advanced Tokens:
-- Child, hold information about each childs age and birthday
-- Villager, holds information about some basic villager information
+- Child, hold information about each child
 
 ### Using Custom Tokens:
 - SMAPI must be installed
@@ -46,20 +45,17 @@ The first argument gives the player type e.g player=host, use host for the main 
 
 The second argument gives the child index, starting from 0 e.g childindex=1. 0 is the oldest child, 1 is the second oldest and so on.
 
-The third argument gives the value you want e.g daysold. Can be either birthdayday, birthdayseason or daysold.
+The third argument gives the value you want e.g daysold. Can be either birthdayday, birthdayseason, daysold, darkskinned or hat.
+
+Accepted arguments | what it gives
+-------------------|--------------
+birthdayday | The day of the month the child was born on
+birthdayseason | The season the child was born in. All lower case
+daysold | The current age of the child in days
+darkskinned | Whether the child uses the dark skinned sprite
+hat | The name of the hat the child is wearing, else null
 
 Example of a full token with input arguments: TheMightyAmondee.CustomTokens:player=host|childindex=0|birthdayday, returns the day of the month the first born child of the main player was born on.
-
-#### Villager
-This token takes 2 input arguments. They are not case sensitive but characters must be an exact match.
-
-The first argument gives the villager name e.g villager=krobus, returns information on Krobus, custom NPCs are supported. While names are not case sensitive, using all lower case should prevent issues.
-
-The second argument gives the value you want e.g manners, returns the integer value of the villagers manners. Accepted values are manners, optimism, socialanxiety, age, birthdayday, birthdayseason, gender.
-
-Numeric values are returned for optimism, manners, socialanxiety, age and gender.
-
-Example of a full token with input arguments: TheMightyAmondee.CustomTokens:villager=harvey|birthdayday, returns the day of the month Harvey was born on, in this case 14.
 
 ### Getting old save files up to speed (Version 1.3.1 and below):
 Old or current save files require some additional set-up. This isn't strictly necessary but may result in incorrect token values.

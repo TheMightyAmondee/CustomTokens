@@ -8,6 +8,7 @@ using StardewModdingAPI.Events;
 using StardewValley.Characters;
 using StardewModdingAPI.Utilities;
 using StardewValley;
+using System.Reflection;
 
 namespace CustomTokens
 {
@@ -16,11 +17,13 @@ namespace CustomTokens
     {
         private readonly Dictionary<string, NPC> villagers;
         private readonly List<string> villagerdata;
+        private readonly FieldInfo[] villagerfield;
 
         public VillagerTokens()
         {
             villagers = new Dictionary<string, NPC>();
             villagerdata = new List<string>() { "birthdayday", "birthdayseason", "age", "manners", "optimism", "gender", "socialanxiety"};
+            villagerfield = typeof(NPC).GetFields(BindingFlags.DeclaredOnly);
         }
 
         public override bool IsReady()
@@ -98,6 +101,21 @@ namespace CustomTokens
         {
             bool found = false;
             founddata = "";
+
+            if (data.Contains("birthday") == true)
+            {
+                data = data.Insert(7, "_");
+            }
+
+            foreach(var field in villagerfield)
+            {
+                if (field.Name.ToLower().Equals(data) == true)
+                {
+                    found = true;
+                    founddata = field.GetValue(this.villagers[villagername]).ToString();
+
+                }
+            }
 
             try
             {
