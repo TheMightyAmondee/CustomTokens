@@ -16,8 +16,6 @@ namespace CustomTokens
         : BaseAdvancedToken
     {
         private readonly Dictionary<string, List<Child>>  children;
-        private readonly List<string> childdata;
-        private readonly FieldInfo[] childfields;
 
         public ChildTokens()
         {
@@ -26,8 +24,6 @@ namespace CustomTokens
                 [host] = new List<Child>(),
                 [loc] = new List<Child>()
             };       
-            childdata = new List<string>() { "birthdayday", "birthdayseason", "daysold"};
-            childfields = typeof(Child).GetFields();
         }
        
         public override bool TryValidateInput(string input, out string error)
@@ -72,9 +68,9 @@ namespace CustomTokens
                     }
                 }
 
-                if (tokenarg[2].Contains("birthdayday") == false && tokenarg[2].Contains("birthdayseason") == false && tokenarg[2].Contains("daysold") == false)
+                if (tokenarg[2].Contains("birthdayday") == false && tokenarg[2].Contains("birthdayseason") == false && tokenarg[2].Contains("daysold") == false && tokenarg[2].Contains("darkskinned") == false && tokenarg[2].Contains("hat") == false)
                 {
-                    error += "unrecognised argument value at index 2. Must be one of 'birthdayday' 'birthdayseason' 'daysold'";
+                    error += "unrecognised argument value at index 2. Must be one of 'birthdayday' 'birthdayseason' 'daysold' 'darkskinned' 'hat'";
                 }
             }
 
@@ -152,6 +148,12 @@ namespace CustomTokens
                             break;
                         case "daysold":
                             founddata = child.daysOld.ToString();
+                            break;
+                        case "darkskinned":
+                            founddata = child.darkSkinned.Value.ToString().ToLower();
+                            break;
+                        case "hat":
+                            founddata = child.hat.Value == null ? "null" : child.hat.Value.Name.ToString();
                             break;
                     }
 
