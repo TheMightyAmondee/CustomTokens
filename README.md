@@ -56,6 +56,8 @@ darkskinned | Whether the child uses the dark skinned sprite | Gives true or fal
 hat | The name of the hat the child is wearing, else null | The token will have a value of ``"Party Hat"`` for all three party hat colours.
 
 Example of a full token with input arguments: ``TheMightyAmondee.CustomTokens:player=host|childindex=0|birthdayday``. This token returns the day of the month the first born child of the main player was born on (very wordy, I know).
+
+The token will return "null" if no suitable values are found.
   
 ### Config:
 - AllowDebugging adds a single debug command so the values of the tokens can be viewed in the SMAPI console. When enabled typing "tracker" in the console will display a list of token values, this does not indicate whether CP has updated the token to this value. Use patch summary for that.
