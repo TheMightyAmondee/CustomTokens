@@ -80,7 +80,7 @@ namespace CustomTokens
 
                 foreach (var argument in acceptedarguments)
                 {
-                    if (tokenarg[2].Equals(argument.Trim().ToLower().Replace("=", "")) == true)
+                    if (tokenarg[2].Contains(argument) == true)
                     {
                         foundacceptedargument = true;
                         break;
