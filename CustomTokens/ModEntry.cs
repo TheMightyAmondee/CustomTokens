@@ -65,7 +65,7 @@ namespace CustomTokens
             // Access Content Patcher API
             var api = this.Helper.ModRegistry.GetApi<IContentPatcherAPI>("Pathoschild.ContentPatcher");
 
-            if(api != null)
+            if (api != null)
             {
                 // Register "MineLevel" token
                 api.RegisterToken(
@@ -402,9 +402,6 @@ namespace CustomTokens
 
                 // Register "Child" token
                 api.RegisterToken(this.ModManifest, "Child", new ChildTokens());
-
-                // Register "Villager" token
-                //api.RegisterToken(this.ModManifest, "Villager", new VillagerTokens());
             }
             else
             {

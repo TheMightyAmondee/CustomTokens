@@ -4,10 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using StardewModdingAPI;
-using StardewModdingAPI.Events;
-using StardewValley.Characters;
-using StardewModdingAPI.Utilities;
-using StardewValley;
 
 namespace CustomTokens
 {
@@ -79,7 +75,7 @@ namespace CustomTokens
         public abstract bool TryValidateInput(string input, out string error);
 
         /// <summary>
-        /// Get whether any data has changed since.
+        /// Get whether any data has changed.
         /// </summary>
         /// <returns>Whether the data has changed</returns>
         protected abstract bool DidDataChange();
