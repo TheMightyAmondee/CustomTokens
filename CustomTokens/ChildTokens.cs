@@ -80,7 +80,7 @@ namespace CustomTokens
 
                 foreach (var argument in acceptedarguments)
                 {
-                    if (tokenarg[2].Contains(argument) == true)
+                    if (tokenarg[2].Equals(argument.Trim().ToLower().Replace("=", "")) == true)
                     {
                         foundacceptedargument = true;
                         break;
@@ -160,7 +160,7 @@ namespace CustomTokens
                 if (child.GetChildIndex() == index)
                 {
                     found = true;
-                    var birthday = SDate.Now().AddDays(-(child.daysOld - 1)) ?? SDate.Now();
+                    var birthday = SDate.Now().AddDays(-child.daysOld) ?? SDate.Now();
 
                     switch (token)
                     {
