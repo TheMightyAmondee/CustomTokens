@@ -121,7 +121,7 @@ namespace CustomTokens
             // get specified child index
             int childindex = Convert.ToInt32(args[1].Substring(args[1].IndexOf('=') + 1).Trim().ToLower().Replace("childindex", "").Replace(" ", ""));
             // get the value needed, remove any equal signs that show up, no idea why
-            string tokenvalue = args[2].Trim().ToLower().Replace("=","");          
+            string tokenvalue = args[2].Trim().ToLower().Replace("=", "");          
 
             // player is the host
             if (playertype == "host")
@@ -141,7 +141,7 @@ namespace CustomTokens
                 }
             }
 
-            // player is a connected farmhand, different from a farmhand in splitscreen
+            // player is a connected farmhand
             else if (playertype == "local")
             {
                 // Get the required value
