@@ -48,7 +48,7 @@ namespace CustomTokens
                 // Could not find player input argument, add to error
                 if (tokenarg[0].Contains("player=") == false)
                 {
-                    error += "player argument not found";
+                    error += "player argument not found. ";
                 }
               
                 // Player input argument has invalid value, add to error
@@ -65,7 +65,7 @@ namespace CustomTokens
                 // Could not find childindex input argument, add to error
                 if (tokenarg[1].Contains("childindex=") == false)
                 {
-                    error += "childindex argument not found";
+                    error += "childindex argument not found. ";
                 }
 
                 // Childindex input argument in not numerical as expected, add to error
@@ -74,7 +74,7 @@ namespace CustomTokens
                     string childindex = tokenarg[1].Substring(tokenarg[1].IndexOf('=') + 1).Trim().Replace("childindex", "");
                     if (childindex.Any(ch => char.IsDigit(ch) == false && ch != ' ') || childindex == "")
                     {
-                        error += "childindex argument must be numeric";
+                        error += "childindex argument must be numeric. ";
                     }
                 }
 
@@ -96,14 +96,14 @@ namespace CustomTokens
                 // No accepted arguments found at index 2, add to error
                 if (foundacceptedargument == false)
                 {
-                    error += "unrecognised argument value at index 2. Must be one of 'birthdayday' 'birthdayseason' 'daysold' 'darkskinned' 'hat'";
+                    error += "unrecognised argument value at index 2. Must be one of 'birthdayday' 'birthdayseason' 'daysold' 'darkskinned' 'hat'.";
                 }
             }
 
             // Too many or too little input arguments found, add to error
             else
             {
-                error = "Incorrect number of arguments";
+                error = "Incorrect number of arguments.";
             }
 
             // Values are valid if error is an empty string
