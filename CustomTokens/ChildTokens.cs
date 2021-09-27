@@ -23,8 +23,8 @@ namespace CustomTokens
         {
             children = new Dictionary<string, List<Child>>(StringComparer.OrdinalIgnoreCase)
             {
-                [host] = new List<Child>(),
-                [loc] = new List<Child>()
+                [main] = new List<Child>(),
+                [local] = new List<Child>()
             };       
         }
        
@@ -117,7 +117,7 @@ namespace CustomTokens
             if (playertype == "host")
             {
                 // Get the required value
-                bool found = TryGetValue(host, childindex, tokenvalue, out string hostdata);
+                bool found = TryGetValue(main, childindex, tokenvalue, out string hostdata);
 
                 if (found == true)
                 {
@@ -130,7 +130,7 @@ namespace CustomTokens
             else if (playertype == "local")
             {
                 // Get the required value
-                bool found = TryGetValue(loc, childindex, tokenvalue, out string hostdata);
+                bool found = TryGetValue(local, childindex, tokenvalue, out string hostdata);
 
                 if (found == true)
                 {
@@ -148,9 +148,9 @@ namespace CustomTokens
             founddata = "";
 
             // player is also the local player if they are the main player, correct this
-            if (Game1.IsMasterGame == true && playertype.Equals(loc) == true)
+            if (Game1.IsMasterGame == true && playertype.Equals(local) == true)
             {
-                playertype = host;
+                playertype = main;
             }
 
             foreach (var child in this.children[playertype])
@@ -194,7 +194,7 @@ namespace CustomTokens
 
             if (Game1.IsMasterGame == false)
             {
-                playertype = loc;
+                playertype = local;
 
                 if (Game1.player.getChildren().Equals(this.children[playertype]) == false)
                 {
@@ -204,7 +204,7 @@ namespace CustomTokens
 
             }
 
-            playertype = host;
+            playertype = main;
 
             if (Game1.MasterPlayer.getChildren().Equals(this.children[playertype]) == false)
             {

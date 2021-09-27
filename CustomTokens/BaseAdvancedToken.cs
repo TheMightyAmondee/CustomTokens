@@ -12,9 +12,11 @@ namespace CustomTokens
     /// </summary>
     internal abstract class BaseAdvancedToken
     {
-        internal static readonly string host = "hostPlayer", loc = "localPlayer";
+        internal static readonly string main = "hostPlayer", local = "localPlayer";
 
-        /// <summary>Get whether the token allows input arguments (e.g. an NPC name for a relationship token).</summary>
+        /// <summary>
+        /// Get whether the token allows input arguments (e.g. an NPC name for a relationship token).
+        /// </summary>
         public virtual bool AllowsInput()
         {
             return true;
