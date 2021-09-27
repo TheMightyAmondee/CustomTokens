@@ -50,13 +50,7 @@ namespace CustomTokens
                 {
                     error += "player argument not found";
                 }
-
-                // Could not find value of player input argument, add to error
-                else if (tokenarg[0].IndexOf('=') == tokenarg[0].Length - 1)
-                {
-                    error += "player argument not provided a value. Must be one of the following values: 'host', 'local'. ";
-                }
-
+              
                 // Player input argument has invalid value, add to error
                 else
                 {
@@ -74,17 +68,11 @@ namespace CustomTokens
                     error += "childindex argument not found";
                 }
 
-                // Could not find value of childindex input argument, add to error
-                else if (tokenarg[0].IndexOf('=') == tokenarg[0].Length - 1)
-                {
-                    error += "childindex argument not provided a value.";
-                }
-
                 // Childindex input argument in not numerical as expected, add to error
                 else
                 {
-                    string statArg = tokenarg[1].Substring(tokenarg[1].IndexOf('=') + 1);
-                    if (statArg.Any(ch => char.IsDigit(ch) == false && ch != ' '))
+                    string childindex = tokenarg[1].Substring(tokenarg[1].IndexOf('=') + 1).Trim().Replace("childindex", "");
+                    if (childindex.Any(ch => char.IsDigit(ch) == false && ch != ' ') || childindex == "")
                     {
                         error += "childindex argument must be numeric";
                     }
