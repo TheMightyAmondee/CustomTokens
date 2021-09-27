@@ -1,5 +1,5 @@
 
-Custom Tokens is a mod that provides some additional tokens for Content Patcher, extending what can be done. I recommend using this mod with [Stats as Tokens](https://www.nexusmods.com/stardewvalley/mods/9659) for even more Content Patcher extensibility. This README is intended for Content Patcher authors.
+Custom Tokens is a mod that provides some additional tokens for Content Patcher, extending what can be done. I recommend using this mod with [Stats as Tokens](https://www.nexusmods.com/stardewvalley/mods/9659) for even more Content Patcher extensibility with creating content packs. This README is intended for Content Patcher authors.
 
 ### Custom Tokens registers the following tokens:
 Basic Tokens:
@@ -41,23 +41,34 @@ These tokens are more unstable as they use the advanced api so that input argume
 #### Child:
 This token takes exactly 3 input arguments. They are not case sensitive.
 
-The first argument gives the player type e.g ``player=host``, use ``host`` for the main player and use ``local`` for connected farmhands.
+The first argument, ``player`` ,gives the player type 
+- Can be either ``host`` or ``local``. 
+- Use ``host`` to get values related to the main player and use ``local`` to get values for the connected farmhand player. 
+- If the player is the host, ``local`` and ``host`` will give the same value. 
+- E.g ``player=host``
 
-The second argument gives the child index, starting from 0 e.g ``childindex=1``. 0 is the oldest child, 1 is the second oldest and so on.
+The second argument, ``childindex``, gives the child index, starting from 0. 
+- 0 is the oldest child, 1 is the second oldest and so on. 
+- Accepts any numerical value, however the largest to return a value is likely to be 1 as the game limits each player to two children unless mods are used.
+- E.g ``childindex=1``
 
-The third argument gives the name of the value you want e.g daysold. Can be either ``birthdayday``, ``birthdayseason``, ``daysold``, ``darkskinned`` or ``hat``.
+The third argument gives the name of the value you want 
+- Can be either ``birthdayday``, ``birthdayseason``, ``daysold``, ``darkskinned`` or ``hat``.
+- E.g ``daysold``
+
+Index 2 accepted arguments in more detail:
 
 Accepted arguments | what it gives | Notes
 -------------------|---------------|------
 birthdayday | The day of the month the child was born on
 birthdayseason | The season the child was born in. | Value is in all lower case.
-daysold | The current age of the child in days
-darkskinned | Whether the child uses the dark skinned sprite | Gives true or false.
-hat | The name of the hat the child is wearing, else null | The token will have a value of ``"Party Hat"`` for all three party hat colours.
+daysold | The current age of the child in days.
+darkskinned | Whether the child uses the dark skinned sprite. | Gives true or false.
+hat | The name of the hat the child is wearing, else ``"null"``. | The token will have a value of ``"Party Hat"`` for all three party hat colours.
 
-Example of a full token with input arguments: ``TheMightyAmondee.CustomTokens:player=host|childindex=0|birthdayday``. This token returns the day of the month the first born child of the main player was born on (very wordy, I know).
+Example of a full token with input arguments: ``TheMightyAmondee.CustomTokens:player=host|childindex=0|birthdayday``. This token returns the day of the month the first born child of the host player was born on (very wordy, I know).
 
-The token will return "null" if no suitable values are found.
+The token will return ``"null"`` if no suitable values are found.
   
 ### Config:
 - AllowDebugging adds a single debug command so the values of the tokens can be viewed in the SMAPI console. When enabled typing "tracker" in the console will display a list of token values, this does not indicate whether CP has updated the token to this value. Use patch summary for that.
