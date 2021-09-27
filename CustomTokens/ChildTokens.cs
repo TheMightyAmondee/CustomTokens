@@ -21,30 +21,43 @@ namespace CustomTokens
 
         public ChildTokens()
         {
+            // Create a new dictionary with a key for each playertype
             children = new Dictionary<string, List<Child>>(StringComparer.OrdinalIgnoreCase)
             {
                 [main] = new List<Child>(),
                 [local] = new List<Child>()
             };       
         }
+
+        //Token is ready, when world is ready
+        //The token allows and requires input
+        //The token does not allow multiple values
        
         public override bool TryValidateInput(string input, out string error)
         {
+
             error = "";
+            // Get input arguments
             string[] tokenarg = input.ToLower().Trim().Split('|');
 
+            // Are the correct number of input arguments present
             if (tokenarg.Count() == 3)
             {
+                // Yes, validate each argument
+
+                // Could not find player input argument, add to error
                 if (tokenarg[0].Contains("player=") == false)
                 {
                     error += "player argument not found";
                 }
 
+                // Could not find value of player input argument, add to error
                 else if (tokenarg[0].IndexOf('=') == tokenarg[0].Length - 1)
                 {
                     error += "player argument not provided a value. Must be one of the following values: 'host', 'local'. ";
                 }
 
+                // Player input argument has invalid value, add to error
                 else
                 {
                     string playerType = tokenarg[0].Substring(tokenarg[0].IndexOf('=') + 1).Trim().Replace("player", "");
@@ -55,16 +68,19 @@ namespace CustomTokens
                     }
                 }
 
+                // Could not find childindex input argument, add to error
                 if (tokenarg[1].Contains("childindex=") == false)
                 {
                     error += "childindex argument not found";
                 }
 
+                // Could not find value of childindex input argument, add to error
                 else if (tokenarg[0].IndexOf('=') == tokenarg[0].Length - 1)
                 {
                     error += "childindex argument not provided a value.";
                 }
 
+                // Childindex input argument in not numerical as expected, add to error
                 else
                 {
                     string statArg = tokenarg[1].Substring(tokenarg[1].IndexOf('=') + 1);
@@ -75,10 +91,13 @@ namespace CustomTokens
                 }
 
                 bool foundacceptedargument = false;
+                // Remove the '=' character at the end of the argument that appears for some reason
                 var formattedtoken = tokenarg[2].Replace("=", "");
 
+                // Iterate through each accepted argument at index 2
                 foreach (var argument in acceptedarguments)
-                {                  
+                { 
+                    // Match found, set foundacceptedargument to true and break from loop
                     if (formattedtoken.Equals(argument) == true)
                     {
                         foundacceptedargument = true;
@@ -86,17 +105,20 @@ namespace CustomTokens
                     }                    
                 }
 
+                // No accepted arguments found at index 2, add to error
                 if (foundacceptedargument == false)
                 {
                     error += "unrecognised argument value at index 2. Must be one of 'birthdayday' 'birthdayseason' 'daysold' 'darkskinned' 'hat'";
                 }
             }
 
+            // Too many or too little input arguments found, add to error
             else
             {
                 error = "Incorrect number of arguments";
             }
 
+            // Values are valid if error is an empty string
             return error.Equals("");
         }
 
@@ -124,6 +146,11 @@ namespace CustomTokens
                     // Value was found, add it to the output list
                     output.Add(hostdata);
                 }
+                else
+                {
+                    // Value not found, add "null"
+                    output.Add("null");
+                }
             }
 
             // player is a connected farmhand, different from a farmhand in splitscreen
@@ -136,6 +163,11 @@ namespace CustomTokens
                 {
                     // Value was found, add it to the output list
                     output.Add(hostdata);
+                }
+                else
+                {
+                    // Value not found, add "null"
+                    output.Add("null");
                 }
             }
 
@@ -158,9 +190,13 @@ namespace CustomTokens
                 // Make sure the index of the child matches the given index to search for
                 if (child.GetChildIndex() == index)
                 {
+                    // Found child of correct index, get data
                     found = true;
+
+                    // Calculate birthday date based on child age
                     var birthday = SDate.Now().AddDays(-child.daysOld) ?? SDate.Now();
 
+                    // Change string value based on input argument at index 2
                     switch (token)
                     {
                         case "birthdayday":
@@ -173,9 +209,11 @@ namespace CustomTokens
                             founddata = child.daysOld.ToString();
                             break;
                         case "darkskinned":
+                            // Value is initially True or False, make all lowercase for ease of use
                             founddata = child.darkSkinned.Value.ToString().ToLower();
                             break;
                         case "hat":
+                            // If no hat is found, change founddata to "null", else the name of the hat
                             founddata = child.hat.Value == null ? "null" : child.hat.Value.Name.ToString();
                             break;
                     }
@@ -184,7 +222,6 @@ namespace CustomTokens
             }
                      
             return found;
-
         }
 
         protected override bool DidDataChange()
@@ -192,6 +229,7 @@ namespace CustomTokens
             bool hasChanged = false;
             string playertype;
 
+            // Update child data for local player if a connected farmhand
             if (Game1.IsMasterGame == false)
             {
                 playertype = local;
@@ -204,6 +242,7 @@ namespace CustomTokens
 
             }
 
+            // Update child data for main player, occurs for all players
             playertype = main;
 
             if (Game1.MasterPlayer.getChildren().Equals(this.children[playertype]) == false)
