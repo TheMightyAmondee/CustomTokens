@@ -77,10 +77,11 @@ namespace CustomTokens
                 }
 
                 bool foundacceptedargument = false;
+                var formattedtoken = tokenarg[2].Replace("=", "");
 
                 foreach (var argument in acceptedarguments)
-                {
-                    if (tokenarg[2].Contains(argument) == true)
+                {                  
+                    if (formattedtoken.Equals(argument) == true)
                     {
                         foundacceptedargument = true;
                         break;
