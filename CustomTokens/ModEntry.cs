@@ -40,7 +40,7 @@ namespace CustomTokens
         private static readonly string[] tokens = { "DeathCountMarried", "PassOutCount", "QuestsCompleted" };
 
         public static Update update = new Update();
-
+        public static int deathcounter;
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
@@ -52,7 +52,6 @@ namespace CustomTokens
             helper.Events.GameLoop.Saving += this.Saving;
             helper.Events.GameLoop.ReturnedToTitle += this.Title;
             helper.Events.GameLoop.DayStarted += this.DayStarted;
-            helper.Events.Multiplayer.ModMessageReceived += this.MessageReceived;
 
             // Read the mod config for values and create one if one does not currently exist
             this.config = this.Helper.ReadConfig<ModConfig>();
@@ -425,6 +424,8 @@ namespace CustomTokens
         /// <param name="e">The event arguments.</param>
         private void DayStarted(object sender, DayStartedEventArgs e)
         {
+            deathcounter = (int)Game1.player.stats.timesUnconscious;
+
             // Add mod data to save file if needed
             foreach(var token in tokens)
             {
@@ -567,18 +568,6 @@ namespace CustomTokens
             {
                 ModEntry.perScreen.Value.QuestsCompleted.Clear();               
                 this.Monitor.Log("Clearing Quest data, ready for new save");
-            }
-        }
-
-        // For compatibility with The Spirit World, one of my personal mods
-        private void MessageReceived(object sender, ModMessageReceivedEventArgs e)
-        {
-            if (e.FromModID == "TheMightyAmondee.SpiritWorld" && e.Type == "falsealarm")
-            {
-                Update message = e.ReadAs<Update>();
-                update.updatedeath = message.updatedeath;
-                this.Monitor.Log("Fixing token values...");
-                this.Monitor.Log(ModEntry.perScreen.Value.DeathCountMarried.ToString());
             }
         }
 
