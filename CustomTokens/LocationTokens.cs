@@ -37,7 +37,6 @@ namespace CustomTokens
 
                 // Update trackers
                 data.Value.CurrentMineLevel = mineShaft.mineLevel;
-                data.Value.LastMineLevel = mineShaft.mineLevel;
 
                 data.Value.DeepestMineLevel = Game1.player.deepestMineLevel;
                 monitor.Log($"Deepest mine level reached by {Game1.player.Name} is {data.Value.DeepestMineLevel}");
@@ -71,7 +70,10 @@ namespace CustomTokens
 
                 // Update tracker
                 data.Value.CurrentVolcanoFloor = VolcanoShaft.level.Value;
-                data.Value.LastVolcanoFloor = VolcanoShaft.level.Value;
+                if (VolcanoShaft.level.Value > data.Value.DeepestVolcanoFloor)
+                {
+                    data.Value.DeepestVolcanoFloor = VolcanoShaft.level.Value;
+                }
             }
 
             else

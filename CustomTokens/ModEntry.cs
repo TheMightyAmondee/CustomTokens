@@ -37,7 +37,7 @@ namespace CustomTokens
 
         public static readonly PerScreen<PlayerData> perScreen = new PerScreen<PlayerData>(createNewState: () => new PlayerData());
 
-        private static readonly string[] tokens = { "DeathCountMarried", "PassOutCount", "QuestsCompleted", "LastMineLevel", "LastVolcanoFloor" };
+        private static readonly string[] tokens = { "DeathCountMarried", "PassOutCount", "QuestsCompleted", "DeepestVolcanoFloor" };
 
         public static Update update = new Update();
         public static int deathcounter;
@@ -409,38 +409,57 @@ namespace CustomTokens
                        return null;
                    });
 
-                // Register "LastMineLevel" token
+                // Register "DeepestStandardMineLevel" token
                 api.RegisterToken(
                     this.ModManifest,
-                    "LastMineLevel",
+                    "DeepestStandardMineLevel",
                     () =>
                     {
                         if (Context.IsWorldReady)
                         {
-                            var lastMineLevel = ModEntry.perScreen.Value.LastMineLevel;
+                            var deepestStandardMineLevel = ModEntry.perScreen.Value.DeepestMineLevel < 121 ? ModEntry.perScreen.Value.DeepestMineLevel : 120;
 
                             return new[]
                             {
-                            lastMineLevel.ToString()
+                            deepestStandardMineLevel.ToString()
                             };
                         }
 
                         return null;
                     });
 
-                // Register "LastVolcanoFloor" token
+                // Register "DeepestSkullCavernMineLevel" token
                 api.RegisterToken(
                     this.ModManifest,
-                    "LastVolcanoFloor",
+                    "DeepestSkullCavernMineLevel",
                     () =>
                     {
                         if (Context.IsWorldReady)
                         {
-                            var lastVolcanoFloor = ModEntry.perScreen.Value.LastVolcanoFloor;
+                            var deepestSkullCavernMineLevel = ModEntry.perScreen.Value.DeepestMineLevel > 120 ? ModEntry.perScreen.Value.DeepestMineLevel - 120 : 0;
 
                             return new[]
                             {
-                            lastVolcanoFloor.ToString()
+                            deepestSkullCavernMineLevel.ToString()
+                            };
+                        }
+
+                        return null;
+                    });
+
+                // Register "DeepestVolcanoFloor" token
+                api.RegisterToken(
+                    this.ModManifest,
+                    "DeepestVolcanoFloor",
+                    () =>
+                    {
+                        if (Context.IsWorldReady)
+                        {
+                            var deepestVolcanoFloor = ModEntry.perScreen.Value.DeepestVolcanoFloor;
+
+                            return new[]
+                            {
+                            deepestVolcanoFloor.ToString()
                             };
                         }
 
@@ -492,10 +511,7 @@ namespace CustomTokens
             ModEntry.perScreen.Value.PassOutCount = Game1.player.modData[$"{this.ModManifest.UniqueID}.PassOutCount"] != "" 
                 ? int.Parse(Game1.player.modData[$"{this.ModManifest.UniqueID}.PassOutCount"])
                 : 0;
-            ModEntry.perScreen.Value.LastMineLevel = Game1.player.modData[$"{this.ModManifest.UniqueID}.LastMineLevel"] != ""
-               ? int.Parse(Game1.player.modData[$"{this.ModManifest.UniqueID}.LastMineLevel"])
-               : 0;
-            ModEntry.perScreen.Value.LastVolcanoFloor = Game1.player.modData[$"{this.ModManifest.UniqueID}.LastVolcanoFloor"] != ""
+            ModEntry.perScreen.Value.DeepestVolcanoFloor = Game1.player.modData[$"{this.ModManifest.UniqueID}.DeepestVolcanoFloor"] != ""
                 ? int.Parse(Game1.player.modData[$"{this.ModManifest.UniqueID}.LastVolcanoFloor"])
                 : 0;
 
@@ -592,8 +608,7 @@ namespace CustomTokens
             // Update old tracker
             Game1.player.modData[$"{this.ModManifest.UniqueID}.DeathCountMarried"] = ModEntry.perScreen.Value.DeathCountMarried.ToString();
             Game1.player.modData[$"{this.ModManifest.UniqueID}.PassOutCount"] = ModEntry.perScreen.Value.PassOutCount.ToString();
-            Game1.player.modData[$"{this.ModManifest.UniqueID}.LastMineLevel"] = ModEntry.perScreen.Value.LastMineLevel.ToString();
-            Game1.player.modData[$"{this.ModManifest.UniqueID}.LastVolcanoFloor"] = ModEntry.perScreen.Value.LastVolcanoFloor.ToString();
+            Game1.player.modData[$"{this.ModManifest.UniqueID}.LastVolcanoFloor"] = ModEntry.perScreen.Value.DeepestVolcanoFloor.ToString();
             this.Monitor.Log("Trackers updated for new day");
         }
 
@@ -653,8 +668,9 @@ namespace CustomTokens
                 // Display information in SMAPI console
                 this.Monitor.Log($"\n\nMineLevel: {ModEntry.perScreen.Value.CurrentMineLevel}" +
                     $"\nVolcanoFloor: {ModEntry.perScreen.Value.CurrentVolcanoFloor}" +
-                    $"\nLastMineLevel: { ModEntry.perScreen.Value.LastMineLevel}" +
-                    $"\nLastVolcanoFloor: {ModEntry.perScreen.Value.LastVolcanoFloor}" +
+                    $"\nDeepestStandardMineLevel: { (ModEntry.perScreen.Value.DeepestMineLevel < 121 ? ModEntry.perScreen.Value.DeepestMineLevel : 120)}" +
+                    $"\nDeepestSkullCavernMineLevel: {(ModEntry.perScreen.Value.DeepestMineLevel > 120 ? ModEntry.perScreen.Value.DeepestMineLevel - 120 : 0)}" +
+                    $"\nDeepestVolcanoFloor: {ModEntry.perScreen.Value.DeepestVolcanoFloor}" +
                     $"\nDeepestMineLevel: {ModEntry.perScreen.Value.DeepestMineLevel}" +
                     $"\nYearsMarried: {ModEntry.perScreen.Value.CurrentYearsMarried}" +
                     $"\nAnniversaryDay: {ModEntry.perScreen.Value.AnniversaryDay}" +
