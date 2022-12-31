@@ -9,6 +9,8 @@ namespace CustomTokens
         public int CurrentMineLevel { get; set; }
         public int DeepestMineLevel { get; set; }
         public int CurrentVolcanoFloor { get; set; }
+        public int LastMineLevel { get; set; }
+        public int LastVolcanoFloor { get; set; }
         public double CurrentYearsMarried { get; set; }
         public int AnniversaryDay { get; set; }
         public string AnniversarySeason { get; set; } = "No season";

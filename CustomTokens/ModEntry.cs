@@ -37,7 +37,7 @@ namespace CustomTokens
 
         public static readonly PerScreen<PlayerData> perScreen = new PerScreen<PlayerData>(createNewState: () => new PlayerData());
 
-        private static readonly string[] tokens = { "DeathCountMarried", "PassOutCount", "QuestsCompleted" };
+        private static readonly string[] tokens = { "DeathCountMarried", "PassOutCount", "QuestsCompleted", "LastMineLevel", "LastVolcanoFloor" };
 
         public static Update update = new Update();
         public static int deathcounter;
@@ -409,6 +409,44 @@ namespace CustomTokens
                        return null;
                    });
 
+                // Register "LastMineLevel" token
+                api.RegisterToken(
+                    this.ModManifest,
+                    "LastMineLevel",
+                    () =>
+                    {
+                        if (Context.IsWorldReady)
+                        {
+                            var lastMineLevel = ModEntry.perScreen.Value.LastMineLevel;
+
+                            return new[]
+                            {
+                            lastMineLevel.ToString()
+                            };
+                        }
+
+                        return null;
+                    });
+
+                // Register "LastVolcanoFloor" token
+                api.RegisterToken(
+                    this.ModManifest,
+                    "LastVolcanoFloor",
+                    () =>
+                    {
+                        if (Context.IsWorldReady)
+                        {
+                            var lastVolcanoFloor = ModEntry.perScreen.Value.LastVolcanoFloor;
+
+                            return new[]
+                            {
+                            lastVolcanoFloor.ToString()
+                            };
+                        }
+
+                        return null;
+                    });
+
                 // Register "Child" token
                 api.RegisterToken(this.ModManifest, "Child", new ChildTokens());
             }
@@ -548,6 +586,8 @@ namespace CustomTokens
             // Update old tracker
             Game1.player.modData[$"{this.ModManifest.UniqueID}.DeathCountMarried"] = ModEntry.perScreen.Value.DeathCountMarried.ToString();
             Game1.player.modData[$"{this.ModManifest.UniqueID}.PassOutCount"] = ModEntry.perScreen.Value.PassOutCount.ToString();
+            Game1.player.modData[$"{this.ModManifest.UniqueID}.LastMineLevel"] = ModEntry.perScreen.Value.LastMineLevel.ToString();
+            Game1.player.modData[$"{this.ModManifest.UniqueID}.LastVolcanoFloor"] = ModEntry.perScreen.Value.LastVolcanoFloor.ToString();
             this.Monitor.Log("Trackers updated for new day");
         }
 
@@ -607,6 +647,8 @@ namespace CustomTokens
                 // Display information in SMAPI console
                 this.Monitor.Log($"\n\nMineLevel: {ModEntry.perScreen.Value.CurrentMineLevel}" +
                     $"\nVolcanoFloor: {ModEntry.perScreen.Value.CurrentVolcanoFloor}" +
+                    $"\nLastMineLevel: { ModEntry.perScreen.Value.LastMineLevel}" +
+                    $"\nLastVolcanoFloor: {ModEntry.perScreen.Value.LastVolcanoFloor}" +
                     $"\nDeepestMineLevel: {ModEntry.perScreen.Value.DeepestMineLevel}" +
                     $"\nYearsMarried: {ModEntry.perScreen.Value.CurrentYearsMarried}" +
                     $"\nAnniversaryDay: {ModEntry.perScreen.Value.AnniversaryDay}" +
