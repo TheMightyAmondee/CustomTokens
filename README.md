@@ -7,8 +7,8 @@ Basic Tokens:
 - ``VolcanoFloor`` the player is currently on
 - ``DeepestMineLevel``, the deepest minelevel the player has reached
 - ``DeepestVolcanoFloor``, the deepest volcano floor reached by the player
--``DeepestStandardMineLevel``, the deepest normal minelevel reached by the player
--``DeepestSkullCavernMineLevel``, the deepest skull cavern minelevel reached
+- ``DeepestStandardMineLevel``, the deepest normal minelevel reached by the player
+- ``DeepestSkullCavernMineLevel``, the deepest skull cavern minelevel reached
 - Anniversary of the player, split into two tokens, ``AnniversaryDay`` and ``AnniversarySeason``
 - ``YearsMarried``, total number of years married
 - ``QuestIDsCompleted``, a list of quest ids that the player has completed
