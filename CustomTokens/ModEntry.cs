@@ -492,6 +492,12 @@ namespace CustomTokens
             ModEntry.perScreen.Value.PassOutCount = Game1.player.modData[$"{this.ModManifest.UniqueID}.PassOutCount"] != "" 
                 ? int.Parse(Game1.player.modData[$"{this.ModManifest.UniqueID}.PassOutCount"])
                 : 0;
+            ModEntry.perScreen.Value.LastMineLevel = Game1.player.modData[$"{this.ModManifest.UniqueID}.LastMineLevel"] != ""
+               ? int.Parse(Game1.player.modData[$"{this.ModManifest.UniqueID}.LastMineLevel"])
+               : 0;
+            ModEntry.perScreen.Value.LastVolcanoFloor = Game1.player.modData[$"{this.ModManifest.UniqueID}.LastVolcanoFloor"] != ""
+                ? int.Parse(Game1.player.modData[$"{this.ModManifest.UniqueID}.LastVolcanoFloor"])
+                : 0;
 
             // Reset booleans for new day
             update.updatepassout = true;
