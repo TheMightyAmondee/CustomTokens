@@ -668,7 +668,7 @@ namespace CustomTokens
                 // Display information in SMAPI console
                 this.Monitor.Log($"\n\nMineLevel: {ModEntry.perScreen.Value.CurrentMineLevel}" +
                     $"\nVolcanoFloor: {ModEntry.perScreen.Value.CurrentVolcanoFloor}" +
-                    $"\nDeepestStandardMineLevel: { (ModEntry.perScreen.Value.DeepestMineLevel < 121 ? ModEntry.perScreen.Value.DeepestMineLevel : 120)}" +
+                    $"\nDeepestNormalMineLevel: { (ModEntry.perScreen.Value.DeepestMineLevel < 121 ? ModEntry.perScreen.Value.DeepestMineLevel : 120)}" +
                     $"\nDeepestSkullCavernMineLevel: {(ModEntry.perScreen.Value.DeepestMineLevel > 120 ? ModEntry.perScreen.Value.DeepestMineLevel - 120 : 0)}" +
                     $"\nDeepestVolcanoFloor: {ModEntry.perScreen.Value.DeepestVolcanoFloor}" +
                     $"\nDeepestMineLevel: {ModEntry.perScreen.Value.DeepestMineLevel}" +
