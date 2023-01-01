@@ -5,9 +5,9 @@ Custom Tokens is a mod that provides some additional tokens for Content Patcher,
 Basic Tokens:
 - ``MineLevel`` the player is currently on
 - ``VolcanoFloor`` the player is currently on
-- ``DeepestMineLevel``, the deepest minelevel the player has reached
+- ``DeepestMineLevel``, the deepest minelevel the player has reached, inclusive of both the normal and Skull Cavern mines
 - ``DeepestVolcanoFloor``, the deepest volcano floor reached by the player
-- ``DeepestStandardMineLevel``, the deepest normal minelevel reached by the player
+- ``DeepestNormalMineLevel``, the deepest normal minelevel reached by the player
 - ``DeepestSkullCavernMineLevel``, the deepest skull cavern minelevel reached
 - Anniversary of the player, split into two tokens, ``AnniversaryDay`` and ``AnniversarySeason``
 - ``YearsMarried``, total number of years married
@@ -83,6 +83,9 @@ Token | Default value | What it tracks | Notes
 Minelevel | 0 | Players current minelevel | Add 120 to Skull Cavern floors for token value. The quarry mine has a minelevel of 77377
 VolcanoFloor | 0 | Players current floor in the Volcano Dungeon
 DeepestMineLevel | 0 | The deepest minelevel the player has reached | Skull Cavern floors included
+DeepestNormalMinelevel | 0 | Players deepest minelevel in the normal mines
+DeepestSkullCavernMinelevel | 0 | Players deepest minelevel in the Skull Cavern
+DeepestVolcanoFloor | 0 | Players deepest floor in the Volcano Dungeon | The deepest floor reached since the mod has been added.
 AnniversaryDay | 0 | The day the player was married on
 AnniversarySeason | No season | The season the player was married in | Value is in all lower-case
 Years Married | 0 | The number of years the player has been married for
@@ -96,9 +99,6 @@ DeathCountMarried | 0 | The number of deaths that occur when the player is marri
 DeathCountMarriedPK | 0 | Value is DeathCountMarried + 1 when married | Because there are limits on the update rate of tokens in CP, this token can be used as a more accurate snapshot of DeathCountMarried in some cases, mainly the PlayerKilled event
 PassOutCount | 0 | The number of times the player has passed out, either from exhaustion or it reaching 2AM
 Child | "null" | Child state data, the token just by itself has no useable value and input arguments must be used.
-DeepestStandardMinelevel | 0 | Players deepest minelevel in the normal mines
-DeepestSkullCavernMinelevel | 0 | Players deepest minelevel in the Skull Cavern
-DeepestVolcanoFloor | 0 | Players deepest floor in the Volcano Dungeon | The deepest floor reached since the mod has been added.
 
 ### Special Order data
 Since Special Orders don't have a number id like quests they are recorded in the save file using a unique string as shown in the table below. The mod will return this unique string as an ID for each Special Order completed in the SOKeysCompleted token

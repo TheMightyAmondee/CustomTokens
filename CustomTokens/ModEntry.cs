@@ -409,10 +409,10 @@ namespace CustomTokens
                        return null;
                    });
 
-                // Register "DeepestStandardMineLevel" token
+                // Register "DeepestNormalMineLevel" token
                 api.RegisterToken(
                     this.ModManifest,
-                    "DeepestStandardMineLevel",
+                    "DeepestNormalMineLevel",
                     () =>
                     {
                         if (Context.IsWorldReady)
@@ -512,7 +512,7 @@ namespace CustomTokens
                 ? int.Parse(Game1.player.modData[$"{this.ModManifest.UniqueID}.PassOutCount"])
                 : 0;
             ModEntry.perScreen.Value.DeepestVolcanoFloor = Game1.player.modData[$"{this.ModManifest.UniqueID}.DeepestVolcanoFloor"] != ""
-                ? int.Parse(Game1.player.modData[$"{this.ModManifest.UniqueID}.LastVolcanoFloor"])
+                ? int.Parse(Game1.player.modData[$"{this.ModManifest.UniqueID}.DeepestVolcanoFloor"])
                 : 0;
 
             // Reset booleans for new day
@@ -608,7 +608,7 @@ namespace CustomTokens
             // Update old tracker
             Game1.player.modData[$"{this.ModManifest.UniqueID}.DeathCountMarried"] = ModEntry.perScreen.Value.DeathCountMarried.ToString();
             Game1.player.modData[$"{this.ModManifest.UniqueID}.PassOutCount"] = ModEntry.perScreen.Value.PassOutCount.ToString();
-            Game1.player.modData[$"{this.ModManifest.UniqueID}.LastVolcanoFloor"] = ModEntry.perScreen.Value.DeepestVolcanoFloor.ToString();
+            Game1.player.modData[$"{this.ModManifest.UniqueID}.DeepestVolcanoFloor"] = ModEntry.perScreen.Value.DeepestVolcanoFloor.ToString();
             this.Monitor.Log("Trackers updated for new day");
         }
 
