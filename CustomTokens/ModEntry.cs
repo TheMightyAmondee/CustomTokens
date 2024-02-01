@@ -198,7 +198,7 @@ namespace CustomTokens
                    {
                        if (Context.IsWorldReady)
                        {
-                           var currentdeathcount = (int)Game1.stats.timesUnconscious;
+                           var currentdeathcount = ModEntry.perScreen.Value.DeathCount;
 
                            return new[]
                            {
@@ -217,7 +217,7 @@ namespace CustomTokens
                    {
                        if (Context.IsWorldReady)
                        {
-                           var currentdeathcountmarried = Game1.player.isMarried()
+                           var currentdeathcountmarried = Game1.player.isMarriedOrRoommates()
                            ? ModEntry.perScreen.Value.DeathCountMarried
                            : 0;
 
@@ -244,7 +244,7 @@ namespace CustomTokens
 
                        if (Context.IsWorldReady)
                        {
-                           var currentdeathcount = (int)Game1.stats.timesUnconscious + 1;
+                           var currentdeathcount = ModEntry.perScreen.Value.DeathCount + 1;
 
                            return new[]
                            {
@@ -267,7 +267,7 @@ namespace CustomTokens
                        CP won't use correct value of DeathCountMarried token during the PlayerKilled event as the token is updated outside of the useable update rates, 
                        Adding 1 to the value of that token ensures token value is correct when content is loaded for event
                        */
-                           var currentdeathcountmarried = Game1.player.isMarried()
+                           var currentdeathcountmarried = Game1.player.isMarriedOrRoommates()
                            ? ModEntry.perScreen.Value.DeathCountMarried + 1
                            : 0;
 
@@ -309,7 +309,7 @@ namespace CustomTokens
                    {
                        if (Context.IsWorldReady)
                        {
-                           var currentquestsdone = Game1.stats.questsCompleted;
+                           var currentquestsdone = ModEntry.perScreen.Value.TotalQuestsCompleted;
 
                            return new[]
                            {
@@ -481,7 +481,7 @@ namespace CustomTokens
         /// <param name="e">The event arguments.</param>
         private void DayStarted(object sender, DayStartedEventArgs e)
         {
-            deathcounter = (int)Game1.player.stats.timesUnconscious;
+            deathcounter = ModEntry.perScreen.Value.DeathCount;
 
             // Add mod data to save file if needed
             foreach(var token in tokens)
@@ -529,14 +529,14 @@ namespace CustomTokens
             var anniversary = SDate.Now().AddDays(-(DaysMarried - 1));
 
             // Set tokens for the start of the day
-            ModEntry.perScreen.Value.CurrentYearsMarried = Game1.player.isMarried() == true ? YearsMarried : 0;
+            ModEntry.perScreen.Value.CurrentYearsMarried = Game1.player.isMarriedOrRoommates() == true ? YearsMarried : 0;
 
-            ModEntry.perScreen.Value.AnniversarySeason = Game1.player.isMarried() == true ? anniversary.Season : "No season";
+            ModEntry.perScreen.Value.AnniversarySeason = Game1.player.isMarriedOrRoommates() == true ? anniversary.Season.ToString() : "No season";
 
-            ModEntry.perScreen.Value.AnniversaryDay = Game1.player.isMarried() == true ? anniversary.Day : 0;
+            ModEntry.perScreen.Value.AnniversaryDay = Game1.player.isMarriedOrRoommates() == true ? anniversary.Day : 0;
 
             // Test if player is married
-            if (Game1.player.isMarried() is false)
+            if (Game1.player.isMarriedOrRoommates() is false)
             {
                 // No, relevant trackers will use their default values
 
@@ -678,11 +678,11 @@ namespace CustomTokens
                     $"\nQuestIDsCompleted: {Quests(ModEntry.perScreen.Value.QuestsCompleted)}" +
                     $"\nSOIDsCompleted: {Quests(ModEntry.perScreen.Value.SpecialOrdersCompleted)}" +
                     $"\nSOCompleted: {ModEntry.perScreen.Value.SpecialOrdersCompleted.Count}" +
-                    $"\nQuestsCompleted: {Game1.stats.questsCompleted}" +
-                    $"\nDeathCount: {Game1.stats.timesUnconscious}" +
+                    $"\nQuestsCompleted: {ModEntry.perScreen.Value.TotalQuestsCompleted}" +
+                    $"\nDeathCount: {ModEntry.perScreen.Value.DeathCount}" +
                     $"\nDeathCountMarried: {ModEntry.perScreen.Value.DeathCountMarried}" +
-                    $"\nDeathCountPK: {(Game1.player.isMarried() ? Game1.stats.timesUnconscious + 1 : 0)}" +
-                    $"\nDeathCountMarriedPK: {(Game1.player.isMarried() ? ModEntry.perScreen.Value.DeathCountMarried + 1 : 0)}" +
+                    $"\nDeathCountPK: {(Game1.player.isMarriedOrRoommates() ? ModEntry.perScreen.Value.DeathCount + 1 : 0)}" +
+                    $"\nDeathCountMarriedPK: {(Game1.player.isMarriedOrRoommates() ? ModEntry.perScreen.Value.DeathCountMarried + 1 : 0)}" +
                     $"\nPassOutCount: {ModEntry.perScreen.Value.PassOutCount}", LogLevel.Info);
             }
             catch (Exception ex)

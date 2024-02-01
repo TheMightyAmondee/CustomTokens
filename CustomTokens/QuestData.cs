@@ -28,7 +28,8 @@ namespace CustomTokens
         {
             try
             {
-                if (ModEntry.perScreen.Value.QuestsCompleted.Contains(__instance.id.Value) == false && __instance.id.Value != 0)
+                ModEntry.perScreen.Value.TotalQuestsCompleted++;
+                if (ModEntry.perScreen.Value.QuestsCompleted.Contains(__instance.id.Value) == false && __instance.id.Value != "0")
                 {
                     ModEntry.perScreen.Value.QuestsCompleted.Add(__instance.id.Value);
                     monitor.Log($"Quest with id {__instance.id.Value} has been completed");
@@ -45,9 +46,9 @@ namespace CustomTokens
             var order = Game1.player.team.completedSpecialOrders;
 
             // Check for completed special orders
-            if (data.Value.SpecialOrdersCompleted.Count < order.Count())
+            if (data.Value.SpecialOrdersCompleted.Count < order.Count)
             {
-                foreach (string questkey in new List<string>(order.Keys))
+                foreach (string questkey in new List<string>(order))
                 {
                     if (data.Value.SpecialOrdersCompleted.Contains(questkey) == false)
                     {
