@@ -11,7 +11,6 @@ namespace CustomTokens
         {
             if (Game1.killScreen == true && update.updatedeath == true)
             {
-                data.Value.DeathCount++;
                 if (Game1.player.isMarriedOrRoommates() == true)
                 {
                     data.Value.DeathCountMarried++;

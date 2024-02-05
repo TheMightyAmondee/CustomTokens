@@ -28,10 +28,9 @@ namespace CustomTokens
         {
             try
             {
-                ModEntry.perScreen.Value.TotalQuestsCompleted++;
-                if (ModEntry.perScreen.Value.QuestsCompleted.Contains(__instance.id.Value) == false && __instance.id.Value != "0")
+                if (ModEntry.perScreenPlayerData.Value.QuestsCompleted.Contains(__instance.id.Value) == false && __instance.id.Value != "0")
                 {
-                    ModEntry.perScreen.Value.QuestsCompleted.Add(__instance.id.Value);
+                    ModEntry.perScreenPlayerData.Value.QuestsCompleted.Add(__instance.id.Value);
                     monitor.Log($"Quest with id {__instance.id.Value} has been completed");
                 }
             }
