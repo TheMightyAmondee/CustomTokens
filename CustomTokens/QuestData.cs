@@ -11,10 +11,12 @@ namespace CustomTokens
     public class QuestData
     {
         private static IMonitor monitor;
+        private static IModHelper helper;
 
-        public static void Hook(Harmony harmony, IMonitor monitor)
+        public static void Hook(Harmony harmony, IMonitor monitor, IModHelper helper)
         {
             QuestData.monitor = monitor;
+            QuestData.helper = helper;
             monitor.Log("Initialising harmony patches...");
 
             harmony.Patch(
@@ -28,7 +30,9 @@ namespace CustomTokens
         {
             try
             {
-                if (ModEntry.perScreenPlayerData.Value.QuestsCompleted.Contains(__instance.id.Value) == false && __instance.id.Value != "0")
+                if (!System.Diagnostics.Debugger.IsAttached) { System.Diagnostics.Debugger.Launch(); }
+                var validid = helper.Reflection.GetMethod(__instance, "HasId").Invoke<bool>();
+                if (ModEntry.perScreenPlayerData.Value.QuestsCompleted.Contains(__instance.id.Value) == false && validid == true && __instance.id.Value != "0")
                 {
                     ModEntry.perScreenPlayerData.Value.QuestsCompleted.Add(__instance.id.Value);
                     monitor.Log($"Quest with id {__instance.id.Value} has been completed");

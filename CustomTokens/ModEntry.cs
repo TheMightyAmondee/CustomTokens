@@ -63,7 +63,7 @@ namespace CustomTokens
             }
 
             var harmony = new Harmony(this.ModManifest.UniqueID);
-            QuestData.Hook(harmony, this.Monitor);
+            QuestData.Hook(harmony, this.Monitor, this.Helper);
         }
 
         /// <summary>Raised after the game is launched, right before the first update tick.</summary>
