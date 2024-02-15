@@ -30,7 +30,6 @@ namespace CustomTokens
         {
             try
             {
-                if (!System.Diagnostics.Debugger.IsAttached) { System.Diagnostics.Debugger.Launch(); }
                 var validid = helper.Reflection.GetMethod(__instance, "HasId").Invoke<bool>();
                 if (ModEntry.perScreenPlayerData.Value.QuestsCompleted.Contains(__instance.id.Value) == false && validid == true && __instance.id.Value != "0")
                 {
