@@ -577,7 +577,7 @@ namespace CustomTokens
         private void UpdateTicked(object sender, UpdateTickedEventArgs e)
         {    
             // Update death or pass out tokens if needed
-            DeathAndExhaustionTokens.UpdateDeathAndExhaustionTokens(this.Helper, this.Monitor, ModEntry.perScreenPlayerData, this.config, update);
+            DeathAndExhaustionTokens.UpdateDeathAndExhaustionTokens(this.Monitor, ModEntry.perScreenPlayerData, this.config, update);
             // Check if any special orders have been completed
             QuestData.CheckForCompletedSpecialOrders(ModEntry.perScreenPlayerData, this.Monitor);
 

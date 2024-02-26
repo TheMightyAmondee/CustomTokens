@@ -7,7 +7,7 @@ namespace CustomTokens
     public class DeathAndExhaustionTokens
     {
         
-        internal void UpdateDeathAndExhaustionTokens(IModHelper helper, IMonitor monitor, PerScreen<PlayerData> data, ModConfig config, Update update)
+        internal void UpdateDeathAndExhaustionTokens(IMonitor monitor, PerScreen<PlayerData> data, ModConfig config, Update update)
         {
             if (Game1.killScreen == true && update.updatedeath == true)
             {

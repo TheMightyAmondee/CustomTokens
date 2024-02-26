@@ -6,7 +6,7 @@
 	"UniqueID": "TheMightyAmondee.CustomTokens",
 	"EntryDll": "CustomTokens.dll",
 	"UpdateKeys": [ "Nexus:7517" ],
-	"MinimumApiVersion": "3.14.0",
+	"MinimumApiVersion": "4.0.0-alpha",
 	"Dependencies": [
 		{
 			"UniqueID": "Pathoschild.ContentPatcher",
