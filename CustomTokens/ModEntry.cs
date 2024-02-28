@@ -496,9 +496,9 @@ namespace CustomTokens
             // Add recorded completed quests from mod data in save file to player data
             foreach(string questid in QuestsComplete)
             {
-                if (questid != "" && ModEntry.perScreenPlayerData.Value.QuestsCompleted.Contains(int.Parse(questid)) == false)
+                if (questid != "" && ModEntry.perScreenPlayerData.Value.QuestsCompleted.Contains(questid) == false)
                 {
-                    ModEntry.perScreenPlayerData.Value.QuestsCompleted.Add(int.Parse(questid));
+                    ModEntry.perScreenPlayerData.Value.QuestsCompleted.Add(questid);
                 }
             }
 
@@ -592,7 +592,7 @@ namespace CustomTokens
             string[] QuestsComplete = Game1.player.modData[$"{this.ModManifest.UniqueID}.QuestsCompleted"].Split('/');
 
             // Remove quests already in mod data so they aren't added again
-            foreach(string questid in QuestsComplete)
+            foreach (string questid in QuestsComplete)
             {
                 if(questid != "")
                 {
@@ -601,7 +601,7 @@ namespace CustomTokens
             }
 
             // Add any newly completed quests to mod data
-            foreach (string questid in ModEntry.perScreenPlayerData.Value.QuestsCompleted)
+            foreach (var questid in ModEntry.perScreenPlayerData.Value.QuestsCompleted)
             {
                 Game1.player.modData[$"{this.ModManifest.UniqueID}.QuestsCompleted"] = Game1.player.modData[$"{this.ModManifest.UniqueID}.QuestsCompleted"] + $"{questid}/";
             }
