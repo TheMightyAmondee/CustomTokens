@@ -530,7 +530,7 @@ namespace CustomTokens
             // Get years married
             double YearsMarried = Math.Floor(Years);
             // Get Anniversary date
-            var anniversary = SDate.Now().AddDays(-(DaysMarried - 1));
+            var anniversary = SDate.Now().AddDays(-DaysMarried);
 
             // Set tokens for the start of the day
             ModEntry.perScreenPlayerData.Value.CurrentYearsMarried = Game1.player.isMarriedOrRoommates() == true ? YearsMarried : 0;
