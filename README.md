@@ -10,6 +10,7 @@ Basic Tokens:
 - ``DeepestNormalMineLevel``, the deepest normal minelevel reached by the player
 - ``DeepestSkullCavernMineLevel``, the deepest skull cavern minelevel reached
 - Anniversary of the player, split into two tokens, ``AnniversaryDay`` and ``AnniversarySeason``
+- ``DaysMarried``, total number of days married
 - ``YearsMarried``, total number of years married
 - ``QuestIDsCompleted``, a list of quest ids that the player has completed
 - ``QuestsCompleted``, the total number of quests completed
@@ -89,6 +90,7 @@ DeepestVolcanoFloor | 0 | Players deepest floor in the Volcano Dungeon | The dee
 AnniversaryDay | 0 | The day the player was married on
 AnniversarySeason | No season | The season the player was married in | Value is in all lower-case
 YearsMarried | 0 | The number of years the player has been married for
+DaysMarried | 0 | The number of days the player has been married for
 QuestIDsCompleted | None | A list of quest ids that the player has completed | Only records quests with ids as specified in the Quests.xnb
 QuestsCompleted | 0 | The total number of quests completed | Includes quests with no ids e.g Bulletin board quests
 SOIDsCompleted | None | A list of the special orders a player has completed | Repeating the same order will not add the key to the token again 

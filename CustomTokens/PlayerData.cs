@@ -11,6 +11,7 @@ namespace CustomTokens
         public int CurrentVolcanoFloor { get; set; }
         public int DeepestVolcanoFloor { get; set; }
         public double CurrentYearsMarried { get; set; }
+        public int CurrentDaysMarried { get; set; }
         public int AnniversaryDay { get; set; }
         public string AnniversarySeason { get; set; } = "No season";
 

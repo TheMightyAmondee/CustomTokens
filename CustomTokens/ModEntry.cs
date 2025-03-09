@@ -164,7 +164,26 @@ namespace CustomTokens
 
                             return new[]
                             {
-                            AnniversarySeason
+                            AnniversarySeason.ToString()
+                            };
+                        }
+
+                        return null;
+                    });
+
+                // Register "DaysMarried" token
+                api.RegisterToken(
+                    this.ModManifest,
+                    "DaysMarried",
+                    () =>
+                    {
+                        if (Context.IsWorldReady)
+                        {
+                            var DaysMarried = ModEntry.perScreenPlayerData.Value.CurrentDaysMarried;
+
+                            return new[]
+                            {
+                            DaysMarried.ToString()
                             };
                         }
 
@@ -533,6 +552,8 @@ namespace CustomTokens
             var anniversary = SDate.Now().AddDays(-DaysMarried);
 
             // Set tokens for the start of the day
+            ModEntry.perScreenPlayerData.Value.CurrentDaysMarried = Game1.player.isMarriedOrRoommates() == true ? DaysMarried : 0;
+
             ModEntry.perScreenPlayerData.Value.CurrentYearsMarried = Game1.player.isMarriedOrRoommates() == true ? YearsMarried : 0;
 
             ModEntry.perScreenPlayerData.Value.AnniversarySeason = Game1.player.isMarriedOrRoommates() == true ? anniversary.Season.ToString() : "No season";
@@ -682,6 +703,7 @@ namespace CustomTokens
                     $"\nDeepestSkullCavernMineLevel: {(ModEntry.perScreenPlayerData.Value.DeepestMineLevel > 120 ? ModEntry.perScreenPlayerData.Value.DeepestMineLevel - 120 : 0)}" +
                     $"\nDeepestVolcanoFloor: {ModEntry.perScreenPlayerData.Value.DeepestVolcanoFloor}" +
                     $"\nDeepestMineLevel: {ModEntry.perScreenPlayerData.Value.DeepestMineLevel}" +
+                    $"\nDaysMarried: {ModEntry.perScreenPlayerData.Value.CurrentDaysMarried}" +
                     $"\nYearsMarried: {ModEntry.perScreenPlayerData.Value.CurrentYearsMarried}" +
                     $"\nAnniversaryDay: {ModEntry.perScreenPlayerData.Value.AnniversaryDay}" +
                     $"\nAnniversarySeason: {ModEntry.perScreenPlayerData.Value.AnniversarySeason}" +
